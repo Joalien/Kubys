@@ -1,7 +1,6 @@
-let Camera = class Camera {
+export default class Camera {
 
     constructor(scene, canvas) {
-        this.currentCamera = null;
         this.canvas = canvas;
         this.scene = scene;
         this.universalCamera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 20, -50), scene);
@@ -9,7 +8,7 @@ let Camera = class Camera {
         this.setUniversalCamera();
 
         this.arcRotateCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 10, 0.8, 10, new BABYLON.Vector3(0, 0, 0), scene);
-        this.arcRotateCamera.setPosition(new BABYLON.Vector3(0, 30, 30));
+        this.arcRotateCamera.setPosition(new BABYLON.Vector3(0, 30, -30));
     }
 
 

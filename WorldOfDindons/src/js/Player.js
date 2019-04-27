@@ -1,23 +1,27 @@
-let Player = class Player {
+import * as GUI from 'babylonjs-gui';
+
+export default class Player {
 
     constructor(scene)
     {
         // Appel des variables nécéssaires
-        const cubeSize = 3;
-        const playerSize = 3;
+        const cubeSize = 1;
+        const playerSize = 1;
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
         let player = BABYLON.Mesh.CreateBox("box1", cubeSize, scene);
+        let playerColor = new BABYLON.StandardMaterial('red', scene);
+        playerColor.diffuseColor = new BABYLON.Color3(1, 0, 0);
         player.position = new BABYLON.Vector3(0, cubeSize / 2 + playerSize, 0);
-        player.scaling = new BABYLON.Vector3(0.95, 0.95, 0.95);
-        player.color = new BABYLON.Color3(1, 0, 0);
+        player.scaling = new BABYLON.Vector3(0.95, 2, 0.95);
+        player.material = playerColor;
 
         let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         let rect1 = new BABYLON.GUI.Rectangle();
         rect1.width = 0.1;
         rect1.height = "40px";
         rect1.cornerRadius = 20;
-        rect1.color = "Orange";
+        rect1.color = "blue";
         rect1.thickness = 4;
         advancedTexture.addControl(rect1);
 

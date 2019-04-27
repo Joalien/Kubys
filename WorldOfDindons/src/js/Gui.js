@@ -1,4 +1,8 @@
-let Gui = class Gui {
+import Player from './Player.js';
+
+import * as GUI from 'babylonjs-gui';
+
+export default class Gui {
 
     constructor(camera) {
         let self = this;
@@ -7,16 +11,7 @@ let Gui = class Gui {
         this.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
         this.advancedTexture.addControl(this.panel);
 
-        //Button to switch between cameras
-        let switchCamera = BABYLON.GUI.Button.CreateSimpleButton("buton", "Switch camera");
-        switchCamera.width = 0.2;
-        switchCamera.height = "40px";
-        switchCamera.color = "white";
-        switchCamera.onPointerClickObservable.add(function() {
-            if(camera.scene.activeCamera instanceof BABYLON.UniversalCamera) camera.setArcRotateCamera();
-            else if(camera.scene.activeCamera instanceof BABYLON.ArcRotateCamera) camera.setUniversalCamera();
-        });
-        this.panel.addControl(switchCamera);
+
 
         //Chose your name
         let input = new BABYLON.GUI.InputText();
@@ -24,6 +19,7 @@ let Gui = class Gui {
         input.height = "40px";
         input.text = "Username";
         input.color = "white";
+        input.background = null;
         this.panel.addControl(input);
 
 
@@ -41,6 +37,17 @@ let Gui = class Gui {
         this.panel.addControl(connection);
         //Select your name
 
+        //Button to switch between cameras
+        let switchCamera = BABYLON.GUI.Button.CreateSimpleButton("buton", "Switch camera");
+        switchCamera.width = 0.2;
+        switchCamera.height = "40px";
+        switchCamera.color = "white";
+        switchCamera.onPointerClickObservable.add(function() {
+            if(camera.scene.activeCamera instanceof BABYLON.UniversalCamera) camera.setArcRotateCamera();
+            else if(camera.scene.activeCamera instanceof BABYLON.ArcRotateCamera) camera.setUniversalCamera();
+        });
+        this.panel.addControl(switchCamera);
+
         //Manuel
         let text1 = new BABYLON.GUI.TextBlock();
         text1.text = "Pour vous déplacer appuyez sur les touches z/q/s/d";
@@ -48,8 +55,5 @@ let Gui = class Gui {
         text1.height = "40px";
         text1.fontSize = 24;
         this.panel.addControl(text1);
-
     }
-
-
 };

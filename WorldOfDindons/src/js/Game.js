@@ -1,9 +1,17 @@
+import Camera from './Camera.js';
+import Gui from './Gui.js';
+import Map from './Map.js';
+import '../css/MainStyle.css';
+
+import * as BABYLON from 'babylonjs';
+
+
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", function () {
     new Game('renderCanvas');
 }, false);
 
-Game = function(canvasId) {
+let Game = function(canvasId) {
     // Canvas et engine défini ici
     let canvas = document.getElementById(canvasId);
     let engine = new BABYLON.Engine(canvas, true);
@@ -34,14 +42,13 @@ Game.prototype = {
     // Prototype d'initialisation de la scène
     _initScene : function(engine) {
         let scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color3(0,0,0);
+        scene.clearColor = new BABYLON.Color4(0,0,0, 0);
         scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
         scene.collisionsEnabled = true;
         let options = {
-            skyboxTexture: new BABYLON.CubeTexture("/textures/skybox", scene),
             groundColor: BABYLON.Color3.White()
         };
-        scene.createDefaultEnvironment(options);
+        // scene.createDefaultEnvironment(options);
 
         return scene;
     }
