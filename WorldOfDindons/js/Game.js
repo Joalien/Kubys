@@ -14,6 +14,7 @@ Game = function(canvasId) {
     this.camera = new Camera(this.scene, canvas);
     this.gui = new Gui(this.camera);
 
+
     let _map = new Map(_this);
     engine.runRenderLoop(function () {
         _this.scene.render();
