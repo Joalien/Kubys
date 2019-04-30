@@ -6,14 +6,14 @@ export default class Player {
     {
         // Appel des variables nécéssaires
         const cubeSize = 1;
-        const playerSize = 1;
+        const playerSize = 2;
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
         let player = BABYLON.Mesh.CreateBox("box1", cubeSize, scene);
         let playerColor = new BABYLON.StandardMaterial('red', scene);
         playerColor.diffuseColor = new BABYLON.Color3(1, 0, 0);
-        player.position = new BABYLON.Vector3(0, cubeSize / 2 + playerSize, 0);
-        player.scaling = new BABYLON.Vector3(0.95, 2, 0.95);
+        player.position = new BABYLON.Vector3(0, cubeSize + playerSize / 2 , 0);
+        player.scaling = new BABYLON.Vector3(0.95, playerSize*0.95, 0.95);
         player.material = playerColor;
 
         let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
