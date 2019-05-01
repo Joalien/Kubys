@@ -30,7 +30,7 @@
     <logger name="chapters.configuration" level="ERROR" additivity="false">
         <appender-ref ref="STDERR" />
     </logger>
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="STDOUT"/>
     </root>
 

@@ -1,14 +1,16 @@
 package kubys.controller;
 
 import kubys.model.Cell;
+import kubys.model.Map;
 import kubys.model.Player;
 import kubys.model.common.Breed;
 import kubys.model.common.Position;
-import kubys.model.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -26,7 +28,7 @@ public class InitController {
     }
 
     @MessageMapping("/getAllMap")
-    @SendTo("/broker/getAllMap")
+    @SendToUser("/broker/getAllMap")
     public Cell[] initMap() {
 
         Player player = Player.builder()
@@ -38,7 +40,7 @@ public class InitController {
                 .pm(5)
                 .build();
 
-        log.info("Before : "+map.getCells().toString());
+        log.debug("Before : "+map.getCells().toString());
 
         this.map.addPlayer(player, Position.builder()
                 .x(from++)
@@ -46,12 +48,19 @@ public class InitController {
                 .z(0)
                 .build());
 
-        log.info("After : "+map.getCells().toString());
+        log.debug("After : "+map.getCells().toString());
 
         map.getCells()
                 .forEach(((position, cell) -> cell.setPosition(position)));
 
         return map.getCells().values().toArray(new Cell[0]);
+    }
+
+    @MessageExceptionHandler
+    @SendToUser("/queue/errors")
+    public String handleException(Throwable exception) {
+        log.error(exception.toString());
+        return exception.getMessage();
     }
 
 }

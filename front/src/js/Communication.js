@@ -1,12 +1,14 @@
 import Player from "./Player";
 import Map from "./Map";
 import {Stomp} from "@stomp/stompjs/esm6";
+import {StompHeaders} from "@stomp/stompjs";
 
 export default class Communication {
 
     static getAllMapSubscription;
     static clientSocket;
     constructor(){
+
 
         Communication.clientSocket = Stomp.client("ws://127.0.0.1:8080/connect");
 
@@ -16,11 +18,14 @@ export default class Communication {
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/broker/getAllMap", Communication.getAllMap);
             Communication.clientSocket.subscribe("/broker/move", () => {});
             Communication.clientSocket.send("/getAllMap", {}, null);
+
         };
 
+        let connectHeaders = new StompHeaders();
+        connectHeaders["login"] = "username";
+        connectHeaders["passcode"] = "password";
 
-
-        Communication.clientSocket.connect(null, connect_callback, ()=> console.log("error trying to connect to the server"));
+        Communication.clientSocket.connect("username", "password", connectHeaders, connect_callback, ()=> console.log("error trying to connect to the server"));
     }
 
 
