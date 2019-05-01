@@ -1,4 +1,4 @@
-package hello.Configuration;
+package hello.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
