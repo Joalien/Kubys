@@ -1,4 +1,4 @@
-package kubys.model;
+package kubys.model.common;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,7 @@
 package kubys.service;
 
 import kubys.model.*;
+import kubys.model.common.Position;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -8,7 +9,7 @@ public class MapService {
 
     public static void generateEmptyMap(Position position, Map map){
         for(int x = 0; x < position.getX(); x++){
-            for(int z = 0; z < position.getY(); z++){
+            for(int z = 0; z < position.getZ(); z++){
                 map.getCells().put(Position.builder()
                         .x(x)
                         .y(0)

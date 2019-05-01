@@ -1,7 +1,7 @@
 package kubys.service;
 
 import kubys.model.Player;
-import kubys.model.Position;
+import kubys.model.common.Position;
 import org.springframework.stereotype.Service;
 
 @Service

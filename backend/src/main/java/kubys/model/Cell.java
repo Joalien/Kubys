@@ -1,5 +1,6 @@
 package kubys.model;
 
+import kubys.model.common.Position;
 import lombok.Data;
 
 @Data

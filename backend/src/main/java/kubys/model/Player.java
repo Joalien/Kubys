@@ -1,5 +1,6 @@
 package kubys.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import kubys.model.common.Breed;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Data
+@JsonIgnoreProperties(value = {"currentMap"})
 public class Player extends Cell{
 
     @ToString.Exclude

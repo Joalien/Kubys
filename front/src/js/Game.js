@@ -20,7 +20,8 @@ let Game = function(canvasId) {
     // On initie la scène avec une fonction associé à l'objet Game
     this.scene = this._initScene(engine);
     this.camera = new Camera(this.scene, canvas);
-    this.gui = new Gui(this.camera);
+    this.gui = new Gui();
+
 
 
     let _map = new Map(_this);

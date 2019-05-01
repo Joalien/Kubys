@@ -3,6 +3,7 @@ package kubys.Move;
 import kubys.Application;
 import kubys.model.*;
 import kubys.model.common.Breed;
+import kubys.model.common.Position;
 import kubys.service.MapService;
 import kubys.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ class PlayerMoveTest {
         mainMap = Map.builder().cells(new HashMap<>()).build();
 
         player = Player.builder()
-                .breed(Breed.Dwarf)
+                .breed(Breed.DWARF)
                 .currentMap(mainMap)
                 .level(1)
                 .name("Joalien")

@@ -28,9 +28,7 @@ class WebSocketClientIT {
         session1.subscribe("/broker/subscription1", new MyStompFrameHandler());
         StompSession session2 = createSession();
         session2.subscribe("/broker/subscription1", new MyStompFrameHandler());
-        Player msg =  Player.builder().build();
-        msg.setName("new Test session 1");
-        session1.send("/endpoint", msg);
+        session1.send("/init", null);
 
 
 

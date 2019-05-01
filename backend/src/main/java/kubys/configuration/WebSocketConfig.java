@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect")
                 .setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy()))
-                /*.setAllowedOrigins("*")*/;
+                .setAllowedOrigins("*");
 
         //Maybe needed for js connection
 //        registry.addEndpoint("/connect")
@@ -28,6 +28,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/broker");//BROADCAST TO ALL USER WHO SUBSCRIBED
+        config.setUserDestinationPrefix("/user");
     }
 
 }

@@ -1,10 +1,12 @@
 import Player from './Player.js';
-
+import Map from './Map.js';
+import Communication from './Communication.js';
 import * as GUI from 'babylonjs-gui';
+import {Stomp} from "@stomp/stompjs/esm6/compatibility/stomp";
 
 export default class Gui {
 
-    constructor(camera) {
+    constructor() {
         let self = this;
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
         this.panel = new BABYLON.GUI.StackPanel();
@@ -24,15 +26,16 @@ export default class Gui {
 
 
         //Let's connect to your account
-        let connection = BABYLON.GUI.Button.CreateSimpleButton("buton", "Play");
+        let connection = BABYLON.GUI.Button.CreateSimpleButton("button", "Play");
         connection.width = 0.2;
         connection.height = "40px";
         connection.color = "white";
         connection.onPointerClickObservable.add(function() {
-            let player = new Player();
-            player.setUsername(input.text);
             self.panel.removeControl(input);
             self.panel.removeControl(connection);
+
+            new Communication(input.text);
+
         });
         this.panel.addControl(connection);
         //Select your name

@@ -6,7 +6,7 @@ export default class Player {
     {
         // Appel des variables nécéssaires
         const cubeSize = 1;
-        const playerSize = 2;
+        const playerSize = 1;
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
         let player = BABYLON.Mesh.CreateBox("box1", cubeSize, scene);
@@ -51,10 +51,16 @@ export default class Player {
                     break;
             }
         }, false);
+
+        this.player = player;
     }
 
     setUsername (username){
         this.username.text = username;
+    }
+
+    setPosition (position){
+        this.player.position = position;
     }
 
 };

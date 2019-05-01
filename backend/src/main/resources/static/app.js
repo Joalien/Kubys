@@ -18,7 +18,7 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/simple-broker/subscritpion1', function (greeting) {
+        stompClient.subscribe('/broker/subscritpion1', function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
     });
@@ -33,7 +33,8 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/endpoint", {}, JSON.stringify({'name': $("#name").val()}));
+    // stompClient.send("/init", {}, JSON.stringify({'name': $("#name").val()}));
+    stompClient.send("/init", {}, {});
 }
 
 function showGreeting(message) {
