@@ -1,78 +1,74 @@
 package hello;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import hello.model.Player;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
-import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
-import static org.assertj.core.api.Assertions.*;
-
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
-@DisplayName("Create WebSocket STOMP client")
+@SpringBootTest(classes = Application.class)
+@DisplayName("Test WebSocket STOMP client")
+@AutoConfigureMockMvc
+@Slf4j
 class WebSocketClientTest {
-    private Logger logger = LogManager.getLogger(MyStompSessionHandler.class);
-
 
     @Test
-    void createClient() {
-        WebSocketClient client = new StandardWebSocketClient();
-        WebSocketStompClient stompClient = new WebSocketStompClient(client);
+    @DisplayName("Exchange simple message with server")
+    void setup() {
+
+        StompSession session1 = createSession();
+        session1.subscribe("/broker/subscription1", new MyStompFrameHandler());
+        StompSession session2 = createSession();
+        session2.subscribe("/broker/subscription1", new MyStompFrameHandler());
+        Player msg =  Player.builder().build();
+        msg.setName("new Test session 1");
+        session1.send("/endpoint", msg);
+
+
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //TODO: Improve test
+        assert true;
+    }
+
+    StompSession createSession(){
+        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
-        StompSessionHandler sessionHandler = new MyStompSessionHandler();
-        stompClient.connect("ws://localhost:8080/connect", sessionHandler);
-
-        new Scanner(System.in).nextLine(); // Don't close immediately.
+        StompSessionHandler sessionHandler = new StompSessionHandlerAdapter(){};
+        try {
+            return stompClient.connect("ws://localhost:8080/connect", sessionHandler).get();
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("Unable to connect to server");
+            assert false;
+        }
+        return null;
     }
-    private class MyStompSessionHandler extends StompSessionHandlerAdapter {
 
-        @Override
-        public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-            logger.info("New session established : " + session.getSessionId());
-            session.subscribe("/simple-broker/subscription1", this);
-            logger.info("Subscribed to /simple-broker/subscription1");
-            session.send("/app/endpoint", getSampleMessage());
-            logger.info("Message sent to /app/endpoint");
-        }
-
-        @Override
-        public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
-            logger.error("Got an exception", exception);
-        }
-
+    private class MyStompFrameHandler implements StompFrameHandler {
         @Override
         public Type getPayloadType(StompHeaders headers) {
-            return HelloMessage.class;
+            return Player.class;
         }
 
         @Override
-        public void handleFrame(StompHeaders headers, Object payload) {
-            HelloMessage msg = (HelloMessage) payload;
-            logger.info("Received : " + msg.getName());
-            logger.info("Received : " + msg);
-            assertThat(msg.getName()).isEqualTo(getSampleMessage().getName().toUpperCase());
-        }
-
-        /**
-         * A sample message instance.
-         * @return instance of <code>Message</code>
-         */
-        private HelloMessage getSampleMessage() {
-            HelloMessage msg = new HelloMessage();
-            msg.setName("Joalien");
-            return msg;
+        public void handleFrame(StompHeaders headers,Object payload) {
+            log.info(((Player)payload).getName());
         }
     }
+
+
 }
