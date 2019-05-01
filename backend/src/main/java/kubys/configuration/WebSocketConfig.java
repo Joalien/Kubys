@@ -1,4 +1,4 @@
-package hello.configuration;
+package kubys.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

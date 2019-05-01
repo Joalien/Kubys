@@ -1,6 +1,6 @@
-package hello.service;
+package kubys.service;
 
-import hello.model.*;
+import kubys.model.*;
 import org.springframework.stereotype.Service;
 
 @Service

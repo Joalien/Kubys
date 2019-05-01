@@ -1,4 +1,4 @@
-package hello.model;
+package kubys.model;
 
 import lombok.Data;
 

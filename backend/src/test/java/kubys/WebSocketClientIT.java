@@ -1,6 +1,6 @@
-package hello;
+package kubys;
 
-import hello.model.Player;
+import kubys.model.Player;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 @DisplayName("Test WebSocket STOMP client")
 @AutoConfigureMockMvc
 @Slf4j
-class WebSocketClientTest {
+class WebSocketClientIT {
 
     @Test
     @DisplayName("Exchange simple message with server")

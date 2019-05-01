@@ -1,6 +1,6 @@
-package hello;
+package kubys.controller;
 
-import hello.model.Player;
+import kubys.model.Player;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;

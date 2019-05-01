@@ -1,5 +1,6 @@
-package hello.model;
+package kubys.model;
 
+import kubys.model.common.Breed;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
