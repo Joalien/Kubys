@@ -5,23 +5,22 @@ import {Stomp} from "@stomp/stompjs/esm6";
 export default class Communication {
 
     static getAllMapSubscription;
+    static clientSocket;
     constructor(){
+
+        Communication.clientSocket = Stomp.client("ws://127.0.0.1:8080/connect");
 
         //Try to connect to the server
         let connect_callback = function() {
             // called back after the client is connected and authenticated to the STOMP server
-            Communication.getAllMapSubscription = clientSocket.subscribe("/broker/getAllMap", Communication.getAllMap);
-            clientSocket.subscribe("/broker/move", () => {});
-            clientSocket.send("/getAllMap", {}, null);
-        };
-        let error_callback = function(error) {
-            alert(error.headers.message);
+            Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/broker/getAllMap", Communication.getAllMap);
+            Communication.clientSocket.subscribe("/broker/move", () => {});
+            Communication.clientSocket.send("/getAllMap", {}, null);
         };
 
 
 
-        let clientSocket = Stomp.client("ws://127.0.0.1:8080/connect");
-        clientSocket.connect("Joalien", connect_callback, error_callback);
+        Communication.clientSocket.connect(null, connect_callback, ()=> console.log("error trying to connect to the server"));
     }
 
 

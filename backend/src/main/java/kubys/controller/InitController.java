@@ -4,7 +4,7 @@ import kubys.model.Cell;
 import kubys.model.Player;
 import kubys.model.common.Breed;
 import kubys.model.common.Position;
-import kubys.service.MapService;
+import kubys.model.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -15,14 +15,14 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class InitController {
 
-//WARNING, THIS IS NOT RESTFULL AT ALL, SINGLETONS HAS INSTANCE VARIABLE !!!
-private MapService mapService;
+    //WARNING, THIS IS NOT RESTFULL AT ALL, SINGLETONS HAS INSTANCE VARIABLE !!!
+    private Map map;
 
     private static int from = 0;
 
     @Autowired
-    public InitController(MapService mapService) {
-        this.mapService = mapService;
+    public InitController(Map map) {
+        this.map = map;
     }
 
     @MessageMapping("/getAllMap")
@@ -31,27 +31,27 @@ private MapService mapService;
 
         Player player = Player.builder()
                 .breed(Breed.DWARF)
-                .currentMap(this.mapService.getMap())
+                .currentMap(this.map)
                 .level(1)
                 .name("Joalien")
                 .pa(10)
                 .pm(5)
                 .build();
 
-//        log.info("Before : "+mapService.getMap().getCells().toString());
+        log.info("Before : "+map.getCells().toString());
 
-        this.mapService.addPlayer(player, Position.builder()
+        this.map.addPlayer(player, Position.builder()
                 .x(from++)
                 .y(1)
                 .z(0)
                 .build());
 
-//        log.info("After : "+mapService.getMap().getCells().toString());
+        log.info("After : "+map.getCells().toString());
 
-        mapService.getMap().getCells()
+        map.getCells()
                 .forEach(((position, cell) -> cell.setPosition(position)));
 
-        return mapService.getMap().getCells().values().toArray(new Cell[0]);
+        return map.getCells().values().toArray(new Cell[0]);
     }
 
 }

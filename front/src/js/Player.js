@@ -1,4 +1,5 @@
 import * as GUI from 'babylonjs-gui';
+import Communication from './Communication';
 
 export default class Player {
 
@@ -33,23 +34,7 @@ export default class Player {
         rect1.linkOffsetY = -30;
 
         window.addEventListener("keypress", function (evt) {
-            switch (evt.key) {
-                case 'z':
-                    player.position.z = player.position.z + cubeSize;
-                    break;
-                case 's':
-                    player.position.z = player.position.z - cubeSize;
-
-                    break;
-                case 'q':
-
-                    player.position.x = player.position.x - cubeSize;
-                    break;
-                case 'd':
-                    player.position.x = player.position.x + cubeSize;
-
-                    break;
-            }
+            Communication.clientSocket.send("/move", {}, JSON.stringify(evt.key));
         }, false);
 
         this.player = player;
@@ -57,6 +42,10 @@ export default class Player {
 
     setUsername (username){
         this.username.text = username;
+    }
+
+    u = function getUsername (){
+        return this.username.text;
     }
 
     setPosition (position){

@@ -4,7 +4,7 @@ import kubys.Application;
 import kubys.model.*;
 import kubys.model.common.Breed;
 import kubys.model.common.Position;
-import kubys.service.MapService;
+import kubys.model.Map;
 import kubys.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -31,7 +31,7 @@ class PlayerMoveTest {
     @BeforeEach
     void setup(){
 
-        mainMap = Map.builder().cells(new HashMap<>()).build();
+        mainMap = new Map();
 
         player = Player.builder()
                 .breed(Breed.DWARF)
@@ -54,8 +54,8 @@ class PlayerMoveTest {
                 .y(position.getY())
                 .z(position.getZ()+1)
                 .build();
-        MapService.generateEmptyMap(Position.builder().build(), mainMap);
-        MapService.addPlayer(mainMap, player, position);
+        mainMap.generateEmptyMap(Position.builder().build());
+        mainMap.addPlayer(player, position);
     }
 
     @Test

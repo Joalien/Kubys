@@ -1,8 +1,5 @@
-import Player from './Player.js';
-import Map from './Map.js';
 import Communication from './Communication.js';
 import * as GUI from 'babylonjs-gui';
-import {Stomp} from "@stomp/stompjs/esm6/compatibility/stomp";
 
 export default class Gui {
 
