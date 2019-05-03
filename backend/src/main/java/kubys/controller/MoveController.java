@@ -15,13 +15,14 @@ public class MoveController {
     //When a player make a direction, only return the diff with previous map
     @MessageMapping("/move")
     @SendTo("/broker/move")
-    public void directionPlayer(Direction direction) {
+    public String directionPlayer(Direction direction) {
         log.info("Server side : "+ direction.toString());
 
 //        switch(direction){
 //            case FORWARD:
 //                ...
 //        }
+        return direction.toString();
     }
 
 }

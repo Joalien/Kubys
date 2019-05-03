@@ -3,19 +3,11 @@ package kubys;
 import kubys.model.Player;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -24,8 +16,6 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.ExecutionException;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(classes = Application.class)
 @DisplayName("Test WebSocket STOMP client")
@@ -106,42 +96,42 @@ class WebSocketClientIT {
     }
 
 
-
-    @Nested
-    @DisplayName("Test that users authenticate well")
-    class AuthenticationTest {
-
-        @Test
-        @DisplayName("Unauthenticated user can't connect ")
-        void getMessageUnauthenticated() {
-            assertThatThrownBy(this::getMessage).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
-        }
-
-        @Test
-        @PreAuthorize("authenticated")
-        @DisplayName("Authenticated user can't connect ")
-        void getMessage() {
-            Authentication authentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
-            log.debug(authentication.toString());
-            assert true;
-        }
-
-        @Test
-        @WithMockUser
-        @DisplayName("What will happend with mock user ?")
-        void getMessageWithMockUser() {
-            getMessage();
-            assert true;
-        }
-
-        @Test
-        @WithAnonymousUser
-        @DisplayName("Anonymous user can't connect ")
-        void getMessageWithAnonymousUser() {
-            assertThatThrownBy(this::getMessage).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
-        }
-    }
+//
+//    @Nested
+//    @DisplayName("Test that users authenticate well")
+//    class AuthenticationTest {
+//
+//        @Test
+//        @DisplayName("Unauthenticated user can't connect ")
+//        void getMessageUnauthenticated() {
+//            assertThatThrownBy(this::getMessage).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
+//        }
+//
+//        @Test
+//        @PreAuthorize("authenticated")
+//        @DisplayName("Authenticated user can't connect ")
+//        void getMessage() {
+//            Authentication authentication = SecurityContextHolder.getContext()
+//                    .getAuthentication();
+//            log.debug(authentication.toString());
+//            assert true;
+//        }
+//
+//        @Test
+//        @WithMockUser
+//        @DisplayName("What will happend with mock user ?")
+//        void getMessageWithMockUser() {
+//            getMessage();
+//            assert true;
+//        }
+//
+//        @Test
+//        @WithAnonymousUser
+//        @DisplayName("Anonymous user can't connect ")
+//        void getMessageWithAnonymousUser() {
+//            assertThatThrownBy(this::getMessage).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
+//        }
+//    }
 
 
 

@@ -29,7 +29,8 @@ public class WebSocketAuthenticatorService {
                 password,
                 Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
         );
-        log.debug("usernamePasswordAuthenticationToken : "+usernamePasswordAuthenticationToken.toString());
+        log.debug(username.toString() + " : " + password.substring(0).toString());
+        log.debug("username_Password_Authentication_Token : ".toUpperCase()+usernamePasswordAuthenticationToken.toString());
         return usernamePasswordAuthenticationToken;
     }
 }

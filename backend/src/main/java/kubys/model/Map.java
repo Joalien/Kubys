@@ -15,9 +15,9 @@ public class Map {
     public Map(){
         this.cells = new HashMap<>();
         generateEmptyMap(Position.builder()
-                .x(10)
+                .x(1)
                 .y(5)
-                .z(10)
+                .z(1)
                 .build());
     }
 

@@ -34,6 +34,7 @@ export default class Player {
         rect1.linkOffsetY = -30;
 
         window.addEventListener("keypress", function (evt) {
+            console.log("send /move ...");
             Communication.clientSocket.send("/move", {}, JSON.stringify(evt.key));
         }, false);
 

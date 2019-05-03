@@ -9,9 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
 
 @Controller
 @Slf4j
@@ -28,8 +29,8 @@ public class InitController {
     }
 
     @MessageMapping("/getAllMap")
-    @SendToUser("/broker/getAllMap")
-    public Cell[] initMap() {
+    @SendToUser("/getAllMap")
+    public Cell[] initMap(Principal principal) {
 
         Player player = Player.builder()
                 .breed(Breed.DWARF)
@@ -57,7 +58,7 @@ public class InitController {
     }
 
     @MessageExceptionHandler
-    @SendToUser("/queue/errors")
+    @SendToUser("/errors")
     public String handleException(Throwable exception) {
         log.error(exception.toString());
         return exception.getMessage();
