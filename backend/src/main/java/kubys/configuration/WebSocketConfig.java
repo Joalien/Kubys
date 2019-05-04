@@ -1,6 +1,5 @@
 package kubys.configuration;
 
-import kubys.service.WebSocketAuthenticatorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -14,7 +13,10 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -22,6 +24,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.Map;
 
 
@@ -32,13 +35,14 @@ import java.util.Map;
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect").setAllowedOrigins("*")
                 .addInterceptors(new HandshakeInterceptor() {
                     @Override
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-                                                   Map attributes) throws Exception {
+                                                   Map attributes) {
                         if (request instanceof ServletServerHttpRequest) {
                             ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                             HttpSession session = servletRequest.getServletRequest().getSession();
@@ -51,7 +55,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                                Exception ex) {
                     }
                 });
-
     }
 
     @Override
@@ -69,18 +72,33 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 StompHeaderAccessor accessor =
                         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-
                     final String username = accessor.getFirstNativeHeader("login");
                     final String password = accessor.getFirstNativeHeader("passcode");
-
-                    final UsernamePasswordAuthenticationToken user = new WebSocketAuthenticatorService().getAuthenticatedOrFail(username, password);
+                    final UsernamePasswordAuthenticationToken user = getAuthenticatedOrFail(username, password);
 
                     accessor.setUser(user);
                 }
                 return message;
-
             }
         });
+    }
+
+    private UsernamePasswordAuthenticationToken getAuthenticatedOrFail(String username, final String password) throws AuthenticationException {
+        if (username == null || username.trim().length() == 0) {
+//            throw new AuthenticationCredentialsNotFoundException("Username was null or empty.");
+            username= String.valueOf((int) (Math.random() * 65535));
+        }
+        // Add your own logic for retrieving user in fetchUserFromDb()
+        if (/*fetchUserFromDb(username, password) == null */password == null) {
+            throw new BadCredentialsException("Bad credentials for user " + username);
+        }
+
+        // null credentials, we do not pass the password along
+        return new UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
+        );
     }
 
 }

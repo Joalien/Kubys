@@ -3,7 +3,7 @@ import * as GUI from 'babylonjs-gui';
 
 export default class Gui {
 
-    constructor() {
+    constructor(scene, camera) {
         let self = this;
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
         this.panel = new BABYLON.GUI.StackPanel();
@@ -16,7 +16,6 @@ export default class Gui {
         let input = new BABYLON.GUI.InputText();
         input.width = 0.2;
         input.height = "40px";
-        input.text = "Username";
         input.color = "white";
         input.background = null;
         this.panel.addControl(input);
@@ -31,7 +30,7 @@ export default class Gui {
             self.panel.removeControl(input);
             self.panel.removeControl(connection);
 
-            new Communication(input.text);
+            new Communication(scene, input.text);
 
         });
         this.panel.addControl(connection);

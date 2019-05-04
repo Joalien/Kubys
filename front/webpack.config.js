@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     watch: false,
     entry: './src/js/Game.js',
+    devtool: 'inline-source-map',
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
@@ -34,7 +35,7 @@ module.exports = {
                 ],
             },
             {
-                test: /\.js$/,
+                test: /\.jsx?$/,
                 use: 'babel-loader',
                 exclude: /node_modules/
             }

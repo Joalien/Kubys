@@ -13,8 +13,10 @@ import lombok.ToString;
 @JsonIgnoreProperties(value = {"currentMap"})
 public class Player extends Cell{
 
-    @ToString.Exclude
-    private Map currentMap;
+
+    private int id;
+//    @ToString.Exclude
+//    private Map currentMap;
     private Breed breed;
     private String name;
     private int level;

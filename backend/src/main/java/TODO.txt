@@ -1,0 +1,2 @@
+Empeĉher les accès concurrents sur HashMap cells
+Envoyer à tout le monde la création d'un nouvel utilisateur

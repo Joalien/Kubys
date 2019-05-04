@@ -6,10 +6,11 @@ export default class Communication {
 
     static getAllMapSubscription;
     static clientSocket;
-    constructor(){
+    static scene;
+    constructor(scene, username){
 
+        Communication.scene = scene;
 
-        
         // fetch(`http://localhost:8080/login`, {
         //     method: "POST",
         //     body: JSON.stringify({username: "user", passcode: "63ea0042-efe7-4413-8e74-7d9d6b33af2c"})
@@ -23,12 +24,11 @@ export default class Communication {
             // called back after the client is connected and authenticated to the STOMP server
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Communication.getAllMap);
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/errors", (error) => console.log(error));
-            Communication.clientSocket.subscribe("/broker/move", () => {});
+            Communication.clientSocket.subscribe("/broker/move", Communication.updateMap);
             Communication.clientSocket.send("/getAllMap", null);
 
         };
-
-        Communication.clientSocket.connect({login: "login"}, {passcode: "passcode"}, connect_callback, ()=> console.log("error trying to connect to the server"));
+        Communication.clientSocket.connect(username, "passcode", connect_callback, ()=> console.log("error trying to connect to the server"));
     }
 
 
@@ -40,9 +40,9 @@ export default class Communication {
             //For each item in the map, we print it
 
             for (let mesh of JSON.parse(message.body)){
-                if(mesh.hasOwnProperty("breed")){
-                    let player = new Player();
-                    player.setUsername(mesh.name);
+                if(mesh.hasOwnProperty("breed")){//Check if player could be optimized
+                    let player = new Player(Communication.scene, mesh.id);
+                    player.setlabel(mesh.name);
                     player.setPosition(new BABYLON.Vector3(mesh.position.x, mesh.position.y , mesh.position.z));
                 }else Map.createLandPlot(mesh.position.x, mesh.position.y ,mesh.position.z);
             }
@@ -52,5 +52,16 @@ export default class Communication {
             console.log("got empty message");
         }
     };
+
+    static updateMap = function(message){
+        if (message.body) {
+            let mesh = JSON.parse(message.body);
+            let player = Communication.scene.getMeshByID(mesh.id);
+
+            player.position =new BABYLON.Vector3(mesh.position.x, mesh.position.y , mesh.position.z);
+        } else {
+            console.log("got empty message, maybe player can't move");
+        }
+    }
 
 }

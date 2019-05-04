@@ -3,14 +3,14 @@ import Communication from './Communication';
 
 export default class Player {
 
-    constructor(scene)
+    constructor(scene, id)
     {
         // Appel des variables nécéssaires
         const cubeSize = 1;
         const playerSize = 1;
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
-        let player = BABYLON.Mesh.CreateBox("box1", cubeSize, scene);
+        let player = BABYLON.Mesh.CreateBox(id, cubeSize, scene);
         let playerColor = new BABYLON.StandardMaterial('red', scene);
         playerColor.diffuseColor = new BABYLON.Color3(1, 0, 0);
         player.position = new BABYLON.Vector3(0, cubeSize + playerSize / 2 , 0);
@@ -26,27 +26,37 @@ export default class Player {
         rect1.thickness = 4;
         advancedTexture.addControl(rect1);
 
-        this.username = new BABYLON.GUI.TextBlock();
-        this.username.text = "Joalien";
-        rect1.addControl(this.username);
+        this.label = new BABYLON.GUI.TextBlock();
+        this.label.text = "Joalien";
+        rect1.addControl(this.label);
 
         rect1.linkWithMesh(player);
         rect1.linkOffsetY = -30;
 
         window.addEventListener("keypress", function (evt) {
-            console.log("send /move ...");
-            Communication.clientSocket.send("/move", {}, JSON.stringify(evt.key));
+            switch (evt.key) {
+                case 'z':
+                case 's':
+                case 'q':
+                case 'd':
+                    Communication.clientSocket.send("/move", {}, JSON.stringify(evt.key));
+            }
+
         }, false);
 
         this.player = player;
     }
 
-    setUsername (username){
-        this.username.text = username;
+    setlabel (label){
+        this.label.text = label;
     }
 
-    u = function getUsername (){
-        return this.username.text;
+    getlabel (){
+        return this.label.text;
+    }
+
+    getPlayer(){
+        return this.player;
     }
 
     setPosition (position){
