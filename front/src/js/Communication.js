@@ -26,6 +26,11 @@ export default class Communication {
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/errors", (error) => console.log(error));
             Communication.clientSocket.subscribe("/broker/move", Communication.updateMap);
             Communication.clientSocket.send("/getAllMap", null);
+            Communication.clientSocket.send("/move", {}, JSON.stringify("CREATE"));
+
+            window.removeEventListener("keypress", Communication.pressEvent, false);
+            window.addEventListener("keypress", Communication.pressEvent, false);
+
 
         };
         Communication.clientSocket.connect(username, "passcode", connect_callback, ()=> console.log("error trying to connect to the server"));
@@ -43,8 +48,9 @@ export default class Communication {
                 if(mesh.hasOwnProperty("breed")){//Check if player could be optimized
                     let player = new Player(Communication.scene, mesh.id);
                     player.setlabel(mesh.name);
-                    player.setPosition(new BABYLON.Vector3(mesh.position.x, mesh.position.y , mesh.position.z));
-                }else Map.createLandPlot(mesh.position.x, mesh.position.y ,mesh.position.z);
+                    player.setPosition(new BABYLON.Vector3(mesh.position.x, mesh.position.y, mesh.position.z));
+                }else
+                    Map.createLandPlot(mesh.position.x, mesh.position.y ,mesh.position.z);
             }
 
             Communication.getAllMapSubscription.unsubscribe();
@@ -55,13 +61,33 @@ export default class Communication {
 
     static updateMap = function(message){
         if (message.body) {
-            let mesh = JSON.parse(message.body);
-            let player = Communication.scene.getMeshByID(mesh.id);
+            let player = JSON.parse(message.body);
+            let mesh = Communication.scene.getMeshByID(player.id);
+            console.log(Communication.scene.getMeshByName(player.id));
+            console.log(Communication.scene.getMeshByID(player.id));
+            console.log(player);
 
-            player.position =new BABYLON.Vector3(mesh.position.x, mesh.position.y , mesh.position.z);
+            if (mesh == null) { //If new player
+                let mesh = new Player(Communication.scene, player.id);
+                mesh.setlabel(player.name);
+                mesh.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
+            } else if(player.connected===false){
+                mesh.dispose();
+            } else {//If player had already been created and should move
+                mesh.position = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
+            }
         } else {
             console.log("got empty message, maybe player can't move");
         }
     }
 
+    static pressEvent = function(evt){
+        switch (evt.key) {
+            case 'z':
+            case 's':
+            case 'q':
+            case 'd':
+                Communication.clientSocket.send("/move", {}, JSON.stringify(evt.key));
+        }
+    }
 }

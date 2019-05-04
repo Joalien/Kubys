@@ -18,7 +18,7 @@ export default class Player {
         player.material = playerColor;
 
         let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        let rect1 = new BABYLON.GUI.Rectangle();
+        let rect1 = new BABYLON.GUI.Rectangle(id);
         rect1.width = 0.1;
         rect1.height = "40px";
         rect1.cornerRadius = 20;
@@ -32,17 +32,6 @@ export default class Player {
 
         rect1.linkWithMesh(player);
         rect1.linkOffsetY = -30;
-
-        window.addEventListener("keypress", function (evt) {
-            switch (evt.key) {
-                case 'z':
-                case 's':
-                case 'q':
-                case 'd':
-                    Communication.clientSocket.send("/move", {}, JSON.stringify(evt.key));
-            }
-
-        }, false);
 
         this.player = player;
     }

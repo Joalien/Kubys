@@ -3,7 +3,7 @@ package kubys.model.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public enum Direction {
+public enum Move {
 
     @JsonProperty("z")
     FORWARD('z'),
@@ -12,9 +12,13 @@ public enum Direction {
     @JsonProperty("q")
     LEFT('q'),
     @JsonProperty("d")
-    RIGHT('d');
+    RIGHT('d'),
+    @JsonProperty("CREATE")
+    CREATE(null),
+    @JsonProperty("REMOVE")
+    REMOVE(null);
 
 
-    Direction(char c) {
+    Move(Character c) {
     }
 }

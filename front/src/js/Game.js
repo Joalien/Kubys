@@ -36,6 +36,7 @@ let Game = function(canvasId) {
         }
     },false);
 
+
 };
 
 Game.prototype = {

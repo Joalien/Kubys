@@ -2,6 +2,7 @@ package kubys.model;
 
 import kubys.model.common.Position;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.security.Principal;
 
 @Component
 @Data
+@Slf4j
 public class Map {
 
     private HashMap<Position, Cell> cells;
@@ -19,9 +21,9 @@ public class Map {
         this.mapOfPlayer = new HashMap<>();
         this.cells = new HashMap<>();
         generateEmptyMap(Position.builder()
-                .x(0)
+                .x(1)
                 .y(5)
-                .z(0)
+                .z(1)
                 .build());
     }
 
@@ -43,13 +45,15 @@ public class Map {
         this.cells.put(position, cell);
     }
 
-    public void addPlayer(Player player, Position position){
+    public Position addPlayer(Player player, Position position){
+        log.debug("New player in"+cells.toString());
         if(cells.containsKey(position)) addPlayer(player, Position.builder().
-                x(position.getX())
-                .y(position.getY()+1)
-                .z(position.getZ()+1).build());
+                x(position.getX()+1)
+                .y(position.getY())
+                .z(position.getZ()).build());
         else addCell(position, player);
         player.setPosition(position);
+        return position;
     }
 
 

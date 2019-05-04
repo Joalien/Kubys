@@ -25,5 +25,6 @@ public class Player extends Cell{
     //private Spell [] spells;
     private int pm;
     private int pa;
+    private boolean isConnected;
 
 }

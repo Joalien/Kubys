@@ -3,7 +3,7 @@ package kubys.Move;
 import kubys.Application;
 import kubys.model.*;
 import kubys.model.common.Breed;
-import kubys.model.common.Direction;
+import kubys.model.common.Move;
 import kubys.model.common.Position;
 import kubys.model.Map;
 import kubys.service.PlayerService;
@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,12 +40,11 @@ class PlayerMoveTest {
                 .pm(5)
                 .build();
 
-
-        position = Position.builder()
+        position = mainMap.addPlayer(player, Position.builder()
                 .x(0)
                 .y(1)
                 .z(0)
-                .build();
+                .build());
 
         nextPosition = Position.builder()
                 .x(position.getX())
@@ -55,14 +52,13 @@ class PlayerMoveTest {
                 .z(position.getZ()+1)
                 .build();
         mainMap.generateEmptyMap(Position.builder().build());
-        mainMap.addPlayer(player, position);
     }
 
     @Test
     @DisplayName("move forward")
     void moveForward() {
         log.info(player.getPosition().toString());
-        PlayerService.movePlayer(player, Direction.FORWARD);
+        PlayerService.movePlayer(player, Move.FORWARD);
         assertEquals(player.getPosition(), nextPosition);
         log.info(player.getPosition().toString());
     }
@@ -72,7 +68,7 @@ class PlayerMoveTest {
     void tryToMoveForward() {
         log.info(player.getPosition().toString());
         mainMap.getCells().put(nextPosition, LandPlot.builder().build());
-        PlayerService.movePlayer(player, Direction.FORWARD);
+        PlayerService.movePlayer(player, Move.FORWARD);
         assertEquals(player.getPosition(), position);
         log.info(player.getPosition().toString());
     }

@@ -2,7 +2,7 @@ package kubys.service;
 
 import kubys.model.Map;
 import kubys.model.Player;
-import kubys.model.common.Direction;
+import kubys.model.common.Move;
 import kubys.model.common.Position;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ public class PlayerService {
         map = _map;
     }
 
-    public static Boolean movePlayer(Player player, Direction direction){
+    public static Boolean movePlayer(Player player, Move move){
         Boolean isMovePossible = null;
-        switch(direction){
+        switch(move){
             case FORWARD:
                 isMovePossible = PlayerService.moveForward(player);
                 break;
@@ -34,6 +34,10 @@ public class PlayerService {
                 break;
             case RIGHT:
                 isMovePossible = PlayerService.moveRight(player);
+                break;
+            case CREATE:
+                map.addPlayer(player, Position.builder().y(1).build());
+                isMovePossible = true;
                 break;
             default:
                 log.error("Not Implemented");

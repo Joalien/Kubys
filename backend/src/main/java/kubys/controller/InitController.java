@@ -41,18 +41,11 @@ public class InitController {
                 .name(principal.getName())
                 .pa(10)
                 .pm(5)
+                .isConnected(true)
                 .build();
         this.map.getMapOfPlayer().put(headerAccessor.getSessionId(), player);
         log.debug("Simultaneous connected players  : "+this.map.getMapOfPlayer().size());
 
-        this.map.addPlayer(player, Position.builder()
-                .x(0)
-                .y(1)
-                .z(0)
-                .build());
-        
-        
-        
         return map.getCells().values().toArray(new Cell[0]);
     }
 
