@@ -3,7 +3,7 @@ package kubys.model.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public enum Move {
+public enum Command {
 
     @JsonProperty("z")
     FORWARD('z'),
@@ -19,6 +19,6 @@ public enum Move {
     REMOVE(null);
 
 
-    Move(Character c) {
+    Command(Character c) {
     }
 }

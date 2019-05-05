@@ -1,51 +1,54 @@
 package kubys.controller;
 
-import kubys.model.Cell;
 import kubys.model.Map;
 import kubys.model.Player;
 import kubys.model.common.Breed;
-import kubys.model.common.Position;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Controller
 @Slf4j
-public class InitController {
+public class PlayerController {
 
     private Map map;
     private static int from = 1;
 
 
     @Autowired
-    public InitController(Map map) {
+    public PlayerController(Map map) {
         this.map = map;
     }
 
-    @MessageMapping("/getAllMap")
-    @SendToUser("/getAllMap")
-    public Cell[] initMap(Principal principal, SimpMessageHeaderAccessor headerAccessor, int playerId) {
-
-        Player player = Player.builder()
+    @MessageMapping("/getPlayers")
+    @SendToUser("/getPlayers")
+    public Player[] initMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+        //TODO : Get players from db
+        Set<Player> players = new LinkedHashSet<>();
+        Player.PlayerBuilder playerBuilder = Player.builder()
                 .id(from++)
-                .breed(Breed.DWARF)
                 .level(1)
                 .name(principal.getName())
                 .pa(10)
                 .pm(5)
-                .isConnected(true)
-                .build();
-        this.map.getMapOfPlayer().put(headerAccessor.getSessionId(), player);
-        log.debug("Simultaneous connected players  : "+this.map.getMapOfPlayer().size());
+                .isConnected(false);
 
-        return map.getCells().values().toArray(new Cell[0]);
+        for(Breed breed : Breed.values()){
+            players.add(playerBuilder.breed(breed).build());
+        }
+
+        log.debug(players.toString());
+
+        return players.toArray(new Player[0]);
+
     }
 
     @MessageExceptionHandler

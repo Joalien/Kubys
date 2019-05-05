@@ -21,16 +21,16 @@ public class Map {
         this.mapOfPlayer = new HashMap<>();
         this.cells = new HashMap<>();
         generateEmptyMap(Position.builder()
-                .x(1)
+                .x(15)
                 .y(5)
-                .z(1)
+                .z(15)
                 .build());
     }
 
 
     public void generateEmptyMap(Position position){
-        for(int x = 0; x < position.getX(); x++){
-            for(int z = 0; z < position.getZ(); z++){
+        for(int x = -position.getX(); x < position.getX(); x++){
+            for(int z = -position.getZ(); z < position.getZ(); z++){
                 this.cells.put(Position.builder()
                         .x(x)
                         .y(0)
@@ -46,7 +46,7 @@ public class Map {
     }
 
     public Position addPlayer(Player player, Position position){
-        log.debug("New player in"+cells.toString());
+        log.debug("New player in "+cells.toString());
         if(cells.containsKey(position)) addPlayer(player, Position.builder().
                 x(position.getX()+1)
                 .y(position.getY())

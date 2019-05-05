@@ -45,7 +45,7 @@ export default class Gui {
             if(camera.scene.activeCamera instanceof BABYLON.UniversalCamera) camera.setArcRotateCamera();
             else if(camera.scene.activeCamera instanceof BABYLON.ArcRotateCamera) camera.setUniversalCamera();
         });
-        this.panel.addControl(switchCamera);
+        // this.panel.addControl(switchCamera);
 
         //Manuel
         let text1 = new BABYLON.GUI.TextBlock();

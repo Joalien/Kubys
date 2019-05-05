@@ -5,7 +5,9 @@ public enum Breed {
 
     DWARF("Nain"),
     ELF("Elfe"),
-    TROLL("Troll");
+    ASSASSIN("Assassin"),
+    WIZARD("Mage"),
+    BERSERKER("Berserker");
 
 
 

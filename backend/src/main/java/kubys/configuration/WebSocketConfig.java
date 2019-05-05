@@ -59,7 +59,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/broker", "/error", "/getAllMap");//BROADCAST TO ALL USER WHO SUBSCRIBED
+        config.enableSimpleBroker("/broker", "/error", "/getAllMap", "/getPlayers");//BROADCAST TO ALL USER WHO SUBSCRIBED
         config.setUserDestinationPrefix("/user");
     }
 

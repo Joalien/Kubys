@@ -30,7 +30,7 @@ class WebSocketClientIT {
     void connectWebSocket() {
 
         StompSession session1 = createSession();
-        session1.subscribe("/broker/getAllMap", new MyStompFrameHandler());
+        session1.subscribe("/getAllMap", new MyStompFrameHandler());
         session1.send("/getAllMap", null);
 
 
@@ -74,7 +74,7 @@ class WebSocketClientIT {
         try {
             WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
             headers.add("login", "username");
-            headers.add("passcode", "password");
+            headers.add("passcode", "passcode");
             return stompClient.connect("ws://localhost:8080/connect", headers, sessionHandler).get();
         } catch (InterruptedException | ExecutionException e) {
             log.error("Unable to connect to server");

@@ -7,29 +7,27 @@ export default class Communication {
     static getAllMapSubscription;
     static clientSocket;
     static scene;
+    static lastObservable;
     constructor(scene, username){
 
         Communication.scene = scene;
 
-        // fetch(`http://localhost:8080/login`, {
-        //     method: "POST",
-        //     body: JSON.stringify({username: "user", passcode: "63ea0042-efe7-4413-8e74-7d9d6b33af2c"})
-        // }).then((response) => console.log(response)).catch(((response) => console.log(response)));
-
-
-        Communication.clientSocket = Stomp.client("ws://127.0.0.1:8080/connect");
+        Communication.clientSocket = Stomp.client("ws://92.169.68.158:8080/connect");
 
         //Try to connect to the server
         let connect_callback = function() {
             // called back after the client is connected and authenticated to the STOMP server
-            Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Communication.getAllMap);
+            // Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Communication.getAllMap);
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/errors", (error) => console.log(error));
-            Communication.clientSocket.subscribe("/broker/move", Communication.updateMap);
-            Communication.clientSocket.send("/getAllMap", null);
-            Communication.clientSocket.send("/move", {}, JSON.stringify("CREATE"));
+            Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getPlayers", Map.selectionRing);
+            // Communication.clientSocket.subscribe("/broker/move", Communication.updateMap);
 
-            window.removeEventListener("keypress", Communication.pressEvent, false);
-            window.addEventListener("keypress", Communication.pressEvent, false);
+            // Communication.clientSocket.send("/getAllMap", null);
+            Communication.clientSocket.send("/getPlayers", null);
+            // Communication.clientSocket.send("/move", {}, JSON.stringify("CREATE"));
+
+            // window.removeEventListener("keypress", Communication.pressEvent, false);
+            // window.addEventListener("keypress", Communication.pressEvent, false);
 
 
         };
@@ -44,13 +42,13 @@ export default class Communication {
         if (message.body) {
             //For each item in the map, we print it
 
-            for (let mesh of JSON.parse(message.body)){
-                if(mesh.hasOwnProperty("breed")){//Check if player could be optimized
-                    let player = new Player(Communication.scene, mesh.id);
-                    player.setlabel(mesh.name);
-                    player.setPosition(new BABYLON.Vector3(mesh.position.x, mesh.position.y, mesh.position.z));
+            for (let player of JSON.parse(message.body)){
+                if(player.hasOwnProperty("breed")){//Check if player could be optimized
+                    let objPlayer = new Player(Communication.scene, player);
+                    objPlayer.setLabel(player.name);
+                    objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
                 }else
-                    Map.createLandPlot(mesh.position.x, mesh.position.y ,mesh.position.z);
+                    Map.createLandPlot(player.position.x, player.position.y ,player.position.z);
             }
 
             Communication.getAllMapSubscription.unsubscribe();
@@ -63,23 +61,41 @@ export default class Communication {
         if (message.body) {
             let player = JSON.parse(message.body);
             let mesh = Communication.scene.getMeshByID(player.id);
-            console.log(Communication.scene.getMeshByName(player.id));
-            console.log(Communication.scene.getMeshByID(player.id));
-            console.log(player);
 
             if (mesh == null) { //If new player
-                let mesh = new Player(Communication.scene, player.id);
-                mesh.setlabel(player.name);
-                mesh.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
+                let objPlayer = new Player(Communication.scene, player);
+                objPlayer.setLabel(player.name);
+                objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
             } else if(player.connected===false){
+                Player.hashmap[mesh].dispose();
                 mesh.dispose();
             } else {//If player had already been created and should move
-                mesh.position = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
+
+                let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
+
+                let animationBox = new BABYLON.Animation("translatePlayer", "position", 500, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                let keys = [];
+
+                keys.push({
+                    frame: 0,
+                    value: mesh.position
+                });
+
+                keys.push({
+                    frame: 100,
+                    value: newPosition
+                });
+                animationBox.setKeys(keys);
+                mesh.animations = [];
+                mesh.animations.push(animationBox);
+                Communication.scene.beginAnimation(mesh, 0, 100, true);
+
+                mesh.position = newPosition;
             }
         } else {
             console.log("got empty message, maybe player can't move");
         }
-    }
+    };
 
     static pressEvent = function(evt){
         switch (evt.key) {
@@ -90,4 +106,6 @@ export default class Communication {
                 Communication.clientSocket.send("/move", {}, JSON.stringify(evt.key));
         }
     }
+
+
 }

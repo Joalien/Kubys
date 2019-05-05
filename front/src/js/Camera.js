@@ -3,8 +3,7 @@ export default class Camera {
     constructor(scene, canvas) {
         this.canvas = canvas;
         this.scene = scene;
-        this.arcRotateCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 10, 0.8, 10, new BABYLON.Vector3(0, 0, 0), scene);
-        this.arcRotateCamera.setPosition(new BABYLON.Vector3(0, 30, -30));
+        this.arcRotateCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera", -Math.PI/2, 7 * Math.PI/16, 12, new BABYLON.Vector3.Zero(), scene);
         this.setArcRotateCamera();
 
 
@@ -24,6 +23,10 @@ export default class Camera {
         // this.arcRotateCamera.setTarget = this.universalCamera.direction;
         this.scene.activeCamera = this.arcRotateCamera;
         this.arcRotateCamera.attachControl(this.canvas, true);
+    }
+
+    setPosition(position){
+        this.scene.activeCamera.setPosition(position);
     }
 };
 

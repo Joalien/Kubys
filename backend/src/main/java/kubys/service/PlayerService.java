@@ -2,7 +2,7 @@ package kubys.service;
 
 import kubys.model.Map;
 import kubys.model.Player;
-import kubys.model.common.Move;
+import kubys.model.common.Command;
 import kubys.model.common.Position;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ public class PlayerService {
         map = _map;
     }
 
-    public static Boolean movePlayer(Player player, Move move){
+    public static Boolean movePlayer(Player player, Command command){
         Boolean isMovePossible = null;
-        switch(move){
+        switch(command){
             case FORWARD:
                 isMovePossible = PlayerService.moveForward(player);
                 break;
@@ -89,7 +89,7 @@ public class PlayerService {
             map.getCells().put(position, player);
 
             player.setPosition(position);
-            log.debug(map.getCells().toString());
+//            log.debug(map.getCells().toString());
             return true;
         }else return false;
     }

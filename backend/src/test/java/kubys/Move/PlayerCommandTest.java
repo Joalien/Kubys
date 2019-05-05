@@ -3,7 +3,7 @@ package kubys.Move;
 import kubys.Application;
 import kubys.model.*;
 import kubys.model.common.Breed;
-import kubys.model.common.Move;
+import kubys.model.common.Command;
 import kubys.model.common.Position;
 import kubys.model.Map;
 import kubys.service.PlayerService;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureMockMvc
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PlayerMoveTest {
+class PlayerCommandTest {
 
     private Map mainMap;
     private Player player;
@@ -58,7 +58,7 @@ class PlayerMoveTest {
     @DisplayName("move forward")
     void moveForward() {
         log.info(player.getPosition().toString());
-        PlayerService.movePlayer(player, Move.FORWARD);
+        PlayerService.movePlayer(player, Command.FORWARD);
         assertEquals(player.getPosition(), nextPosition);
         log.info(player.getPosition().toString());
     }
@@ -68,7 +68,7 @@ class PlayerMoveTest {
     void tryToMoveForward() {
         log.info(player.getPosition().toString());
         mainMap.getCells().put(nextPosition, LandPlot.builder().build());
-        PlayerService.movePlayer(player, Move.FORWARD);
+        PlayerService.movePlayer(player, Command.FORWARD);
         assertEquals(player.getPosition(), position);
         log.info(player.getPosition().toString());
     }

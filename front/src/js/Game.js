@@ -24,7 +24,7 @@ let Game = function(canvasId) {
 
 
 
-    let _map = new Map(_this);
+    let _map = new Map(_this, this.camera);
     engine.runRenderLoop(function () {
         _this.scene.render();
     });
