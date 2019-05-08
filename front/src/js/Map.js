@@ -13,7 +13,6 @@ export default class Map {
     constructor(game, camera) {
         // Appel des letiables nécéssaires
         this.cubeSize = 1;
-        this.game = game;
         Map.CAMERA = camera;
         Map.SCENE = game.scene;
 

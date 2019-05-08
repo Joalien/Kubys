@@ -1,5 +1,4 @@
 import * as GUI from 'babylonjs-gui';
-import Communication from './Communication';
 
 export default class Player {
 

@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", function () {
 }, false);
 
 let Game = function(canvasId) {
+
+
+
     // Canvas et engine défini ici
     let canvas = document.getElementById(canvasId);
     let engine = new BABYLON.Engine(canvas, true);
@@ -21,7 +24,6 @@ let Game = function(canvasId) {
     this.scene = this._initScene(engine);
     this.camera = new Camera(this.scene, canvas);
     this.gui = new Gui(this.scene, this.camera);
-
 
 
     let _map = new Map(_this, this.camera);
