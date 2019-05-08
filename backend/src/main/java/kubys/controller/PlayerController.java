@@ -3,6 +3,7 @@ package kubys.controller;
 import kubys.model.Map;
 import kubys.model.Player;
 import kubys.model.common.Breed;
+import kubys.service.Spells;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -34,6 +35,7 @@ public class PlayerController {
         //TODO : Get players from db
         Set<Player> players = new LinkedHashSet<>();
         Player.PlayerBuilder playerBuilder = Player.builder()
+                .spells(Spells.getSpells())
                 .id(from++)
                 .level(1)
                 .name(principal.getName())

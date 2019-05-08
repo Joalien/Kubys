@@ -11,5 +11,4 @@ public class LandPlot extends Cell {
 
     boolean isDiggable;
 
-
 }

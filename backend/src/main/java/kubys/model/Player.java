@@ -5,7 +5,8 @@ import kubys.model.common.Breed;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
+
+import java.util.LinkedHashSet;
 
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -22,7 +23,7 @@ public class Player extends Cell{
     private int level;
     //private Weapon [] weapons;
     //private Weapon currentWeapon;
-    //private Spell [] spells;
+    private LinkedHashSet<Spell> spells;
     private int pm;
     private int pa;
     private boolean isConnected;

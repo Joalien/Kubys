@@ -4,14 +4,13 @@ import kubys.model.Cell;
 import kubys.model.Map;
 import kubys.model.Player;
 import kubys.model.common.Breed;
-import kubys.model.common.Position;
+import kubys.service.Spells;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -31,7 +30,7 @@ public class InitController {
 
     @MessageMapping("/getAllMap")
     @SendToUser("/getAllMap")
-    public Cell[] initMap(Principal principal, SimpMessageHeaderAccessor headerAccessor, int playerId) {
+    public Cell[] initMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
 
         Player player = Player.builder()
                 .id(from++)
@@ -41,10 +40,13 @@ public class InitController {
                 .pa(10)
                 .pm(5)
                 .isConnected(true)
+                .spells(Spells.getSpells())
                 .build();
+
         this.map.getMapOfPlayer().put(headerAccessor.getSessionId(), player);
         log.debug("Simultaneous connected players  : "+this.map.getMapOfPlayer().size());
 
+        log.debug("map : "+map.getCells());
         return map.getCells().values().toArray(new Cell[0]);
     }
 

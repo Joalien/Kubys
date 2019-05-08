@@ -170,7 +170,7 @@ export default class Map {
                 }
             });
         }
-    }
+    };
 
 
     showWorldAxis(size) {
