@@ -8,8 +8,6 @@ public enum SpellType {
     THROW("En cloche");
 
 
-
-
     SpellType(String type) {
 
     }

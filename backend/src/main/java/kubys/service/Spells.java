@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Service
 @Getter
@@ -29,7 +27,7 @@ public class Spells {
     static {
         spells = new LinkedHashSet<>();
         spells.add(Spell.builder()
-                .spellType(SpellType.CLASSIC)
+                .type(SpellType.CLASSIC)
                 .name("Tir simple")
                 .ammunition(-1)
                 .minScope(1)
@@ -38,16 +36,16 @@ public class Spells {
                 .build());
 
         spells.add(Spell.builder()
-                .spellType(SpellType.DROP)
+                .type(SpellType.DROP)
                 .name("Lacher simple")
                 .ammunition(-1)
                 .minScope(1)
-                .maxScope(2)
+                .maxScope(3)
                 .zone(1)
                 .build());
 
         spells.add(Spell.builder()
-                .spellType(SpellType.THROW)
+                .type(SpellType.THROW)
                 .name("Tir en cloche simple")
                 .ammunition(-1)
                 .minScope(1)

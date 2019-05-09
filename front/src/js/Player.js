@@ -3,12 +3,15 @@ import * as GUI from 'babylonjs-gui';
 export default class Player {
 
     static hashmap = {};
+    static CURRENT_PLAYER;
 
     constructor(scene, characteristics)
     {
         // Appel des variables nécéssaires
         const cubeSize = 1;
         const playerSize = 1;
+
+        Player.CURRENT_PLAYER = characteristics;
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
         let mesh = BABYLON.Mesh.CreateBox(characteristics.id, cubeSize, scene);

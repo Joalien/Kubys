@@ -13,7 +13,11 @@ export default class Communication {
 
         Communication.scene = scene;
 
-        Communication.clientSocket = Stomp.client("ws://92.169.68.158:8080/connect");
+        /*92.169.68.158*/
+
+
+
+        Communication.clientSocket = Stomp.client("ws://localhost:8080/connect");
 
         //Try to connect to the server
         let connect_callback = function() {
@@ -52,6 +56,7 @@ export default class Communication {
                     let objPlayer = new Player(Communication.scene, player);
                     objPlayer.setLabel(player.name);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
+                    console.log(Player.CURRENT_PLAYER);
                 }else
                     Map.createLandPlot(player.position.x, player.position.y ,player.position.z);
             }

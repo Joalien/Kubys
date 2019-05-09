@@ -9,7 +9,7 @@ import lombok.Data;
 public class Spell {
 
     String name;
-    SpellType spellType;
+    SpellType type;
     int pa;
     int minScope;
     int maxScope;
