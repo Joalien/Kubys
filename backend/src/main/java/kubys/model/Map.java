@@ -54,6 +54,22 @@ public class Map {
         addCell(pb.x(3).y(4).z(0).build(), lpb.build());
         addCell(pb.x(3).y(5).z(0).build(), lpb.build());
 
+        addCell(pb.x(4).y(1).z(4).build(), lpb.build());
+        addCell(pb.x(3).y(1).z(4).build(), lpb.build());
+        addCell(pb.x(4).y(1).z(3).build(), lpb.build());
+
+        addCell(pb.x(-4).y(1).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(2).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(3).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(4).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(5).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(6).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(7).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(8).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(9).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(10).z(-4).build(), lpb.build());
+        addCell(pb.x(-4).y(11).z(-4).build(), lpb.build());
+
 
     }
 

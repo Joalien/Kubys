@@ -31,7 +31,7 @@ public class Spells {
                 .name("Tir simple")
                 .ammunition(-1)
                 .minScope(1)
-                .maxScope(8)
+                .maxScope(12)
                 .zone(1)
                 .build());
 

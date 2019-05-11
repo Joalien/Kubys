@@ -6,6 +6,7 @@ export default class FightMap {
     static PANEL;
     static PICKED_MESH = null;
     static HIGHLIGHT_LAYER;
+    static i = 0;
 
     constructor() {
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu de combat");
@@ -24,27 +25,32 @@ export default class FightMap {
         connection.height = "40px";
         connection.color = "white";
         connection.onPointerClickObservable.add(function () {
+            if(FightMap.HIGHLIGHT_LAYER) FightMap.HIGHLIGHT_LAYER.dispose();
             FightMap.HIGHLIGHT_LAYER = new BABYLON.HighlightLayer("hl1", Map.SCENE);
             for (let mesh of Map.SCENE.meshes) {
-                if (!FightMap.isMeshInsideScope(Player.CURRENT_PLAYER, mesh, spell)){
+                if (!FightMap.isMeshInsideScope(Player.PLAYERS[Player.CURRENT_PLAYER_ID], mesh, spell) // If outside of the scope
+                    || !FightMap.isLightOfSight(mesh, Player.PLAYERS[Player.CURRENT_PLAYER_ID])){// Or no light of sight
                     mesh.visibility = 0.5;
                     transparentMeshes.push(mesh);
                 }else{
+
                     inScopeMeshes.push(mesh);
+
                 }
 
             }
 
 
 
-            window.addEventListener("pointermove", () =>FightMap.colorPickedMesh(inScopeMeshes));
+            window.addEventListener("pointermove", () =>FightMap.highlightPickedMesh(inScopeMeshes));
 
 
-            setTimeout(() => window.addEventListener("click", () => {
+            setTimeout(() => window.addEventListener("click", () => {// Remove spell casting
                 for (let mesh of transparentMeshes) mesh.visibility = 1;
                 FightMap.HIGHLIGHT_LAYER.dispose();
-                window.removeEventListener("pointermove", () =>FightMap.colorPickedMesh(inScopeMeshes));
+                window.removeEventListener("pointermove", () => FightMap.highlightPickedMesh(inScopeMeshes));
             }, {once: true}), 10);
+
         });
 
 
@@ -82,14 +88,12 @@ export default class FightMap {
                 default:
                     console.log("No type found");
                     return false;
-                
+
             }
         }else return false;
     };
 
-    static colorPickedMesh = function (inScopeMeshes) {
-
-
+    static highlightPickedMesh = function (inScopeMeshes) {
 
         let newPickedMesh = Map.SCENE.pick(Map.SCENE.pointerX, Map.SCENE.pointerY).pickedMesh;
 
@@ -99,9 +103,24 @@ export default class FightMap {
             }
             FightMap.PICKED_MESH = newPickedMesh;
             FightMap.HIGHLIGHT_LAYER.addMesh(FightMap.PICKED_MESH, BABYLON.Color3.Green());
-
         }
 
-    }
+    };
+
+    static isLightOfSight = function (mesh, player) {
+
+        let origin = player.position;
+
+        let direction = new BABYLON.Vector3(mesh.position.x-player.position.x,mesh.position.y-player.position.y,mesh.position.z-player.position.z);
+        direction = direction.normalize();
+
+        let ray = new BABYLON.Ray(origin, direction, 30);
+
+        let hit = Map.SCENE.pickWithRay(ray, (mesh) => mesh !== Map.SCENE.getMeshByID(player.id));
+
+        return (hit.pickedMesh === mesh || hit.pickedMesh === null); //Weird but else (-4, 0, -4) not found :O
+
+    };
+
 
 }

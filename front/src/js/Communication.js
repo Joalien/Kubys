@@ -17,7 +17,7 @@ export default class Communication {
 
 
 
-        Communication.clientSocket = Stomp.client("ws://localhost:8080/connect");
+        Communication.clientSocket = Stomp.client("ws://92.169.68.158:8080/connect");
 
         //Try to connect to the server
         let connect_callback = function() {
@@ -56,7 +56,6 @@ export default class Communication {
                     let objPlayer = new Player(Communication.scene, player);
                     objPlayer.setLabel(player.name);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
-                    console.log(Player.CURRENT_PLAYER);
                 }else
                     Map.createLandPlot(player.position.x, player.position.y ,player.position.z);
             }
@@ -69,7 +68,9 @@ export default class Communication {
 
     static updateMap = function(message){
         if (message.body) {
+
             let player = JSON.parse(message.body);
+
             let mesh = Communication.scene.getMeshByID(player.id);
             console.log(player);
 
@@ -77,11 +78,12 @@ export default class Communication {
                 let objPlayer = new Player(Communication.scene, player);
                 objPlayer.setLabel(player.name);
                 objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
-            } else if(player.connected===false){
-                Player.hashmap[mesh].dispose();
+            } else if(player.connected===false){// If player disconnect
+                Player.NAME_LABEL[mesh].dispose();
                 mesh.dispose();
-            } else {//If player had already been created and should move
+            } else {//If player had already been created and should move (normal case)
 
+                Player.PLAYERS[player.id] = player;
                 let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
 
                 let animationBox = new BABYLON.Animation("translatePlayer", "position", 500, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);

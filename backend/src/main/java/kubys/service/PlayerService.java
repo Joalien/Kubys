@@ -47,50 +47,56 @@ public class PlayerService {
     }
 
     private static Boolean moveForward(Player player){
-        Position position = Position.builder()
-                .x(player.getPosition().getX())
-                .y(player.getPosition().getY())
-                .z(player.getPosition().getZ()+1)
-                .build();
+        Position position = player.getPosition().addZ(1);
         return movePosition(player, position);
     }
 
     private static Boolean moveBackward(Player player){
-        Position position = Position.builder()
-                .x(player.getPosition().getX())
-                .y(player.getPosition().getY())
-                .z(player.getPosition().getZ()-1)
-                .build();
+        Position position = player.getPosition().addZ(-1);
+
         return movePosition(player, position);
     }
 
     private static Boolean moveLeft(Player player){
-        Position position = Position.builder()
-                .x(player.getPosition().getX()-1)
-                .y(player.getPosition().getY())
-                .z(player.getPosition().getZ())
-                .build();
+        Position position = player.getPosition().addX(-1);
+
         return movePosition(player, position);
     }
 
     private static Boolean moveRight(Player player){
-        Position position = Position.builder()
-                .x(player.getPosition().getX()+1)
-                .y(player.getPosition().getY())
-                .z(player.getPosition().getZ())
-                .build();
+        Position position = player.getPosition().addX(1);
+
         return movePosition(player, position);
     }
 
-    private static Boolean movePosition(Player player, Position position){
-        if(!map.getCells().containsKey(position)){
-            //Change map information
-            map.getCells().remove(player.getPosition());
-            map.getCells().put(position, player);
+    private static Boolean movePosition(Player player, Position position){// This method contains logic
+        Position above = position.addY(1);
+        Position below = position.addY(-1);
 
-            player.setPosition(position);
-//            log.debug(map.getCells().toString());
+        if(!map.getCells().containsKey(position)){
+            // Drop the ~~mic~~ player
+            while (!map.getCells().containsKey(below)){
+                below = below.addY(-1);
+
+            }
+            updatePosition(player, below.addY(1));// Change map information
+            return true;
+
+        }else if (!map.getCells().containsKey(above) && !map.getCells().containsKey(player.getPosition().addY(1))){
+            updatePosition(player, above);
             return true;
         }else return false;
+
+
+
+
+
+    }
+
+    private static void updatePosition(Player player, Position position){
+        map.getCells().remove(player.getPosition());
+        map.getCells().put(position, player);
+
+        player.setPosition(position);
     }
 }

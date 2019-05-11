@@ -53,7 +53,7 @@ export default class Map {
         }
     }
 
-    static createTree( x, z){
+    static createTree(x, z){
         let treeTexture = new BABYLON.Texture(Tree, this.SCENE);
         let leafTexture = new BABYLON.Texture(Leaf, this.SCENE);
         //Creation of a material
