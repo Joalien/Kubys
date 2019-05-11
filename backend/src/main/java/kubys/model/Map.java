@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.security.Principal;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Component
@@ -14,17 +15,20 @@ import java.security.Principal;
 @Slf4j
 public class Map {
 
-    private HashMap<Position, Cell> cells;
+    private ConcurrentHashMap<Position, Cell> cells;
     private HashMap<String, Player> mapOfPlayer;
 
     public Map(){
         this.mapOfPlayer = new HashMap<>();
-        this.cells = new HashMap<>();
-        generateFightMap1(/*Position.builder()
-                .x(1)
+        this.cells = new ConcurrentHashMap<>();
+        generateFightMap1();
+        generateEmptyMap(Position.builder()
+                .x(10)
                 .y(5)
-                .z(1)
-                .build()*/);
+                .z(10)
+                .build());
+
+
     }
 
 
