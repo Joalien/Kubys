@@ -6,6 +6,10 @@ import '../css/MainStyle.css';
 import * as BABYLON from 'babylonjs';
 
 
+if (process.env.NODE_ENV !== 'production') {
+    console.log('Development mode');
+}
+
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", function () {
     new Game('renderCanvas');
@@ -37,6 +41,7 @@ let Game = function(canvasId) {
             engine.resize();
         }
     },false);
+
 
 
 };

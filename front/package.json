@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build": "webpack --config webpack.config.js --mode=production",
+    "build": "webpack --config webpack.config.js --port 80 --mode=production -p",
     "dev": "webpack-dev-server --mode=development --port 4242 --hot --host 0.0.0.0"
   },
   "keywords": [],
@@ -34,6 +34,7 @@
     "websocket": "^1.0.28"
   },
   "dependencies": {
-    "babylonjs": "^3.3.0"
+    "babylonjs": "^3.3.0",
+    "express": "latest"
   }
 }

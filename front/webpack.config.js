@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     watch: false,
     entry: './src/js/Game.js',
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
