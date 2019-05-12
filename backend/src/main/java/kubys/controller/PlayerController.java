@@ -37,6 +37,7 @@ public class PlayerController {
         Player.PlayerBuilder playerBuilder = Player.builder()
                 .spells(Spells.getSpells())
                 .id(from++)
+                .isConnected(true)
                 .level(1)
                 .name(principal.getName())
                 .pa(10)

@@ -1,18 +1,30 @@
 import Map from "./Map"
 import Player from "./Player";
 
+import 'babylonjs-loaders'
+
+
 export default class FightMap {
 
     static PANEL;
     static PICKED_MESH = null;
     static HIGHLIGHT_LAYER;
-    static i = 0;
+    static axe;
+    static container;
 
     constructor() {
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu de combat");
         FightMap.PANEL = new BABYLON.GUI.StackPanel();
         FightMap.PANEL.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
         this.advancedTexture.addControl(FightMap.PANEL);
+
+        BABYLON.SceneLoader.LoadAssetContainer(/*"", */"/resources/", "axe.obj", Map.SCENE, function (container) {
+            FightMap.axe = container.meshes[0];
+            FightMap.axe.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
+            FightMap.axe.scaling = new BABYLON.Vector3(0.03, 0.03, 0.03);
+            FightMap.container = container;
+        });
+
 
     }
 
@@ -35,20 +47,70 @@ export default class FightMap {
                 }else{
 
                     inScopeMeshes.push(mesh);
-
                 }
-
             }
 
-
-
             window.addEventListener("pointermove", () =>FightMap.highlightPickedMesh(inScopeMeshes));
-
 
             setTimeout(() => window.addEventListener("click", () => {// Remove spell casting
                 for (let mesh of transparentMeshes) mesh.visibility = 1;
                 FightMap.HIGHLIGHT_LAYER.dispose();
                 window.removeEventListener("pointermove", () => FightMap.highlightPickedMesh(inScopeMeshes));
+
+                if (Map.SCENE.pick(Map.SCENE.pointerX, Map.SCENE.pointerY).pickedMesh === FightMap.PICKED_MESH){
+                    let time = 1;//second
+                    let player = Player.PLAYERS[Player.CURRENT_PLAYER_ID];
+                    let mesh = Map.SCENE.pick(Map.SCENE.pointerX, Map.SCENE.pointerY).pickedMesh;
+                    let direction = mesh.position.subtract(player.position);
+                    let direction2D = new BABYLON.Vector3(direction.x, direction.y, direction.z);
+                    direction2D.y = 0;
+                    direction2D.normalize();
+
+
+                    let ephemeralAxe = FightMap.axe.clone();
+                    FightMap.axe.dispose();
+                    ephemeralAxe.rotate(BABYLON.Axis.Y, Math.atan2(-direction2D.z, direction2D.x), BABYLON.Space.WORLD);
+                    ephemeralAxe.position = player.position;
+
+
+                    let axeAnimation1 = new BABYLON.Animation("translateAxe", "position", 100/time, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                    let axeAnimation2 = new BABYLON.Animation("translateAxe", "rotation.y", 100/time, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                    let keys1 = [];
+                    let keys2 = [];
+                    ephemeralAxe.animations = [];
+                    ephemeralAxe.animations.push(axeAnimation1);
+                    ephemeralAxe.animations.push(axeAnimation2);
+
+                    keys1.push({
+                        frame: 0,
+                        value: player.position
+                    });
+                    keys1.push({
+                        frame: 100,
+                        value: mesh.position
+                    });
+
+                    keys2.push({
+                        frame: 0,
+                        value: 0
+                    });
+                    keys2.push({
+                        frame: 100,
+                        value: -Math.PI/10
+                    });
+
+                    axeAnimation1.setKeys(keys1);
+                    axeAnimation2.setKeys(keys2);
+
+                    FightMap.container.addAllToScene();
+
+                    Map.SCENE.beginAnimation(ephemeralAxe, 0, 100, true, 1, );
+
+                    setTimeout(()=>Map.SCENE.removeMesh(ephemeralAxe), time*1000);
+
+
+                }
+
             }, {once: true}), 10);
 
         });

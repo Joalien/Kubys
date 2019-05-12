@@ -35,7 +35,7 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
             this.map.getMapOfPlayer().remove(sessionDisconnectEvent.getSessionId(), oldPlayer);
 
             oldPlayer.setConnected(false);
-            this.template.convertAndSend("/broker/move", oldPlayer);
+            this.template.convertAndSend("/broker/command", oldPlayer);
 
         } else log.warn("Weird, socket disconnect without having associate player. Try to remove this warning !");
     }

@@ -79,6 +79,7 @@ export default class Communication {
                 objPlayer.setLabel(player.name);
                 objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
             } else if(player.connected===false){// If player disconnect
+                console.log("Player "+player.id+" has left the game");
                 Player.NAME_LABEL[mesh].dispose();
                 mesh.dispose();
             } else {//If player had already been created and should move (normal case)

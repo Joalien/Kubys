@@ -3,7 +3,6 @@ import Grass from "../../textures/grass.jpg"
 import Tree from "../../textures/tree.jpg"
 import Leaf from "../../textures/leaf.jpg"
 import Player from "./Player";
-import Camera from "./Camera";
 
 export default class Map {
 
