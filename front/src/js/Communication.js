@@ -17,7 +17,7 @@ export default class Communication {
 
 
 
-        Communication.clientSocket = Stomp.client("ws://92.169.68.158:8080/connect");
+        Communication.clientSocket = Stomp.client("ws://localhost:8080/connect");
 
         //Try to connect to the server
         let connect_callback = function() {
