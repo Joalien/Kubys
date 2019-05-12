@@ -1,1 +1,0 @@
-Empeĉher les accès concurrents sur HashMap cells

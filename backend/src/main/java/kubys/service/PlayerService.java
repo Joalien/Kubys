@@ -1,12 +1,17 @@
 package kubys.service;
 
+import kubys.model.Cell;
 import kubys.model.Map;
 import kubys.model.Player;
 import kubys.model.common.Command;
 import kubys.model.common.Position;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Service
 @Slf4j
@@ -14,10 +19,12 @@ public class PlayerService {
 
     
     static private Map map;
-    
+    static private SimpMessagingTemplate template;
+
     @Autowired
-    public PlayerService(Map _map) {
-        map = _map;
+    public PlayerService(SimpMessagingTemplate template, Map map) {
+        PlayerService.template = template;
+        PlayerService.map = map;
     }
 
     public static Boolean movePlayer(Player player, Command command){
@@ -46,6 +53,7 @@ public class PlayerService {
         return isMovePossible;
     }
 
+
     private static Boolean moveForward(Player player){
         Position position = player.getPosition().addZ(1);
         return movePosition(player, position);
@@ -69,6 +77,7 @@ public class PlayerService {
         return movePosition(player, position);
     }
 
+
     private static Boolean movePosition(Player player, Position position){// This method contains logic
         Position above = position.addY(1);
         Position below = position.addY(-1);
@@ -86,17 +95,30 @@ public class PlayerService {
             updatePosition(player, above);
             return true;
         }else return false;
-
-
-
-
-
     }
 
     private static void updatePosition(Player player, Position position){
+
         map.getCells().remove(player.getPosition());
         map.getCells().put(position, player);
 
+//        DOES NOT WORK BECAUSE SERVER RETURN ONLY 1 CHANGE PER REQUEST
+//        MAYBE SEND DIRECTLY MESSAGE TO BROKER WITH NEW POSITION (SEND PLAYER AS CONTENT)
+
+        log.error(player.getPosition().toString());
+
+
+        if(map.getCells().containsKey(player.getPosition().addY(1)) &&
+            map.getCells().get(player.getPosition().addY(1)) instanceof Player) { // If they were a player on the cel above
+            log.error(map.getCells().get(player.getPosition().addY(1)).getPosition().toString());
+            log.error(player.getPosition().toString());
+            movePosition((Player) map.getCells().get(player.getPosition().addY(1)), player.getPosition());
+            PlayerService.template.convertAndSend("/broker/command", map.getCells().get(player.getPosition()));
+        }
+
+
+
         player.setPosition(position);
     }
+
 }
