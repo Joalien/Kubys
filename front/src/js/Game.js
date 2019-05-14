@@ -4,6 +4,7 @@ import Map from './Map.js';
 import '../css/MainStyle.css';
 
 import * as BABYLON from 'babylonjs';
+import FightMap from "./FightMap";
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -17,8 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 let Game = function(canvasId) {
 
-
-
     // Canvas et engine défini ici
     let canvas = document.getElementById(canvasId);
     let engine = new BABYLON.Engine(canvas, true);
@@ -27,13 +26,15 @@ let Game = function(canvasId) {
     // On initie la scène avec une fonction associé à l'objet Game
     this.scene = this._initScene(engine);
     this.camera = new Camera(this.scene, canvas);
-    this.gui = new Gui(this.scene, this.camera);
-
+    this.gui = new Gui(this.camera);
 
     let _map = new Map(_this, this.camera);
     engine.runRenderLoop(function () {
         _this.scene.render();
     });
+
+    new FightMap();
+
 
     // Ajuste la vue 3D si la fenetre est agrandi ou diminué
     window.addEventListener("resize", function () {

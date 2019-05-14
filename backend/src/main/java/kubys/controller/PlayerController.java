@@ -48,7 +48,7 @@ public class PlayerController {
             players.add(playerBuilder.breed(breed).build());
         }
 
-        log.debug(players.toString());
+//        log.debug(players.toString());
 
         return players.toArray(new Player[0]);
 

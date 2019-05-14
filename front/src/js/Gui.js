@@ -1,9 +1,10 @@
 import Communication from './Communication.js';
 import * as GUI from 'babylonjs-gui';
+import FightMap from "./FightMap";
 
 export default class Gui {
 
-    constructor(scene, camera) {
+    constructor(camera) {
         let self = this;
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
         this.panel = new BABYLON.GUI.StackPanel();
@@ -30,7 +31,8 @@ export default class Gui {
             self.panel.removeControl(input);
             self.panel.removeControl(connection);
 
-            new Communication(scene, input.text);
+            new Communication(Map.SCENE, input.text);
+
 
         });
         this.panel.addControl(connection);

@@ -25,11 +25,8 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
     @Override
     public void onApplicationEvent(SessionDisconnectEvent sessionDisconnectEvent) {
 
-        log.debug(sessionDisconnectEvent.getSessionId());
-        log.debug(this.map.getMapOfPlayer().toString());
-
         if(this.map.getMapOfPlayer().containsKey(sessionDisconnectEvent.getSessionId())) {
-            log.debug("USER DISCONNECT, DELETE HIS PLAYER !");
+            log.debug("USER DISCONNECT !");
             Player oldPlayer = this.map.getMapOfPlayer().get(sessionDisconnectEvent.getSessionId());
             this.map.getCells().remove(oldPlayer.getPosition(), oldPlayer);
             this.map.getMapOfPlayer().remove(sessionDisconnectEvent.getSessionId(), oldPlayer);

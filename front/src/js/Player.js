@@ -6,7 +6,7 @@ export default class Player {
     static CURRENT_PLAYER_ID;
     static PLAYERS = {};
 
-    constructor(scene, characteristics)
+    constructor(characteristics)
     {
         Player.PLAYERS[characteristics.id] = characteristics;
         // Appel des variables nécéssaires
@@ -16,8 +16,8 @@ export default class Player {
         Player.CURRENT_PLAYER_ID = characteristics.id;
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
-        let mesh = BABYLON.Mesh.CreateBox(characteristics.id, cubeSize, scene);
-        let playerColor = new BABYLON.StandardMaterial('red', scene);
+        let mesh = BABYLON.Mesh.CreateBox(characteristics.id, cubeSize, Map.SCENE);
+        let playerColor = new BABYLON.StandardMaterial('red', Map.SCENE);
         switch (characteristics.breed){
             case "DWARF":
                 playerColor.diffuseColor = new BABYLON.Color3(1, 0, 0);

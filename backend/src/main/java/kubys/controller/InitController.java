@@ -46,14 +46,12 @@ public class InitController {
         this.map.getMapOfPlayer().put(headerAccessor.getSessionId(), player);
         log.debug("Simultaneous connected players  : "+this.map.getMapOfPlayer().size());
 
-        log.debug("map : "+map.getCells());
         return map.getCells().values().toArray(new Cell[0]);
     }
 
     @MessageExceptionHandler
     @SendToUser("/errors")
     public String handleException(Throwable exception) {
-        log.error(exception.toString());
         return exception.getMessage();
     }
 
