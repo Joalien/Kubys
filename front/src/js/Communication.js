@@ -9,8 +9,8 @@ export default class Communication {
 
 
     constructor(username){
-
-        Communication.clientSocket = Stomp.client("ws://localhost:8080/connect");
+        let url = "wss://www.kubys.fr:8080/connect";
+        Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server
         let connect_callback = function() {

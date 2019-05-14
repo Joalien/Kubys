@@ -1,10 +1,15 @@
+openssl pkcs12 -export -out bundle.pfx -inkey privkey1.pem -in cert1.pem -certfile chain1.pem -password pass:password
+
+scp bundle.pfx src/main/resources
+
+
+
 # Define a custom port instead of the default 8080
 server.port=8080
 
 server.ssl.enabled=true
-
 # Tell Spring Security (if used) to require requests over HTTPS
-security.require-ssl=true
+#security.require-ssl=true
 
 # The format used for the keystore
 server.ssl.key-store-type=JKS
