@@ -21,7 +21,7 @@ export default class FightMap {
 
         this.advancedTexture.addControl(FightMap.PANEL);
 
-        BABYLON.SceneLoader.LoadAssetContainer("/resources/", "axe.obj", Map.SCENE, function (container) {
+        BABYLON.SceneLoader.LoadAssetContainer("/resources/axe/", "axe.obj", Map.SCENE, function (container) {
             FightMap.axe = container.meshes[0];
             FightMap.axe.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
             FightMap.axe.scaling = new BABYLON.Vector3(0.03, 0.03, 0.03);

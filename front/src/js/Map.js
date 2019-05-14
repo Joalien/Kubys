@@ -17,6 +17,8 @@ export default class Map {
         Map.CAMERA = camera;
         Map.SCENE = game.scene;
 
+        this.showWorldAxis(1);
+
         //Uncomment to see axis (debug purpose)
         // this.showWorldAxis(5);
 
@@ -47,7 +49,7 @@ export default class Map {
 
             for (let player of JSON.parse(message.body)){
                 if(player.hasOwnProperty("breed")){//Check if player could be optimized
-                    let objPlayer = new Player(Map.SCENE, player);
+                    let objPlayer = new Player(player);
                     objPlayer.setLabel(player.name);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
                 }else
@@ -66,8 +68,6 @@ export default class Map {
             let player = JSON.parse(message.body);
 
             let mesh = Map.SCENE.getMeshByID(player.id);
-            console.log(player);
-            console.log(mesh);
 
             if (mesh == null) { //If new player
                 let objPlayer = new Player(player);
@@ -176,10 +176,9 @@ export default class Map {
                 let alpha = (2 * Math.PI / JSON.parse(message.body).length * i) - Math.PI/2;
                 let distance = 5;
 
-                let objPlayer = new Player(Map.SCENE, player);
+                let objPlayer = new Player(player);
                 objPlayer.setLabel(player.name);
                 objPlayer.mesh.position = new BABYLON.Vector3(Math.cos(alpha)*distance, 0, Math.sin(alpha)*distance);
-                console.log(objPlayer.mesh.position);
                 objPlayer.mesh.rotate(BABYLON.Axis.Y, -alpha, BABYLON.Space.WORLD);
 
                 let animationBox = new BABYLON.Animation("translatePlayer", "position", 500, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);

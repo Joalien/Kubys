@@ -5,6 +5,7 @@ import '../css/MainStyle.css';
 
 import * as BABYLON from 'babylonjs';
 import FightMap from "./FightMap";
+import Player from "./Player";
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -34,6 +35,7 @@ let Game = function(canvasId) {
     });
 
     new FightMap();
+    new Player();
 
 
     // Ajuste la vue 3D si la fenetre est agrandi ou diminué
