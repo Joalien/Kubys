@@ -174,11 +174,12 @@ export default class Map {
             //For each item in the map, we print i
             for (let player of JSON.parse(message.body)) {
                 let alpha = (2 * Math.PI / JSON.parse(message.body).length * i) - Math.PI/2;
-                let distance = 5;
+                let distance = 3;
 
                 let objPlayer = new Player(player);
                 objPlayer.setLabel(player.name);
                 objPlayer.mesh.position = new BABYLON.Vector3(Math.cos(alpha)*distance, 0, Math.sin(alpha)*distance);
+                objPlayer.mesh.rotate(BABYLON.Axis.Y, Math.PI / 2, BABYLON.Space.WORLD);
                 objPlayer.mesh.rotate(BABYLON.Axis.Y, -alpha, BABYLON.Space.WORLD);
 
                 let animationBox = new BABYLON.Animation("translatePlayer", "position", 500, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);

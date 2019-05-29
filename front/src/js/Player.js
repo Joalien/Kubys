@@ -12,7 +12,7 @@ export default class Player {
     static elf;
     static dwarf;
     static assassin;
-    static wizard = BABYLON.AbstractMesh;
+    static wizard;
     static berserker;
 
 
@@ -22,15 +22,16 @@ export default class Player {
         if(!Player.areObjectLoaded) {
             console.log("load asset");
             BABYLON.SceneLoader.LoadAssetContainer("/resources/wizard/", "wizard.obj", Map.SCENE, function (container) {
+
                 Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
-                console.log("Loading wizard ...");
-                console.log("scaling factor : " + Player.getScalingVectorToFit(Player.wizard));
+                Player.wizard.visibility = 0;
+
+
+
                 let scaleFactor = Player.getScalingVectorToFit(Player.wizard);
                 scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
                 Player.wizard.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
                 // Player.wizard.dispose();
-                console.log(new BABYLON.Mesh(Player.wizard));
-                console.log("wizard : "+Player.wizard);
 
             });
             BABYLON.SceneLoader.LoadAssetContainer("/resources/elf/", "elf.obj", Map.SCENE, function (container) {
@@ -67,27 +68,37 @@ export default class Player {
 
         let mesh;
 
+        console.log(Player.wizard);
+
         switch (characteristics.breed){
             case "DWARF":
+                // mesh = Player.dwarf.clone();
                 mesh = Player.wizard.clone();
-                console.log("dwarf : "+mesh);
+
                 break;
             case "ELF":
+                // mesh = Player.elf.clone();
                 mesh = Player.wizard.clone();
+
                 break;
             case "ASSASSIN":
+                // mesh = Player.assassin.clone();
                 mesh = Player.wizard.clone();
+
                 break;
             case "WIZARD":
                 mesh = Player.wizard.clone();
                 break;
             case "BERSERKER":
+                // mesh = Player.berserker.clone();
                 mesh = Player.wizard.clone();
+
                 break;
 
         }
+
+        mesh.visibility = 1;
         mesh.position = new BABYLON.Vector3(0, cubeSize + playerSize / 2 , 0);
-        mesh.scaling = new BABYLON.Vector3(0.95, playerSize*0.95, 0.95);
 
         let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         let rect1 = new BABYLON.GUI.Rectangle(characteristics.id);
@@ -119,7 +130,6 @@ export default class Player {
     }
 
 
-    //TODO ! (https://www.babylonjs-playground.com/#7BICDZ)
     static getScalingVectorToFit (mesh) {
         let otherVector = BABYLON.Vector3.One();
         if(!mesh.__scaleVectorCache){
