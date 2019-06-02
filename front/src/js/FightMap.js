@@ -27,7 +27,6 @@ export default class FightMap {
             FightMap.axe.scaling = new BABYLON.Vector3(0.03, 0.03, 0.03);
             FightMap.container = container;
         });
-
     }
 
     static addButton = function (spell) {
@@ -135,7 +134,7 @@ export default class FightMap {
     };
 
     static castSpell = function(player, mesh){
-        let time = 1;//second
+        let time = 1; // second
         let direction = mesh.position.subtract(player.position);
         let direction2D = new BABYLON.Vector3(direction.x, direction.y, direction.z);
         direction2D.y = 0;
@@ -148,7 +147,7 @@ export default class FightMap {
 
 
         let axeAnimation1 = new BABYLON.Animation("translateAxe", "position", 100/time, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-        let axeAnimation2 = new BABYLON.Animation("translateAxe", "rotation.y", 100/time, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let axeAnimation2 = new BABYLON.Animation("rotateAxe", "rotation.y", 100/time, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
         let keys1 = [];
         let keys2 = [];
         ephemeralAxe.animations = [];

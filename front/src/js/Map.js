@@ -73,6 +73,8 @@ export default class Map {
                 let objPlayer = new Player(player);
                 objPlayer.setLabel(player.name);
                 objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
+                               
+
             } else if(player.connected===false){// If player disconnect
                 console.log("Player "+player.id+" has left the game");
                 Player.NAME_LABEL[mesh].dispose();
@@ -81,6 +83,17 @@ export default class Map {
 
                 Player.PLAYERS[player.id] = player;
                 let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
+                // try to find the direction in order to rotate the player around y axis
+                if(newPosition.x - mesh.position.x > 0){
+                    mesh.rotation.y = Math.PI / 2;
+                } else if(newPosition.x - mesh.position.x < 0){
+                    mesh.rotation.y = - Math.PI / 2;
+                } else if(newPosition.z - mesh.position.z > 0){
+                    mesh.rotation.y = 0;
+                } else if(newPosition.z - mesh.position.z < 0){
+                    mesh.rotation.y = Math.PI;
+                }
+
 
                 let animationBox = new BABYLON.Animation("translatePlayer", "position", 500, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                 let keys = [];
@@ -192,6 +205,7 @@ export default class Map {
                     frame: 100,
                     value: new BABYLON.Vector3.Zero()
                 });
+
                 animationBox.setKeys(keys);
                 objPlayer.mesh.animations = [];
                 objPlayer.mesh.animations.push(animationBox);

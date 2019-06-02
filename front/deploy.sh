@@ -1,12 +1,12 @@
 #!/bin/bash
 
 npm run build 
-cp -R textures/ dist/
+rsync -avzc textures resources dist/
 
-scp -r Dockerfile dist/ josquin@kubys.fr:~/front
+rsync -avzc Dockerfile dist josquin@kubys.fr:~/front
 
 #Maybe think about destroy all running containers
-	ssh josquin@kubys.fr -t "cd ~/front && 
-	docker build -t kubys_frontend . && 
+	ssh josquin@kubys.fr -t 'cd ~/front && 
 	docker stop $(docker ps | grep kubys_frontend | cut -d " " -f1) ;
-	docker run -d -p 80:80 -p 443:443 -v /home/josquin/front/certs/:/etc/ssl  kubys_frontend"
+	docker build -t kubys_frontend . && 
+	docker run -d -p 80:80 -p 443:443 -v /home/josquin/front/certs/:/etc/ssl -v /home/josquin/front/dist/:/usr/share/nginx/html kubys_frontend'

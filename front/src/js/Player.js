@@ -21,39 +21,48 @@ export default class Player {
 
         if(!Player.areObjectLoaded) {
             console.log("load asset");
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/wizard/", "wizard.obj", Map.SCENE, function (container) {
+
+
+            BABYLON.SceneLoader.LoadAssetContainer("/resources/wizard/", "wizard2.obj", Map.SCENE, function (container) {
 
                 Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
                 Player.wizard.visibility = 0;
 
-
-
                 let scaleFactor = Player.getScalingVectorToFit(Player.wizard);
                 scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
                 Player.wizard.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
-                // Player.wizard.dispose();
 
             });
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/elf/", "elf.obj", Map.SCENE, function (container) {
-                Player.elf = BABYLON.Mesh.MergeMeshes(container.meshes);
-                Player.resize(Player.elf.scaling);
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/centor/", "cent.obj", Map.SCENE, function (container) {
+            //
+            //
+                // Player.elf = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
+                // Player.elf.visibility = 0;
 
-            });
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/dwarf/", "dwarf.obj", Map.SCENE, function (container) {
-                Player.dwarf = BABYLON.Mesh.MergeMeshes(container.meshes);
-                Player.resize(Player.dwarf.scaling);
+                // Player.elf = container.meshes[1];
+                // console.log(Player.elf);
+                // container.addAllToScene();
 
-            });
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/assassin/", "assassin.obj", Map.SCENE, function (container) {
-                Player.assassin = BABYLON.Mesh.MergeMeshes(container.meshes);
-                Player.resize(Player.assassin.scaling);
-
-            });
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/berserker/", "berserker.obj", Map.SCENE, function (container) {
-                Player.berserker = BABYLON.Mesh.MergeMeshes(container.meshes);
-                Player.resize(Player.berserker.scaling);
-
-            });
+                // let scaleFactor = Player.getScalingVectorToFit(Player.elf);
+                // scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
+                // Player.elf.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
+            //
+            // });
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/dwarf/", "dwarf.obj", Map.SCENE, function (container) {
+            //     Player.dwarf = BABYLON.Mesh.MergeMeshes(container.meshes);
+            //     Player.resize(Player.dwarf.scaling);
+            //
+            // });
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/assassin/", "assassin.obj", Map.SCENE, function (container) {
+            //     Player.assassin = BABYLON.Mesh.MergeMeshes(container.meshes);
+            //     Player.resize(Player.assassin.scaling);
+            //
+            // });
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/berserker/", "berserker.obj", Map.SCENE, function (container) {
+            //     Player.berserker = BABYLON.Mesh.MergeMeshes(container.meshes);
+            //     Player.resize(Player.berserker.scaling);
+            //
+            // });
             Player.areObjectLoaded = true;
             return;
         }
@@ -68,13 +77,11 @@ export default class Player {
 
         let mesh;
 
-        console.log(Player.wizard);
-
         switch (characteristics.breed){
             case "DWARF":
                 // mesh = Player.dwarf.clone();
                 mesh = Player.wizard.clone();
-
+                
                 break;
             case "ELF":
                 // mesh = Player.elf.clone();
@@ -94,11 +101,10 @@ export default class Player {
                 mesh = Player.wizard.clone();
 
                 break;
-
         }
 
+        mesh.id = characteristics.id;
         mesh.visibility = 1;
-        mesh.position = new BABYLON.Vector3(0, cubeSize + playerSize / 2 , 0);
 
         let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         let rect1 = new BABYLON.GUI.Rectangle(characteristics.id);
@@ -119,6 +125,8 @@ export default class Player {
         Player.NAME_LABEL[mesh] = rect1;
 
         this.mesh = mesh;
+
+        return this;
     }
 
     setLabel (label){
@@ -158,6 +166,37 @@ export default class Player {
 
         return mesh.__size;
     };
+
+    // //Local Axes
+    // static localAxes(size) {
+    //     let pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [
+    //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
+    //         new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+    //     ], Map.SCENE);
+    //     pilot_local_axisX.color = new BABYLON.Color3(1, 0, 0);
+    //
+    //     let pilot_local_axisY = BABYLON.Mesh.CreateLines("pilot_local_axisY", [
+    //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+    //         new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
+    //     ], Map.SCENE);
+    //     pilot_local_axisY.color = new BABYLON.Color3(0, 1, 0);
+    //
+    //     let pilot_local_axisZ = BABYLON.Mesh.CreateLines("pilot_local_axisZ", [
+    //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
+    //         new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+    //     ], Map.SCENE);
+    //     pilot_local_axisZ.color = new BABYLON.Color3(0, 0, 1);
+    //
+    //     let local_origin = BABYLON.MeshBuilder.CreateBox("local_origin", {size:1}, Map.SCENE);
+    //     local_origin.isVisible = false;
+    //
+    //     pilot_local_axisX.parent = local_origin;
+    //     pilot_local_axisY.parent = local_origin;
+    //     pilot_local_axisZ.parent = local_origin;
+    //
+    //     return local_origin;
+    //
+    // }
 
 
 };
