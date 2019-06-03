@@ -81,7 +81,7 @@ export default class Player {
             case "DWARF":
                 // mesh = Player.dwarf.clone();
                 mesh = Player.wizard.clone();
-                
+
                 break;
             case "ELF":
                 // mesh = Player.elf.clone();

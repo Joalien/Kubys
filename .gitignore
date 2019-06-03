@@ -4,3 +4,4 @@ target/
 *.iml
 dist/
 bundle.pfx
+resources/

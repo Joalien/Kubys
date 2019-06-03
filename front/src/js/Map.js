@@ -84,13 +84,14 @@ export default class Map {
                 Player.PLAYERS[player.id] = player;
                 let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
                 // try to find the direction in order to rotate the player around y axis
-                if(newPosition.x - mesh.position.x > 0){
+
+                if(newPosition.x - mesh.position.x === 1){
                     mesh.rotation.y = Math.PI / 2;
-                } else if(newPosition.x - mesh.position.x < 0){
+                } else if(newPosition.x - mesh.position.x === -1){
                     mesh.rotation.y = - Math.PI / 2;
-                } else if(newPosition.z - mesh.position.z > 0){
+                } else if(newPosition.z - mesh.position.z === 1){
                     mesh.rotation.y = 0;
-                } else if(newPosition.z - mesh.position.z < 0){
+                } else if(newPosition.z - mesh.position.z === -1){
                     mesh.rotation.y = Math.PI;
                 }
 
@@ -110,9 +111,10 @@ export default class Map {
                 animationBox.setKeys(keys);
                 mesh.animations = [];
                 mesh.animations.push(animationBox);
+                mesh.position = newPosition;
                 Map.SCENE.beginAnimation(mesh, 0, 100, true);
 
-                mesh.position = newPosition;
+
             }
         } else {
             console.log("got empty message, maybe player can't move");
