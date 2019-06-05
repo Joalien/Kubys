@@ -30,7 +30,7 @@ public class MoveController {
     @MessageMapping("/command")
     @SendTo("/broker/command")
     public Cell directionPlayer(Principal principal, Command command, SimpMessageHeaderAccessor headerAccessor) {
-        log.info("Server side : "+ command.toString());
+//        log.info("Server side : "+ command.toString());
 
         //Get the current player
         Player player = map.getMapOfPlayer().get(headerAccessor.getSessionId());

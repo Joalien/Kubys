@@ -44,7 +44,7 @@ public class InitController {
                 .build();
 
         this.map.getMapOfPlayer().put(headerAccessor.getSessionId(), player);
-        log.debug("Simultaneous connected players  : "+this.map.getMapOfPlayer().size());
+//        log.debug("Simultaneous connected players  : "+this.map.getMapOfPlayer().size());
 
         return map.getCells().values().toArray(new Cell[0]);
     }

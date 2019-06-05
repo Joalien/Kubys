@@ -57,19 +57,15 @@ class PlayerCommandTest {
     @Test
     @DisplayName("move forward")
     void moveForward() {
-        log.info(player.getPosition().toString());
         PlayerService.movePlayer(player, Command.FORWARD);
         assertEquals(player.getPosition(), nextPosition);
-        log.info(player.getPosition().toString());
     }
 
     @Test
     @DisplayName("Try to move forward et fail")
     void tryToMoveForward() {
-        log.info(player.getPosition().toString());
         mainMap.getCells().put(nextPosition, LandPlot.builder().build());
         PlayerService.movePlayer(player, Command.FORWARD);
         assertEquals(player.getPosition(), position);
-        log.info(player.getPosition().toString());
     }
 }

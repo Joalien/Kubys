@@ -34,7 +34,7 @@ public class SpellController {
     @MessageMapping("/getSpells")
     @SendToUser("/getSpells")
     public Spell [] directionPlayer(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
-        log.info("Server side : Spell");
+//        log.info("Server side : Spell");
 
         //Get the current player
         Player player = map.getMapOfPlayer().get(headerAccessor.getSessionId());

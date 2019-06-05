@@ -91,7 +91,7 @@ class WebSocketClientIT {
 
         @Override
         public void handleFrame(StompHeaders headers,Object payload) {
-            log.info(((Player)payload).getName());
+//            log.info(((Player)payload).getName());
         }
     }
 

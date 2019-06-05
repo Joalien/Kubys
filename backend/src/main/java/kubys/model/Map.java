@@ -96,7 +96,7 @@ public class Map {
     }
 
     public Position addPlayer(Player player, Position position){
-        log.debug("New player in "+cells.toString());
+//        log.debug("New player in "+cells.toString());
         if(cells.containsKey(position)) addPlayer(player, Position.builder().
                 x(position.getX())
                 .y(position.getY()+1)
