@@ -23,7 +23,7 @@ export default class Player {
             console.log("load asset");
 
 
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/wizard/", "wizard2.obj", Map.SCENE, function (container) {
+            BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", Map.SCENE, function (container) {
 
                 Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
                 Player.wizard.visibility = 0;

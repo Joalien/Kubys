@@ -21,7 +21,7 @@ export default class FightMap {
 
         this.advancedTexture.addControl(FightMap.PANEL);
 
-        BABYLON.SceneLoader.LoadAssetContainer("/resources/axe/", "axe.obj", Map.SCENE, function (container) {
+        BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/axe/", "axe.obj", Map.SCENE, function (container) {
             FightMap.axe = container.meshes[0];
             FightMap.axe.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
             FightMap.axe.scaling = new BABYLON.Vector3(0.03, 0.03, 0.03);
@@ -147,39 +147,42 @@ export default class FightMap {
 
 
         let axeAnimation1 = new BABYLON.Animation("translateAxe", "position", 100/time, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-        let axeAnimation2 = new BABYLON.Animation("rotateAxe", "rotation.y", 100/time, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let axeAnimation2 = new BABYLON.Animation("rotateAxe", "rotation.y", 100/time, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
         let keys1 = [];
         let keys2 = [];
         ephemeralAxe.animations = [];
         ephemeralAxe.animations.push(axeAnimation1);
         ephemeralAxe.animations.push(axeAnimation2);
-
         keys1.push({
             frame: 0,
             value: player.position
         });
+
         keys1.push({
             frame: 100,
             value: mesh.position
         });
-
         keys2.push({
             frame: 0,
             value: 0
         });
+
         keys2.push({
             frame: 100,
-            value: -Math.PI/10
+            value: Math.PI
         });
-
         axeAnimation1.setKeys(keys1);
         axeAnimation2.setKeys(keys2);
 
-        FightMap.container.addAllToScene();
+        let animationGroup = new BABYLON.AnimationGroup("axeGroup");
+        animationGroup.addTargetedAnimation(axeAnimation1, ephemeralAxe);
+        animationGroup.addTargetedAnimation(axeAnimation2, ephemeralAxe);
+        animationGroup.normalize(0, 100);
+        animationGroup.play(true);
 
-        Map.SCENE.beginAnimation(ephemeralAxe, 0, 100, true, 1, );
+        // Map.SCENE.beginAnimation(ephemeralAxe, 0, 100, true, 1);
 
-        setTimeout(()=>Map.SCENE.removeMesh(ephemeralAxe), time*1000);
+        setTimeout(() => Map.SCENE.removeMesh(ephemeralAxe), time*1000);
 
     }
 
