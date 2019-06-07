@@ -1,21 +1,16 @@
 package kubys.controller;
 
-import kubys.model.Cell;
 import kubys.model.Map;
 import kubys.model.Player;
 import kubys.model.Spell;
-import kubys.model.common.Command;
-import kubys.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.util.Arrays;
 
 
 @Controller

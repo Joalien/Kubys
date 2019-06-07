@@ -6,11 +6,25 @@ import '../css/MainStyle.css';
 import * as BABYLON from 'babylonjs';
 import FightMap from "./FightMap";
 import Player from "./Player";
+import Communication from "./Communication";
+import {initializeApp} from "firebase";
 
 
 if (process.env.NODE_ENV !== 'production') {
     console.log('Development mode');
 }
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDmXTP9dZiqvzc2o1d0VREobnx4sFVduxY",
+    authDomain: "kubys-id.firebaseapp.com",
+    databaseURL: "https://kubys-id.firebaseio.com",
+    projectId: "kubys-id",
+    storageBucket: "kubys-id.appspot.com",
+    messagingSenderId: "no-reply@kubys.fr",
+    appID: "kubys-id",
+};
+initializeApp(firebaseConfig);
+
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", function () {
@@ -27,7 +41,7 @@ let Game = function(canvasId) {
     // On initie la scène avec une fonction associé à l'objet Game
     this.scene = this._initScene(engine);
     this.camera = new Camera(this.scene, canvas);
-    this.gui = new Gui(this.camera);
+    this.gui = new Gui();
 
     let _map = new Map(_this, this.camera);
     engine.runRenderLoop(function () {
@@ -36,6 +50,7 @@ let Game = function(canvasId) {
 
     new FightMap();
     new Player();
+    new Communication();
 
 
     // Ajuste la vue 3D si la fenetre est agrandi ou diminué

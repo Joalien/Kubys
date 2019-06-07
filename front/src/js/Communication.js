@@ -1,6 +1,7 @@
 import Map from "./Map";
 import {Stomp} from "@stomp/stompjs/esm6";
 import FightMap from "./FightMap"
+import * as firebase from "firebase";
 
 export default class Communication {
 
@@ -9,7 +10,8 @@ export default class Communication {
 
 
     constructor(username){
-        let url = "wss://www.kubys.fr:8080/connect";
+        let url = "wss://kubys.fr:8080/connect";
+        // let url = "ws://localhost:8080/connect";
         Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server
@@ -30,7 +32,19 @@ export default class Communication {
 
             Communication.sendMessage("/getSpells", null);
         };
-        Communication.clientSocket.connect(username, "passcode", connect_callback, ()=> console.log("error trying to connect to the server"));
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                // User is signed in.
+                user.getIdToken().then((token) => {
+                    Communication.clientSocket.connect(token, null, connect_callback, (error) => {
+                        console.log(error);
+                        document.location.href = "/login.html";
+                    });
+
+                });
+            }
+        });
+
     }
 
 

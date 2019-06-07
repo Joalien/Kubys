@@ -20,6 +20,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().denyAll();
 
     }
-
-
 }

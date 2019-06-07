@@ -5,3 +5,5 @@ target/
 dist/
 bundle.pfx
 resources/
+package-lock.json
+src/main/resources/serviceAccountPrivateKey.json

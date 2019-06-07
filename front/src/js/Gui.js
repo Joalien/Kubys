@@ -1,60 +1,126 @@
-import Communication from './Communication.js';
 import * as GUI from 'babylonjs-gui';
-import FightMap from "./FightMap";
+import * as firebase from "firebase";
+
 
 export default class Gui {
 
-    constructor(camera) {
-        let self = this;
+    constructor() {
+
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
-        this.panel = new BABYLON.GUI.StackPanel();
-        this.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-        this.advancedTexture.addControl(this.panel);
+        let panel = new BABYLON.GUI.StackPanel();
+        panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+        this.advancedTexture.addControl(panel);
 
 
 
-        //Chose your name
-        let input = new BABYLON.GUI.InputText();
-        input.width = 0.2;
-        input.height = "40px";
-        input.color = "white";
-        input.background = null;
-        this.panel.addControl(input);
-
-
-        //Let's connect to your account
-        let connection = BABYLON.GUI.Button.CreateSimpleButton("button", "Play");
-        connection.width = 0.2;
-        connection.height = "40px";
-        connection.color = "white";
-        connection.onPointerClickObservable.add(function() {
-            self.panel.removeControl(input);
-            self.panel.removeControl(connection);
-
-            new Communication(Map.SCENE, input.text);
-
-
+        let connectionTextBlock = new BABYLON.GUI.TextBlock();
+        connectionTextBlock.color = "white";
+        connectionTextBlock.height = "40px";
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                // User is signed in.
+                connectionTextBlock.text = user.email + " " +user.displayName;
+            }
         });
-        this.panel.addControl(connection);
-        //Select your name
+        panel.addControl(connectionTextBlock);
 
-        //Button to switch between cameras
-        let switchCamera = BABYLON.GUI.Button.CreateSimpleButton("buton", "Switch camera");
-        switchCamera.width = 0.2;
-        switchCamera.height = "40px";
-        switchCamera.color = "white";
-        switchCamera.onPointerClickObservable.add(function() {
-            if(camera.scene.activeCamera instanceof BABYLON.UniversalCamera) camera.setArcRotateCamera();
-            else if(camera.scene.activeCamera instanceof BABYLON.ArcRotateCamera) camera.setUniversalCamera();
+
+        let signOut = BABYLON.GUI.Button.CreateSimpleButton("signOut", "Déconnexion");
+        signOut.color = "white";
+        signOut.height = "40px";
+        signOut.onPointerClickObservable.add(function() {
+            firebase.auth().signOut();
+            firebase.default.auth().onAuthStateChanged(function(user) {
+                if (!user) {
+                    // User is signed in.
+                    document.location.href = "/login.html";
+                }
+            });
         });
+        panel.addControl(signOut);
+
+        // let grid = new BABYLON.GUI.Grid();
+        // this.advancedTexture.addControl(grid);
+        // grid.background = "black";
+        // grid.height = "500px";
+        // grid.width = "500px";
+        //
+        //
+        // grid.addColumnDefinition(0.5);
+        // grid.addColumnDefinition(0.5);
+        // grid.addRowDefinition(0.25);
+        // grid.addRowDefinition(0.25);
+        // grid.addRowDefinition(0.25);
+        // grid.addRowDefinition(0.25);
+        //
+        //
+        // //Connection
+        // let connectionTextBlock = new BABYLON.GUI.TextBlock();
+        // connectionTextBlock.text = "Connection";
+        // connectionTextBlock.color = "white";
+        // connectionTextBlock.fontSize = 24;
+        // connectionTextBlock.width = "100%";
+        // connectionTextBlock.height = "100%";
+        // grid.addControl(connectionTextBlock, 0, 0);
+        //
+        // //Connection email
+        // let connectionEmail = new BABYLON.GUI.InputText();
+        // connectionEmail.color = "white";
+        // connectionEmail.background = null;
+        // grid.addControl(connectionEmail, 1, 0);
+        //
+        // //Connection email
+        // let connectionPassword = new BABYLON.GUI.InputPassword();
+        // connectionPassword.color = "white";
+        // connectionPassword.background = null;
+        // grid.addControl(connectionPassword, 2, 0);
+        //
+        //
+        // //Inscription
+        // let inscriptionTextBlock = new BABYLON.GUI.TextBlock();
+        // inscriptionTextBlock.text = "Inscription";
+        // inscriptionTextBlock.color = "white";
+        // inscriptionTextBlock.fontSize = 24;
+        // grid.addControl(inscriptionTextBlock, 0, 1);
+        //
+        // //Inscription email
+        // let inscriptionEmail = new BABYLON.GUI.InputText();
+        // inscriptionEmail.color = "white";
+        // inscriptionEmail.background = null;
+        // grid.addControl(inscriptionEmail, 1, 1);
+        //
+        // //Inscription email
+        // let inscriptionPassword = new BABYLON.GUI.InputPassword();
+        // inscriptionPassword.color = "white";
+        // inscriptionPassword.background = null;
+        // grid.addControl(inscriptionPassword, 2, 1);
+        //
+        //
+        //
+        // //Let's connect to your account
+        // let playButton = BABYLON.GUI.Button.CreateSimpleButton("button", "Play");
+        // playButton.color = "white";
+        // playButton.onPointerClickObservable.add(function() {
+        //     self.advancedTexture.removeControl(grid);
+        //
+        //     new Communication(Map.SCENE, input.text);
+        //
+        //
+        // });
+        // grid.addControl(playButton, 3, 0);
+        // grid.addControl(playButton, 3, 1);
+
+        // //Button to switch between cameras
+        // let switchCamera = BABYLON.GUI.Button.CreateSimpleButton("buton", "Switch camera");
+        // switchCamera.width = 1;
+        // switchCamera.height = "40px";
+        // switchCamera.color = "white";
+        // switchCamera.onPointerClickObservable.add(function() {
+        //     if(camera.scene.activeCamera instanceof BABYLON.UniversalCamera) camera.setArcRotateCamera();
+        //     else if(camera.scene.activeCamera instanceof BABYLON.ArcRotateCamera) camera.setUniversalCamera();
+        // });
         // this.panel.addControl(switchCamera);
 
-        //Manuel
-        let text1 = new BABYLON.GUI.TextBlock();
-        text1.text = "Pour vous déplacer appuyez sur les touches z/q/s/d";
-        text1.color = "white";
-        text1.height = "40px";
-        text1.fontSize = 24;
-        this.panel.addControl(text1);
+
     }
 };

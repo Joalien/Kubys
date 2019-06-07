@@ -15,10 +15,11 @@
 
     <properties>
         <java.version>11</java.version>
-<!--        <start-class>kubys.Application</start-class>-->
+        <!--        <start-class>kubys.Application</start-class>-->
     </properties>
 
     <dependencies>
+        <!-- Spring boot dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -41,7 +42,7 @@
         </dependency>
 
 
-        <!--  JUnit 5 for test purpose      -->
+        <!-- JUnit 5 for test purpose -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -53,6 +54,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -65,6 +67,13 @@
             <version>7.0</version>
         </dependency>
 
+        <!-- Firebase -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>5.8.0</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -73,10 +82,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-<!--                <configuration>-->
-<!--                    <mainClass>kubys.Application</mainClass>-->
-<!--                    <layout>JAR</layout>-->
-<!--                </configuration>-->
+                <!--                <configuration>-->
+                <!--                    <mainClass>kubys.Application</mainClass>-->
+                <!--                    <layout>JAR</layout>-->
+                <!--                </configuration>-->
             </plugin>
         </plugins>
     </build>

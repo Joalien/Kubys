@@ -4,14 +4,36 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     watch: false,
-    entry: './src/js/Game.js',
-    devtool: 'source-map',
+    devtool: "source-map",
+    entry: {
+        kubys: './src/js/Game.js'
+    },
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/index.html'
-        })
+        }),
+        new HtmlWebpackPlugin({
+            files: {
+                chunks: {
+                    kubys: {
+                        entry: './src/js/Game.js',
+                    }
+                }
+            }
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: './src/index.html',
+            chunks: ['kubys']
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'login.html',
+            template: './src/login.html',
+        }),
+
+
     ],
     output: {
         filename: 'bundle.js',
