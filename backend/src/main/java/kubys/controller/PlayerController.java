@@ -21,7 +21,7 @@ import java.util.Set;
 public class PlayerController {
 
     private Map map;
-    private static int from = 1;
+    private static Long from = 1L;
 
 
     @Autowired
@@ -37,12 +37,10 @@ public class PlayerController {
         Player.PlayerBuilder playerBuilder = Player.builder()
                 .spells(Spells.getSpells())
                 .id(from++)
-                .isConnected(true)
                 .level(1)
                 .name(principal.getName())
                 .pa(10)
-                .pm(5)
-                .isConnected(false);
+                .pm(5);
 
         for(Breed breed : Breed.values()){
             players.add(playerBuilder.breed(breed).build());

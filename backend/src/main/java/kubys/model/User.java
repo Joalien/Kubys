@@ -3,14 +3,22 @@ package kubys.model;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Builder
 @Data
+@Entity
+@Table(name = "Person")
 public class User {
+    @Id
+    private String uid;
 
-    private String email;
-    private String username;
-    private String passwordHash;
+    @Column
+    private String displayName;
 
-    private Player [] players;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Player> players = new LinkedHashSet<>();
 
 }

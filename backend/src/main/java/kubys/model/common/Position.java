@@ -3,12 +3,16 @@ package kubys.model.common;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
 @Builder
 @Data
+@Embeddable
 public class Position {
-    private int x;
-    private int y;
-    private int z;
+    @Column private int x;
+    @Column private int y;
+    @Column private int z;
 
 
     public Position addX(int x){

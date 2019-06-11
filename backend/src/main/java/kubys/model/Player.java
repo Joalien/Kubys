@@ -1,31 +1,44 @@
 package kubys.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import kubys.model.common.Breed;
+import kubys.model.common.Position;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.persistence.*;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @Data
-@JsonIgnoreProperties(value = {"currentMap"})
+@Entity
 public class Player extends Cell{
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    private User user;
 
-    private int id;
-//    @ToString.Exclude
-//    private Map currentMap;
+
+    @Embedded
+    private Position position;
+
+    @Column
+    @Enumerated(EnumType.STRING)
     private Breed breed;
+    @Column
     private String name;
+    @Column
     private int level;
     //private Weapon [] weapons;
     //private Weapon currentWeapon;
-    private LinkedHashSet<Spell> spells;
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<Spell> spells = new LinkedHashSet<>();
+    @Column
     private int pm;
+    @Column
     private int pa;
-    private boolean isConnected;
-
 }

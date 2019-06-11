@@ -20,7 +20,7 @@ import java.security.Principal;
 public class InitController {
 
     private Map map;
-    private static int from = 1;
+    private static Long from = 1L;
 
 
     @Autowired
@@ -39,7 +39,6 @@ public class InitController {
                 .name(principal.getName())
                 .pa(10)
                 .pm(5)
-                .isConnected(true)
                 .spells(Spells.getSpells())
                 .build();
 
