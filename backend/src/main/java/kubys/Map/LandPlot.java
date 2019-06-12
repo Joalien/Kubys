@@ -1,5 +1,6 @@
-package kubys.model;
+package kubys.Map;
 
+import kubys.Map.Cell;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

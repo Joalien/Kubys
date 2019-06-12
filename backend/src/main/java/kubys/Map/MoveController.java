@@ -1,10 +1,8 @@
-package kubys.controller;
+package kubys.Map;
 
-import kubys.model.Cell;
-import kubys.model.Map;
-import kubys.model.Player;
-import kubys.model.common.Command;
-import kubys.service.PlayerService;
+import kubys.Player.Player;
+import kubys.Player.PlayerService;
+import kubys.configuration.commons.SessionStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,21 +17,23 @@ import java.security.Principal;
 @Slf4j
 public class MoveController {
 
-    private Map map;
+    private SessionStore sessionStore;
+
 
     @Autowired
-    public MoveController(Map map) {
-        this.map = map;
+    public MoveController(SessionStore sessionStore) {
+        this.sessionStore = sessionStore;
     }
+
 
     //When a player make a command, only return the diff with previous map
     @MessageMapping("/command")
     @SendTo("/broker/command")
     public Cell directionPlayer(Principal principal, Command command, SimpMessageHeaderAccessor headerAccessor) {
-//        log.info("Server side : "+ command.toString());
+        log.info("Command controller");
 
         //Get the current player
-        Player player = map.getMapOfPlayer().get(headerAccessor.getSessionId());
+        Player player = sessionStore.getPlayer();
 
         //If player command, send changes to all players
         if(PlayerService.movePlayer(player, command)){

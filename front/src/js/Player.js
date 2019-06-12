@@ -1,6 +1,7 @@
 import * as GUI from 'babylonjs-gui';
 import 'babylonjs-loaders'
 import Map from "./Map";
+import Communication from "./Communication";
 
 export default class Player {
 
@@ -166,6 +167,15 @@ export default class Player {
 
         return mesh.__size;
     };
+
+    static refreshPlayer(player){
+        console.log("Current player id : "+Player.CURRENT_PLAYER_ID);
+        console.log("Current player : "+player);
+        Player.CURRENT_PLAYER_ID = player.id;
+
+        Communication.sendMessage("/getAllMap", null);
+
+    }
 
     // //Local Axes
     // static localAxes(size) {

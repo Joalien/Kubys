@@ -1,10 +1,14 @@
-package kubys.controller;
+package kubys.Map;
 
-import kubys.model.Cell;
-import kubys.model.Map;
-import kubys.model.Player;
-import kubys.model.common.Breed;
-import kubys.service.Spells;
+import kubys.Map.Cell;
+import kubys.Map.Map;
+import kubys.Player.Player;
+import kubys.Player.Breed;
+import kubys.Player.PlayerService;
+import kubys.Spell.Spells;
+import kubys.User.User;
+import kubys.User.UserService;
+import kubys.configuration.commons.SessionStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -17,34 +21,30 @@ import java.security.Principal;
 
 @Controller
 @Slf4j
-public class InitController {
+public class MapController {
 
     private Map map;
-    private static Long from = 1L;
+    private SessionStore sessionStore;
 
 
     @Autowired
-    public InitController(Map map) {
+    public MapController(Map map, SessionStore sessionStore) {
         this.map = map;
+        this.sessionStore = sessionStore;
     }
 
     @MessageMapping("/getAllMap")
     @SendToUser("/getAllMap")
     public Cell[] initMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+        log.info("SessionStore in getAllMap controller : " + sessionStore);
+        Player player = sessionStore.getPlayer();
+        log.info(player.toString());
+        map.getCells().put(player.getPosition(), player);
 
-        Player player = Player.builder()
-                .id(from++)
-                .breed(Breed.DWARF)
-                .level(1)
-                .name(principal.getName())
-                .pa(10)
-                .pm(5)
-                .spells(Spells.getSpells())
-                .build();
-
-        this.map.getMapOfPlayer().put(headerAccessor.getSessionId(), player);
-//        log.debug("Simultaneous connected players  : "+this.map.getMapOfPlayer().size());
-
+        log.info("print all players on the map :");
+        map.getCells().values().parallelStream().
+                filter(cell -> cell instanceof Player)
+                .forEach(System.out::println);
         return map.getCells().values().toArray(new Cell[0]);
     }
 

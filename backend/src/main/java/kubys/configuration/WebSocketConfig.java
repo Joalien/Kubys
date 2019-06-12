@@ -1,14 +1,17 @@
 package kubys.configuration;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
+import kubys.Map.Position;
+import kubys.Player.Breed;
+import kubys.Player.Player;
+import kubys.Player.PlayerDao;
+import kubys.User.User;
+import kubys.User.UserDao;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -32,10 +35,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Optional;
 
 
 // https://stackoverflow.com/questions/45405332/websocket-authentication-and-authorization-in-spring
@@ -44,6 +47,15 @@ import java.util.concurrent.ExecutionException;
 @EnableWebSocketMessageBroker
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private UserDao userDao;
+    private PlayerDao playerDao;
+
+    @Autowired
+    public WebSocketConfig(UserDao userDao, PlayerDao playerDao) {
+        this.userDao = userDao;
+        this.playerDao = playerDao;
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -71,7 +83,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         //BROADCAST TO ALL USER WHO SUBSCRIBED
-        config.enableSimpleBroker("/broker", "/error", "/getAllMap", "/getPlayers", "/getSpells");
+        config.enableSimpleBroker("/broker", "/error", "/getAllMap", "/getPlayers", "/getSpells", "/setPlayer");
         config.setUserDestinationPrefix("/user");
     }
 
@@ -80,13 +92,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registration.interceptors(new ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
-
-                StompHeaderAccessor accessor =
-                        MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    final String username = accessor.getFirstNativeHeader("login");
-//                    final String password = accessor.getFirstNativeHeader("passcode");
-                    final UsernamePasswordAuthenticationToken user = getAuthenticatedOrFail(username/*, password*/);
+                    final String token = accessor.getFirstNativeHeader("login");
+                    final UsernamePasswordAuthenticationToken user = getAuthenticatedOrFail(token);
 
                     accessor.setUser(user);
                 }
@@ -95,21 +104,50 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         });
     }
 
-    private UsernamePasswordAuthenticationToken getAuthenticatedOrFail(String token/*, final String password*/) throws AuthenticationException {
+    private UsernamePasswordAuthenticationToken getAuthenticatedOrFail(String token) throws AuthenticationException {
         if (token == null || token.trim().length() == 0) {
             throw new AuthenticationCredentialsNotFoundException("token was null or empty.");
         }
+
+        User u = null;
 
 //        log.info("token : "+token);
         try {
             // idToken comes from the client app (shown above)
             FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdTokenAsync(token).get();
             UserRecord user = FirebaseAuth.getInstance().getUserAsync(firebaseToken.getUid()).get();
-//            log.info("user : " + user);
-//            System.out.println(user.getEmail());
-//            System.out.println(user.getUid());
-//            System.out.println(user.getDisplayName());
-            
+
+            log.info("1"+user.getUid());
+
+            //Get user from db
+            Optional<User> optionalUser = userDao.findById(user.getUid());
+            if(optionalUser.isEmpty()) {
+                u = User.builder()
+                        .uid(user.getUid())
+                        .displayName("Georges")
+                        .players(List.of(Player.builder()
+//                                .spells(Spells.getSpells())
+                                .breed(Breed.DWARF)
+                                .level(1)
+                                .name("Harison")
+                                .pa(10)
+                                .pm(5)
+                                .position(Position.builder().x(0).y(5).z(0).build())
+                                .build()))
+                        .build();
+                u.getPlayers().toArray(new Player[0])[0].setUser(u);
+
+                log.info("2"+u);
+                userDao.save(u);
+                log.info("2.5");
+                System.out.println(playerDao.findAll());
+                System.out.println(userDao.findAll());
+                log.info("2.6");
+                optionalUser = userDao.findById(user.getUid());
+                log.info("3"+optionalUser.toString());
+
+            }else u = optionalUser.get();
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new BadCredentialsException(e.getMessage());
@@ -117,7 +155,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         // null credentials, we do not pass the password along
         return new UsernamePasswordAuthenticationToken(
-                token,
+                u.getUid(),
                 null,
                 Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
         );

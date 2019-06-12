@@ -1,13 +1,16 @@
-package kubys.service;
+package kubys.Player;
 
-import kubys.model.Map;
-import kubys.model.Player;
-import kubys.model.common.Command;
-import kubys.model.common.Position;
+import kubys.Map.Map;
+import kubys.Map.Command;
+import kubys.Map.Position;
+import kubys.User.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 @Service
 @Slf4j
@@ -16,12 +19,15 @@ public class PlayerService {
     
     static private Map map;
     static private SimpMessagingTemplate template;
+    private final ThreadLocal<Player> CONTEXT = new ThreadLocal<>();
 
     @Autowired
     public PlayerService(SimpMessagingTemplate template, Map map) {
         PlayerService.template = template;
         PlayerService.map = map;
     }
+
+
 
     public static Boolean movePlayer(Player player, Command command){
         Boolean isMovePossible = null;

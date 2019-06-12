@@ -1,7 +1,9 @@
-package kubys.model.common;
+package kubys.Map;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -9,6 +11,8 @@ import javax.persistence.Embeddable;
 @Builder
 @Data
 @Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
 public class Position {
     @Column private int x;
     @Column private int y;

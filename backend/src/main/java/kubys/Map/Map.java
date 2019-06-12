@@ -1,6 +1,6 @@
-package kubys.model;
+package kubys.Map;
 
-import kubys.model.common.Position;
+import kubys.Player.Player;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

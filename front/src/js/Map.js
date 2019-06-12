@@ -3,6 +3,7 @@ import Grass from "../../resources/textures/grass.jpg"
 import Tree from "../../resources/textures/tree.jpg"
 import Leaf from "../../resources/textures/leaf.jpg"
 import Player from "./Player";
+import Gui from "./Gui";
 
 import Communication from "./Communication"
 
@@ -43,6 +44,7 @@ export default class Map {
 
     //Function call only once to fetch all information about game
     static getAllMap = function(message) {
+        console.log("getAllMap ...");
         // called when the client receives a STOMP message from the server
         if (message.body) {
             //For each item in the map, we print it
@@ -75,15 +77,19 @@ export default class Map {
                 objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
                                
 
-            } else if(player.connected===false){// If player disconnect
-                console.log("Player "+player.id+" has left the game");
-                Player.NAME_LABEL[mesh].dispose();
-                mesh.dispose();
+                //TODO Create new endpoint for disconnected users
+            // } else if(player.connected === false){// If player disconnect
+            //     console.log("Player "+player.id+" has left the game");
+            //     Player.NAME_LABEL[mesh].dispose();
+            //     mesh.dispose();
             } else {//If player had already been created and should move (normal case)
 
                 Player.PLAYERS[player.id] = player;
                 let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
                 // try to find the direction in order to rotate the player around y axis
+
+                console.log("position : "+mesh.position);
+                console.log("new position : " + newPosition);
 
                 if(newPosition.x - mesh.position.x === 1){
                     mesh.rotation.y = Math.PI / 2;
@@ -95,6 +101,7 @@ export default class Map {
                     mesh.rotation.y = Math.PI;
                 }
 
+                console.log(mesh.rotation);
 
                 let animationBox = new BABYLON.Animation("translatePlayer", "position", 500, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                 let keys = [];
@@ -222,12 +229,17 @@ export default class Map {
                     let pickInfo = Map.SCENE.pick(Map.SCENE.pointerX,Map.SCENE.pointerY,null,null).pickedMesh;
                     if(pickInfo.animations.length === 0) return;
                     let numberOfPlayer;
-                    for(let i=0; i<players.length; i++){
+                    for (let i=0; i<players.length; i++) {
                         if(players[i].position.equals(new BABYLON.Vector3.Zero())) {
                             Map.SCENE.beginAnimation(players[i], 100, 0, true);
-                            if(players[i] === pickInfo) return;// If we click against on same mesh
+                            Gui.removePlayButton();
+                            if (players[i] === pickInfo) return;// If we click against on same mesh
                         }
-                        if(players[i] === pickInfo) numberOfPlayer = i;
+                        if(players[i] === pickInfo) {
+                            numberOfPlayer = i;
+                            console.log(pickInfo);
+                            Gui.addPlayButton(i);
+                        }
                     }
 
 
@@ -247,9 +259,6 @@ export default class Map {
                     Map.SCENE.beginAnimation(Map.CAMERA.arcRotateCamera, 0, 100, false, 1, () =>
                         Map.SCENE.beginAnimation(pickInfo, 0, 100, true)
                     );
-
-
-
                 }
             });
         }

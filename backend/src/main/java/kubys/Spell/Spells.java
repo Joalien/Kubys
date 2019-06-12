@@ -1,7 +1,5 @@
-package kubys.service;
+package kubys.Spell;
 
-import kubys.model.Spell;
-import kubys.model.common.SpellType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,5 @@
-package kubys.model;
+package kubys.Spell;
 
-import kubys.model.common.SpellType;
 import lombok.Builder;
 import lombok.Data;
 

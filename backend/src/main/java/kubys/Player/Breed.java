@@ -1,4 +1,4 @@
-package kubys.model.common;
+package kubys.Player;
 
 
 public enum Breed {

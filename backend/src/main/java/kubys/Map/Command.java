@@ -1,4 +1,4 @@
-package kubys.model.common;
+package kubys.Map;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

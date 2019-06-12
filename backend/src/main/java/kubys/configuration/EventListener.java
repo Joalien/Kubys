@@ -1,7 +1,8 @@
 package kubys.configuration;
 
-import kubys.model.Map;
-import kubys.model.Player;
+import kubys.Map.Map;
+import kubys.Player.Player;
+import kubys.User.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -30,6 +31,7 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
             Player oldPlayer = this.map.getMapOfPlayer().get(sessionDisconnectEvent.getSessionId());
             this.map.getCells().remove(oldPlayer.getPosition(), oldPlayer);
             this.map.getMapOfPlayer().remove(sessionDisconnectEvent.getSessionId(), oldPlayer);
+//            UserService.clear();
 
             this.template.convertAndSend("/broker/command", oldPlayer);
 

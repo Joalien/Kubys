@@ -1,12 +1,13 @@
 package kubys.Move;
 
 import kubys.Application;
-import kubys.model.*;
-import kubys.model.common.Breed;
-import kubys.model.common.Command;
-import kubys.model.common.Position;
-import kubys.model.Map;
-import kubys.service.PlayerService;
+import kubys.Map.LandPlot;
+import kubys.Player.Player;
+import kubys.Player.Breed;
+import kubys.Map.Command;
+import kubys.Map.Position;
+import kubys.Map.Map;
+import kubys.Player.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
