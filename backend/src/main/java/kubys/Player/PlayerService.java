@@ -19,14 +19,19 @@ public class PlayerService {
     
     static private Map map;
     static private SimpMessagingTemplate template;
-    private final ThreadLocal<Player> CONTEXT = new ThreadLocal<>();
+    private PlayerDao playerDao;
 
     @Autowired
-    public PlayerService(SimpMessagingTemplate template, Map map) {
+    public PlayerService(SimpMessagingTemplate template, Map map, PlayerDao playerDao) {
         PlayerService.template = template;
         PlayerService.map = map;
+        this.playerDao = playerDao;
     }
 
+
+    public void save(Player player){
+        playerDao.save(player);
+    }
 
 
     public static Boolean movePlayer(Player player, Command command){

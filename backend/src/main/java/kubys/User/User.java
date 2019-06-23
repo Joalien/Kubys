@@ -28,6 +28,7 @@ public class User {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference
+    @Builder.Default
     private List<Player> players = new ArrayList<>();
 
 }

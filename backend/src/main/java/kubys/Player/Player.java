@@ -42,6 +42,7 @@ public class Player extends Cell {
     //private Weapon currentWeapon;
     @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
+    @Builder.Default
     private Set<Spell> spells = new LinkedHashSet<>();
     @Column
     private int pm;

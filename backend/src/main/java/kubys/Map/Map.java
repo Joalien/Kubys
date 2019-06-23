@@ -15,10 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Map {
 
     private ConcurrentHashMap<Position, Cell> cells;
-    private HashMap<String, Player> mapOfPlayer;
 
     public Map(){
-        this.mapOfPlayer = new HashMap<>();
         this.cells = new ConcurrentHashMap<>();
         generateFightMap1();
         generateEmptyMap(Position.builder()

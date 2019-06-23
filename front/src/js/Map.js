@@ -11,6 +11,7 @@ export default class Map {
 
     static SCENE;
     static CAMERA;
+    static ringPlayers = [];
 
     constructor(game, camera) {
         // Appel des letiables nécéssaires
@@ -192,13 +193,14 @@ export default class Map {
     static selectionRing = function(message) {
         if (message.body) {
             let i = 0;
-            let players = [];
             //For each item in the map, we print i
             for (let player of JSON.parse(message.body)) {
                 let alpha = (2 * Math.PI / JSON.parse(message.body).length * i) - Math.PI/2;
                 let distance = 3;
 
                 let objPlayer = new Player(player);
+                console.log("objPlayer:");
+                console.log(objPlayer);
                 objPlayer.setLabel(player.name);
                 objPlayer.mesh.position = new BABYLON.Vector3(Math.cos(alpha)*distance, 0, Math.sin(alpha)*distance);
                 objPlayer.mesh.rotate(BABYLON.Axis.Y, Math.PI / 2, BABYLON.Space.WORLD);
@@ -219,9 +221,10 @@ export default class Map {
                 objPlayer.mesh.animations = [];
                 objPlayer.mesh.animations.push(animationBox);
 
-                players[i] = (objPlayer.mesh);
+                Map.ringPlayers[i] = objPlayer.mesh;
                 i++;
             }
+            console.log(Map.ringPlayers);
 
 
             Map.SCENE.onPointerObservable.add(function (evt) {
@@ -229,13 +232,13 @@ export default class Map {
                     let pickInfo = Map.SCENE.pick(Map.SCENE.pointerX,Map.SCENE.pointerY,null,null).pickedMesh;
                     if(pickInfo.animations.length === 0) return;
                     let numberOfPlayer;
-                    for (let i=0; i<players.length; i++) {
-                        if(players[i].position.equals(new BABYLON.Vector3.Zero())) {
-                            Map.SCENE.beginAnimation(players[i], 100, 0, true);
+                    for (let i=0; i<Map.ringPlayers.length; i++) {
+                        if(Map.ringPlayers[i].position.equals(new BABYLON.Vector3.Zero())) {
+                            Map.SCENE.beginAnimation(Map.ringPlayers[i], 100, 0, true);
                             Gui.removePlayButton();
-                            if (players[i] === pickInfo) return;// If we click against on same mesh
+                            if (Map.ringPlayers[i] === pickInfo) return;// If we click against on same mesh
                         }
-                        if(players[i] === pickInfo) {
+                        if(Map.ringPlayers[i] === pickInfo) {
                             numberOfPlayer = i;
                             console.log(pickInfo);
                             Gui.addPlayButton(i);
@@ -262,6 +265,14 @@ export default class Map {
                 }
             });
         }
+    };
+
+    static clearRingSelection = function() {
+        console.log(Map.ringPlayers);
+        for (let mesh of Map.ringPlayers){
+            mesh.dispose();
+        }
+        console.log(Map.ringPlayers);
     };
 
     showWorldAxis(size) {

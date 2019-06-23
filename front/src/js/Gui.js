@@ -1,6 +1,7 @@
 import * as GUI from 'babylonjs-gui';
 import * as firebase from "firebase";
 import Communication from "./Communication";
+import Map from "./Map.js";
 
 
 export default class Gui {
@@ -16,7 +17,6 @@ export default class Gui {
         Gui.panel = new BABYLON.GUI.StackPanel();
         Gui.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
         this.advancedTexture.addControl(Gui.panel);
-
 
 
         let connectionTextBlock = new BABYLON.GUI.TextBlock();
@@ -50,6 +50,8 @@ export default class Gui {
         Gui.playPlayerButton.height = "40px";
         Gui.playPlayerButton.onPointerClickObservable.add(function() {
             Communication.sendMessage("/setPlayer", Gui.playerId);
+            Gui.removePlayButton();
+            Map.clearRingSelection();
         });
         // Gui.panel.addControl(Gui.playPlayerButton);
 
@@ -88,12 +90,10 @@ export default class Gui {
     }
 
     static addPlayButton = function(playerId){
-        console.log("addButton "+playerId);
         Gui.playerId = playerId;
         Gui.panel.addControl(Gui.playPlayerButton);
     };
     static removePlayButton = function(){
-        console.log("removeButton");
-            Gui.panel.removeControl(Gui.playPlayerButton);
+        Gui.panel.removeControl(Gui.playPlayerButton);
     };
 };

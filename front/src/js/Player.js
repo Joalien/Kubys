@@ -74,7 +74,7 @@ export default class Player {
         const cubeSize = 1;
         const playerSize = 1;
 
-        Player.CURRENT_PLAYER_ID = characteristics.id;
+        // Player.CURRENT_PLAYER_ID = characteristics.id;
 
         let mesh;
 
@@ -109,7 +109,7 @@ export default class Player {
 
         let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         let rect1 = new BABYLON.GUI.Rectangle(characteristics.id);
-        rect1.width = 0.1;
+        rect1.width = (characteristics.name.length+1) * 10 + "px";
         rect1.height = "40px";
         rect1.cornerRadius = 20;
         rect1.color = "blue";
@@ -121,11 +121,12 @@ export default class Player {
         rect1.addControl(this.label);
 
         rect1.linkWithMesh(mesh);
-        rect1.linkOffsetY = -30;
+        rect1.linkOffsetY = -70;
 
         Player.NAME_LABEL[mesh] = rect1;
 
         this.mesh = mesh;
+
 
         return this;
     }
@@ -152,7 +153,6 @@ export default class Player {
 
         return mesh.__scaleVectorCache;
     };
-
 
 
     static getAbsoluteSize(mesh) {
