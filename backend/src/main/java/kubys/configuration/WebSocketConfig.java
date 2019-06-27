@@ -109,32 +109,47 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             throw new AuthenticationCredentialsNotFoundException("token was null or empty.");
         }
 
-        User u = null;
-
 //        log.info("token : "+token);
+        String userId = null;
         try {
             // idToken comes from the client app (shown above)
             FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdTokenAsync(token).get();
             UserRecord user = FirebaseAuth.getInstance().getUserAsync(firebaseToken.getUid()).get();
-
-            log.info("1"+user.getUid());
+            userId = user.getUid();
+            log.info("1:"+user.getUid());
 
             //Get user from db
             Optional<User> optionalUser = userDao.findById(user.getUid());
+            log.info("1.5:"+optionalUser);
             if(optionalUser.isEmpty()) {
-                u = User.builder()
-                        .uid(user.getUid())
-                        .displayName("Georges")
-                        .players(List.of(Player.builder()
-//                                .spells(Spells.getSpells())
+                User u = User.builder().uid(user.getUid()).displayName("Alexandre Dumas").build();
+                log.info("No user find, creating 3 empty players");
+                u.setPlayers(List.of(
+                        Player.builder()
                                 .breed(Breed.DWARF)
+                                .user(u)
                                 .level(1)
-                                .name("Harison")
+                                .name("Athos")
                                 .pa(10)
                                 .pm(5)
-                                .position(Position.builder().x(0).y(5).z(0).build())
-                                .build()))
-                        .build();
+                                .build(),
+                        Player.builder()
+                                .breed(Breed.DWARF)
+                                .user(u)
+                                .level(1)
+                                .name("Porthos")
+                                .pa(10)
+                                .pm(5)
+                                .build(),
+                        Player.builder()
+                                .breed(Breed.DWARF)
+                                .user(u)
+                                .level(1)
+                                .name("Aramis")
+                                .pa(10)
+                                .pm(5)
+                                .build()
+                ));
                 u.getPlayers().toArray(new Player[0])[0].setUser(u);
 
                 log.info("2"+u);
@@ -146,7 +161,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 optionalUser = userDao.findById(user.getUid());
                 log.info("3"+optionalUser.toString());
 
-            }else u = optionalUser.get();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,7 +170,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         // null credentials, we do not pass the password along
         return new UsernamePasswordAuthenticationToken(
-                u.getUid(),
+                userId,
                 null,
                 Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
         );

@@ -2,14 +2,14 @@
 
 I am happy to see you here !
 
-If all you want is playing, just click [here](http://92.169.68.158:4242/) and you will be redirect to the game.
+If all you want is playing, just click [here](https://kubys.fr) and you will be redirect to the game.
 
-If you want to help the develop team, do not be shy and do not hesitate to ask questions, we are looking for little hands as well as experimented developers, 3D designers and game designers.
+If you want to help the develop team, do not be shy and do not hesitate to ask questions, we are looking for little hands as well as experimented developers, 3D experts and game designers.
 
 ## I want to help, what can I do ?
 
 First, you can send me a message and ask what you can do or what you want to do.
-Secondly, you can travel around the code and search for smells or improvement.
+Secondly, you can travel around the code and search for code smells or improvements.
 Thirdly, you can make pull requests in order to share your improvements with the community.
 
 ## Where could I find the code ?
@@ -31,13 +31,17 @@ Client are  embedded inside the browser, no need to install anything.
 
 ```mermaid
 graph LR
-A1(client)
-A2(client)
-A3(client)
-B(server)
+F(Firebase)
+K(kubys.fr)
+B(Backend)
+DB(Postgres DB)
 
-A1 -- 8080 --> B
-A2 -- 8080 --> B
-A3 -- 8080 --> B
+K -- 1: log_in --> F
+F -- 2: get_token --> K
+K -- 3: user_action --> B
+B -- 4: confirm_token --> F
+F -- 5: confirm_token --> B
+B -- 6: save_DB --> DB
+B -- 7: update_map --> K 
 ```
 

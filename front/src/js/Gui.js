@@ -1,7 +1,7 @@
 import * as GUI from 'babylonjs-gui';
-import * as firebase from "firebase";
 import Communication from "./Communication";
 import Map from "./Map.js";
+import * as firebase from "firebase";
 
 
 export default class Gui {
@@ -9,13 +9,14 @@ export default class Gui {
     static panel;
     static playPlayerButton;
     static playerId;
+    static logOutButton;
 
 
     constructor() {
 
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
         Gui.panel = new BABYLON.GUI.StackPanel();
-        Gui.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+        Gui.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
         this.advancedTexture.addControl(Gui.panel);
 
 
@@ -31,19 +32,23 @@ export default class Gui {
         Gui.panel.addControl(connectionTextBlock);
 
 
-        let signOut = BABYLON.GUI.Button.CreateSimpleButton("signOut", "Déconnexion");
-        signOut.color = "white";
-        signOut.height = "40px";
-        signOut.onPointerClickObservable.add(function() {
+        Gui.logOutButton = BABYLON.GUI.Button.CreateSimpleButton("Gui.logOutButton", "Deconnexion");
+        Gui.logOutButton.color = "white";
+        Gui.logOutButton.height = "40px";
+        Gui.logOutButton.onPointerClickObservable.add(function() {
             firebase.auth().signOut();
-            firebase.default.auth().onAuthStateChanged(function(user) {
-                if (!user) {
-                    // User is signed in.
-                    document.location.href = "/login.html";
-                }
-            });
+            // firebase.default.auth().onAuthStateChanged(function(user) {
+            //     if (user) { // User is signed in.
+            //         Gui.logOutButton.children[0].text = "Deconnexion";
+            //         user.getIdToken().then((token) => {
+            //             Communication.clientSocket.connect(token, null, connect_callback, (error) => {
+            //                 Communication.redirectUser();
+            //             });
+            //         });
+            //     } else Gui.logOutButton.children[0].text = "Se connecter";
+            // });
         });
-        Gui.panel.addControl(signOut);
+        Gui.panel.addControl(Gui.logOutButton);
 
         Gui.playPlayerButton = BABYLON.GUI.Button.CreateSimpleButton("playPlayerButton", "Play");
         Gui.playPlayerButton.color = "white";
@@ -90,6 +95,7 @@ export default class Gui {
     }
 
     static addPlayButton = function(playerId){
+        // console.log("playerId : "+playerId);
         Gui.playerId = playerId;
         Gui.panel.addControl(Gui.playPlayerButton);
     };

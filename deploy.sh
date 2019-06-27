@@ -5,4 +5,4 @@ bash -c "cd front && ./deploy.sh"
 
 ssh josquin@kubys.fr -t "export LC_ALL=C.UTF-8;
 			 export LANG=C.UTF-8;
-			 pipenv run docker-compose up -d --force-recreate"
+			 pipenv run docker-compose up --build -d"

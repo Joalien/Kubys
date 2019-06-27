@@ -7,7 +7,7 @@ import * as BABYLON from 'babylonjs';
 import FightMap from "./FightMap";
 import Player from "./Player";
 import Communication from "./Communication";
-import {initializeApp} from "firebase";
+import {initializeApp} from "firebase/app";
 
 
 if (process.env.NODE_ENV !== 'production') {
@@ -24,7 +24,6 @@ const firebaseConfig = {
     appID: "kubys-id",
 };
 initializeApp(firebaseConfig);
-
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", function () {
@@ -49,8 +48,8 @@ let Game = function(canvasId) {
     });
 
     new FightMap();
-    new Player();
-    new Communication();
+    Player.init(() => new Communication());
+
 
 
     // Ajuste la vue 3D si la fenetre est agrandi ou diminué

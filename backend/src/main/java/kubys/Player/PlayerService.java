@@ -16,7 +16,6 @@ import org.springframework.web.context.WebApplicationContext;
 @Slf4j
 public class PlayerService {
 
-    
     static private Map map;
     static private SimpMessagingTemplate template;
     private PlayerDao playerDao;
@@ -33,33 +32,19 @@ public class PlayerService {
         playerDao.save(player);
     }
 
-
     public static Boolean movePlayer(Player player, Command command){
-        Boolean isMovePossible = null;
-        switch(command){
-            case FORWARD:
-                isMovePossible = PlayerService.moveForward(player);
-                break;
-            case BACKWARD:
-                isMovePossible = PlayerService.moveBackward(player);
-                break;
-            case LEFT:
-                isMovePossible = PlayerService.moveLeft(player);
-                break;
-            case RIGHT:
-                isMovePossible = PlayerService.moveRight(player);
-                break;
-            case CREATE:
-                map.addPlayer(player, Position.builder().y(1).build());
-                isMovePossible = true;
-                break;
-            default:
-                log.error("Not Implemented");
-                System.exit(1);
-        }
-        return isMovePossible;
+        return switch(command) {
+            case FORWARD -> PlayerService.moveForward(player);
+            case BACKWARD -> PlayerService.moveBackward(player);
+            case LEFT -> PlayerService.moveLeft(player);
+            case RIGHT -> PlayerService.moveRight(player);
+            case CREATE -> {
+                map.addPlayer(player, Position.builder().y(5).build());
+                break movePosition(player, player.getPosition());
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + command);
+        };
     }
-
 
     private static Boolean moveForward(Player player){
         Position position = player.getPosition().addZ(1);
@@ -84,12 +69,12 @@ public class PlayerService {
         return movePosition(player, position);
     }
 
-
     private static Boolean movePosition(Player player, Position position){// This method contains logic
+        if (position == null) return false;
         Position above = position.addY(1);
         Position below = position.addY(-1);
 
-        if(!map.getCells().containsKey(position)){
+        if(!map.getCells().containsKey(position) || map.getCells().get(position).equals(player)){
             // Drop the ~~mic~~ player
             while (!map.getCells().containsKey(below)){
                 below = below.addY(-1);
@@ -109,15 +94,11 @@ public class PlayerService {
         map.getCells().remove(player.getPosition());
         map.getCells().put(position, player);
 
-//        log.error(player.getPosition().toString());
-
         if(map.getCells().containsKey(player.getPosition().addY(1)) &&
-            map.getCells().get(player.getPosition().addY(1)) instanceof Player) { // If they were a player on the cel above
+                map.getCells().get(player.getPosition().addY(1)) instanceof Player) { // If they were a player on the cel above
             movePosition((Player) map.getCells().get(player.getPosition().addY(1)), player.getPosition());
             PlayerService.template.convertAndSend("/broker/command", map.getCells().get(player.getPosition()));
         }
-
-
 
         player.setPosition(position);
     }

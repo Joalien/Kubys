@@ -14,7 +14,7 @@
     </parent>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>12</java.version>
         <!--        <start-class>kubys.Application</start-class>-->
     </properties>
 

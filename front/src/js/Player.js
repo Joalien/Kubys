@@ -16,37 +16,34 @@ export default class Player {
     static wizard;
     static berserker;
 
-
-    constructor(characteristics)
-    {
-
+    static init(callback) {
         if(!Player.areObjectLoaded) {
+            Player.areObjectLoaded = true;
             console.log("load asset");
-
-
             BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", Map.SCENE, function (container) {
-
                 Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
                 Player.wizard.visibility = 0;
 
                 let scaleFactor = Player.getScalingVectorToFit(Player.wizard);
                 scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
                 Player.wizard.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
-
+                console.log('Texture loaded !');
+                // TODO Improve me !
+                callback();
             });
             // BABYLON.SceneLoader.LoadAssetContainer("/resources/centor/", "cent.obj", Map.SCENE, function (container) {
             //
             //
-                // Player.elf = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
-                // Player.elf.visibility = 0;
+            // Player.elf = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
+            // Player.elf.visibility = 0;
 
-                // Player.elf = container.meshes[1];
-                // console.log(Player.elf);
-                // container.addAllToScene();
+            // Player.elf = container.meshes[1];
+            // console.log(Player.elf);
+            // container.addAllToScene();
 
-                // let scaleFactor = Player.getScalingVectorToFit(Player.elf);
-                // scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
-                // Player.elf.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
+            // let scaleFactor = Player.getScalingVectorToFit(Player.elf);
+            // scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
+            // Player.elf.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
             //
             // });
             // BABYLON.SceneLoader.LoadAssetContainer("/resources/dwarf/", "dwarf.obj", Map.SCENE, function (container) {
@@ -64,11 +61,11 @@ export default class Player {
             //     Player.resize(Player.berserker.scaling);
             //
             // });
-            Player.areObjectLoaded = true;
-            return;
         }
+    }
 
-
+    constructor(characteristics)
+    {
         Player.PLAYERS[characteristics.id] = characteristics;
         // Appel des variables nécéssaires
         const cubeSize = 1;
@@ -78,21 +75,18 @@ export default class Player {
 
         let mesh;
 
-        switch (characteristics.breed){
+        switch (characteristics.breed) {
             case "DWARF":
                 // mesh = Player.dwarf.clone();
                 mesh = Player.wizard.clone();
-
                 break;
             case "ELF":
                 // mesh = Player.elf.clone();
                 mesh = Player.wizard.clone();
-
                 break;
             case "ASSASSIN":
                 // mesh = Player.assassin.clone();
                 mesh = Player.wizard.clone();
-
                 break;
             case "WIZARD":
                 mesh = Player.wizard.clone();
@@ -100,15 +94,17 @@ export default class Player {
             case "BERSERKER":
                 // mesh = Player.berserker.clone();
                 mesh = Player.wizard.clone();
-
+                break;
+            default :
+                console.error("Breed not found !");
                 break;
         }
-
         mesh.id = characteristics.id;
         mesh.visibility = 1;
 
         let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        let rect1 = new BABYLON.GUI.Rectangle(characteristics.id);
+        let rect1 = new BABYLON.GUI.Rectangle("rect"+characteristics.id);
+        rect1.id = "rect"+characteristics.id;
         rect1.width = (characteristics.name.length+1) * 10 + "px";
         rect1.height = "40px";
         rect1.cornerRadius = 20;
@@ -123,11 +119,11 @@ export default class Player {
         rect1.linkWithMesh(mesh);
         rect1.linkOffsetY = -70;
 
-        Player.NAME_LABEL[mesh] = rect1;
+        Player.NAME_LABEL["rect"+characteristics.id] = rect1;
 
         this.mesh = mesh;
 
-
+        console.log(rect1);
         return this;
     }
 
@@ -169,8 +165,8 @@ export default class Player {
     };
 
     static refreshPlayer(player){
-        console.log("Current player id : "+Player.CURRENT_PLAYER_ID);
-        console.log("Current player : "+player);
+        // console.log("Current player id : "+Player.CURRENT_PLAYER_ID);
+        // console.log("Current player : "+player);
         Player.CURRENT_PLAYER_ID = player.id;
 
         Communication.sendMessage("/getAllMap", null);
@@ -207,6 +203,4 @@ export default class Player {
     //     return local_origin;
     //
     // }
-
-
 };

@@ -2,5 +2,6 @@
 
 mvn package -DskipTests && 
 
-scp -r Dockerfile target/kubys-*.jar josquin@kubys.fr:~/backend
+scp -r target/kubys-*.jar josquin@kubys.fr:~/backend/target
+scp Dockerfile josquin@kubys.fr:~/backend
 

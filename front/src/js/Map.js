@@ -89,8 +89,8 @@ export default class Map {
                 let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
                 // try to find the direction in order to rotate the player around y axis
 
-                console.log("position : "+mesh.position);
-                console.log("new position : " + newPosition);
+                // console.log("position : "+mesh.position);
+                // console.log("new position : " + newPosition);
 
                 if(newPosition.x - mesh.position.x === 1){
                     mesh.rotation.y = Math.PI / 2;
@@ -271,7 +271,16 @@ export default class Map {
         console.log(Map.ringPlayers);
         for (let mesh of Map.ringPlayers){
             mesh.dispose();
+            console.log("rect"+mesh.id);
+            Player.NAME_LABEL["rect"+mesh.id].dispose();
+            // Map.SCENE.getMeshByID("rect"+mesh.id).dispose();
         }
+        // for (let mesh of Player.NAME_LABEL){
+        //     mesh.dispose();
+        // }
+
+
+
         console.log(Map.ringPlayers);
     };
 

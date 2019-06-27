@@ -10,13 +10,13 @@ export default class Communication {
     static clientSocket;
 
 
-    constructor(username){
+    constructor(username) {
         let url = "wss://kubys.fr:8443/connect";
-        // let url = "ws://127.0.0.1:8080/connect";
+        // let url = "ws://127.0.0.1:8443/connect";
         Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server
-        let connect_callback = function() {
+        let connect_callback = function () {
             console.log("Connected with server !");
             // called back after the client is connected and authenticated to the STOMP server
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Map.getAllMap);
@@ -34,23 +34,34 @@ export default class Communication {
 
             // Communication.sendMessage("/getSpells", null);
         };
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                // User is signed in.
+
+
+
+        firebase.auth().onAuthStateChanged(function (user) {
+
+            if (user) { // User is signed in.
+                // Gui.logOutButton.children[0].text = "Deconnexion";
                 user.getIdToken().then((token) => {
                     Communication.clientSocket.connect(token, null, connect_callback, (error) => {
-                        console.log("Not connected : "+error);
-                        document.location.href = "/login.html";
+                        Communication.redirectUser();
                     });
-
                 });
+            } else {
+                // Gui.logOutButton.children[0].text = "Se connecter";
+                Communication.redirectUser();
             }
         });
 
     }
 
+    static redirectUser() {
+        console.log("Not connected : ");
+        document.location.href = "/login.html";
+    }
+
 
     static sendMessage(endpoint, message){
+        message = message===0?"0":message;
         Communication.clientSocket.send(endpoint, {}, message);
     }
 

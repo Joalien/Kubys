@@ -39,12 +39,14 @@ public class MapController {
         log.info("SessionStore in getAllMap controller : " + sessionStore);
         Player player = sessionStore.getPlayer();
         log.info(player.toString());
+        if(player.getPosition() == null) PlayerService.movePlayer(player, Command.CREATE);
+        log.info(player.toString());
         map.getCells().put(player.getPosition(), player);
 
         log.info("print all players on the map :");
-        map.getCells().values().parallelStream().
-                filter(cell -> cell instanceof Player)
-                .forEach(System.out::println);
+        map.getCells().keySet().parallelStream().
+                filter(position -> map.getCells().get(position) instanceof Player)
+                .forEach(x -> System.out.println(x + " : " + map.getCells().get(x)));
         return map.getCells().values().toArray(new Cell[0]);
     }
 

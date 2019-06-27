@@ -1,10 +1,8 @@
 package kubys.Player;
 
-import kubys.Map.Map;
-import kubys.Spell.Spells;
 import kubys.User.User;
-import kubys.User.UserDao;
 import kubys.User.UserService;
+import kubys.configuration.commons.ApplicationStore;
 import kubys.configuration.commons.SessionStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.annotation.SessionScope;
 
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 @Slf4j
@@ -26,23 +22,29 @@ public class PlayerController {
 
     private UserService userService;
     private SessionStore sessionStore;
-
+    private ApplicationStore applicationStore;
 
     @Autowired
-    public PlayerController(UserService userService, SessionStore sessionStore) {
+    public PlayerController(UserService userService, SessionStore sessionStore, ApplicationStore applicationStore) {
         this.userService = userService;
         this.sessionStore = sessionStore;
+        this.applicationStore = applicationStore;
     }
+
     @MessageMapping("/setPlayer")
     @SendToUser("/setPlayer")
-    public Player setPlayer(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
-        log.info("setPlayer controller");
-        
-        User u = userService.findById(principal.getName());
-        Player player = u.getPlayers().get(0);
+    public Player setPlayer(@Payload Integer playerIndex, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+//        log.info("setPlayer controller");
+//        log.info(String.valueOf(playerIndex));
 
-        log.info(u.toString());
-        log.info(player.toString());
+        User u = userService.findById(principal.getName());
+        Player player = u.getPlayers().get(playerIndex);
+
+//        log.info(u.toString());
+//        log.info(player.toString());
+//        log.info(principal.toString());
+//        log.info(headerAccessor.toString());
+        applicationStore.getSessionIdPlayer().put(headerAccessor.getSessionId(), player);
 
         sessionStore.setPlayer(player);
         sessionStore.setUser(u);
@@ -59,19 +61,8 @@ public class PlayerController {
 
         User u = userService.findById(principal.getName());
 
-        System.out.println(u);
+        log.info(String.valueOf(u));
         if(u.getPlayers().isEmpty()) {
-            u.setPlayers(List.of(
-                    Player.builder()
-                            .breed(Breed.DWARF)
-                            .user(u)
-                            .level(1)
-                            .name("Harisson")
-                            .pa(10)
-                            .pm(5)
-                            .spells(Spells.getSpells())
-                            .build()
-            ));
             log.error("Should never occur except first time if no automatic player in webSocketConfig!");
         }
 

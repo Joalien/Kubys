@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Null;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,26 +16,25 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Map {
 
     private ConcurrentHashMap<Position, Cell> cells;
+    public static final int MAX_X_SIZE = 10;
+    public static final int MAX_Y_SIZE = 10;
+    public static final int MAX_Z_SIZE = 10;
 
     public Map(){
         this.cells = new ConcurrentHashMap<>();
         generateFightMap1();
-        generateEmptyMap(Position.builder()
-                .x(10)
-                .y(5)
-                .z(10)
-                .build());
-
-
     }
 
 
-    public void generateFightMap1(){
+    private void generateFightMap1(){
         log.debug("Generate Fight map");
         LandPlot.LandPlotBuilder lpb = LandPlot.builder();
         Position.PositionBuilder pb = Position.builder();
 
-        generateEmptyMap(pb.x(10).z(10).build());
+        generateEmptyMap(Position.builder()
+                .x(MAX_X_SIZE)
+                .z(MAX_Z_SIZE)
+                .build());
 
         addCell(pb.x(-10).y(1).z(-10).build(), lpb.build());
         addCell(pb.x(-10).y(1).z(-9).build(), lpb.build());
@@ -69,27 +69,27 @@ public class Map {
         addCell(pb.x(-4).y(8).z(-4).build(), lpb.build());
         addCell(pb.x(-4).y(9).z(-4).build(), lpb.build());
         addCell(pb.x(-4).y(10).z(-4).build(), lpb.build());
+        //Should return null
         addCell(pb.x(-4).y(11).z(-4).build(), lpb.build());
-
-
     }
 
     public void generateEmptyMap(Position position){
         for(int x = -position.getX(); x <= position.getX(); x++){
             for(int z = -position.getZ(); z <= position.getZ(); z++){
-
                 addCell(Position.builder()
-                        .x(x)
-                        .y(0)
-                        .z(z)
-                        .build(), LandPlot.builder().build());
+                    .x(x)
+                    .y(0)
+                    .z(z)
+                    .build(), LandPlot.builder().build());
             }
         }
     }
 
-    public void addCell(Position position, Cell cell){
-        cell.setPosition(position);
-        this.cells.put(position, cell);
+    private void addCell(Position position, Cell cell){
+        try{
+            this.cells.put(position, cell);
+            cell.setPosition(position);
+        } catch (NullPointerException ignored) {}
     }
 
     public Position addPlayer(Player player, Position position){

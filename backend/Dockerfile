@@ -1,8 +1,8 @@
 FROM arm32v7/openjdk
 
-EXPOSE 8080
+EXPOSE 8443
 
-COPY kubys-*.jar .
+COPY target/kubys-*.jar .
 
 CMD java -jar kubys-*.jar
 
