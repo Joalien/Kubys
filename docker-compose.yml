@@ -1,0 +1,57 @@
+version: '3.6'
+
+networks:
+  back:
+volumes:
+  kubys_db_volume:
+  
+  
+  
+services:
+  db:
+    container_name: kubys_db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: josquin
+      POSTGRES_PASSWORD: '@SQLpassword123'
+      POSTGRES_DB: kubys
+    volumes:
+      - kubys_db_volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - back
+
+  webadmin:
+    image: adminer
+    container_name: kubys_webadmin
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      - back
+
+  back:
+    container_name: kubys_backend
+    build: backend
+    image: kubys_backend
+    restart: always
+    ports:
+      - 8443:8443
+    depends_on:
+      - db
+    networks:
+      - back
+
+  front:
+    container_name: kubys_frontend
+    build: front
+    image: kubys_frontend
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /home/josquin/front/certs/:/etc/ssl 
+      - /home/josquin/front/dist/:/usr/share/nginx/html

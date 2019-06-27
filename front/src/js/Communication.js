@@ -11,8 +11,8 @@ export default class Communication {
 
 
     constructor(username){
-        // let url = "wss://kubys.fr:8443/connect";
-        let url = "ws://127.0.0.1:8080/connect";
+        let url = "wss://kubys.fr:8443/connect";
+        // let url = "ws://127.0.0.1:8080/connect";
         Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server
