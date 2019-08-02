@@ -1,4 +1,4 @@
-import * as GUI from 'babylonjs-gui';
+import { Rectangle, AdvancedDynamicTexture, TextBlock } from 'babylonjs-gui'
 import 'babylonjs-loaders'
 import Map from "./Map";
 import Communication from "./Communication";
@@ -102,8 +102,8 @@ export default class Player {
         mesh.id = characteristics.id;
         mesh.visibility = 1;
 
-        let advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        let rect1 = new BABYLON.GUI.Rectangle("rect"+characteristics.id);
+        let advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        let rect1 = new Rectangle("rect"+characteristics.id);
         rect1.id = "rect"+characteristics.id;
         rect1.width = (characteristics.name.length+1) * 10 + "px";
         rect1.height = "40px";
@@ -112,7 +112,7 @@ export default class Player {
         rect1.thickness = 4;
         advancedTexture.addControl(rect1);
 
-        this.label = new BABYLON.GUI.TextBlock();
+        this.label = new TextBlock();
         this.label.text = "Error";
         rect1.addControl(this.label);
 
@@ -127,18 +127,18 @@ export default class Player {
         return this;
     }
 
-    setLabel (label){
+    setLabel (label) {
         this.label.text = label;
     }
 
-    setPosition (position){
+    setPosition (position) {
         this.mesh.position = position;
     }
 
 
     static getScalingVectorToFit (mesh) {
         let otherVector = BABYLON.Vector3.One();
-        if(!mesh.__scaleVectorCache){
+        if(!mesh.__scaleVectorCache) {
             mesh.__scaleVectorCache = BABYLON.Vector3.Zero();
         }
 
@@ -152,7 +152,7 @@ export default class Player {
 
 
     static getAbsoluteSize(mesh) {
-        if(!mesh.__size){
+        if(!mesh.__size) {
             mesh.__size = BABYLON.Vector3.Zero();
         }
 
@@ -164,7 +164,7 @@ export default class Player {
         return mesh.__size;
     };
 
-    static refreshPlayer(player){
+    static refreshPlayer(player) {
         // console.log("Current player id : "+Player.CURRENT_PLAYER_ID);
         // console.log("Current player : "+player);
         Player.CURRENT_PLAYER_ID = player.id;

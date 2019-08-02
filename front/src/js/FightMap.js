@@ -42,7 +42,7 @@ export default class FightMap {
             FightMap.HIGHLIGHT_LAYER = new BABYLON.HighlightLayer("hl1", Map.SCENE);
             for (let mesh of Map.SCENE.meshes) {
                 if (!FightMap.isMeshInsideScope(Player.PLAYERS[Player.CURRENT_PLAYER_ID], mesh, spell) // If outside of the scope
-                    || !FightMap.isLightOfSight(mesh, Player.PLAYERS[Player.CURRENT_PLAYER_ID])){// Or no light of sight
+                    || !FightMap.isLightOfSight(mesh, Player.PLAYERS[Player.CURRENT_PLAYER_ID])) {// Or no light of sight
                     mesh.visibility = 0.5;
                     transparentMeshes.push(mesh);
                 }else{
@@ -58,7 +58,7 @@ export default class FightMap {
                 FightMap.HIGHLIGHT_LAYER.dispose();
                 window.removeEventListener("pointermove", () => FightMap.highlightPickedMesh(inScopeMeshes));
 
-                if (inScopeMeshes.includes(Map.SCENE.pick(Map.SCENE.pointerX, Map.SCENE.pointerY).pickedMesh)){
+                if (inScopeMeshes.includes(Map.SCENE.pick(Map.SCENE.pointerX, Map.SCENE.pointerY).pickedMesh)) {
                     FightMap.castSpell(Player.PLAYERS[Player.CURRENT_PLAYER_ID], Map.SCENE.pick(Map.SCENE.pointerX, Map.SCENE.pointerY).pickedMesh);
                 }
 
@@ -84,10 +84,10 @@ export default class FightMap {
     };
 
 
-    static isMeshInsideScope = function(player, mesh, spell){
+    static isMeshInsideScope = function(player, mesh, spell) {
         if(mesh.name === "skyBox") return false;
         let distance = Math.abs(player.position.x - mesh.position.x) + Math.abs(player.position.z - mesh.position.z);
-        if(distance <= spell.maxScope && distance >= spell.minScope){
+        if(distance <= spell.maxScope && distance >= spell.minScope) {
             switch (spell.type) {
                 case "CLASSIC":
                     distance = Math.abs(player.position.x - mesh.position.x) + Math.abs(player.position.z - mesh.position.z) + Math.abs(player.position.y - mesh.position.y);
@@ -108,8 +108,8 @@ export default class FightMap {
 
         let newPickedMesh = Map.SCENE.pick(Map.SCENE.pointerX, Map.SCENE.pointerY).pickedMesh;
 
-        if(newPickedMesh !== FightMap.PICKED_MESH && inScopeMeshes.includes(newPickedMesh)){
-            if(FightMap.PICKED_MESH !== null){
+        if(newPickedMesh !== FightMap.PICKED_MESH && inScopeMeshes.includes(newPickedMesh)) {
+            if(FightMap.PICKED_MESH !== null) {
                 FightMap.HIGHLIGHT_LAYER.removeMesh(FightMap.PICKED_MESH);
             }
             FightMap.PICKED_MESH = newPickedMesh;
@@ -133,7 +133,7 @@ export default class FightMap {
 
     };
 
-    static castSpell = function(player, mesh){
+    static castSpell = function(player, mesh) {
         let time = 1; // second
         let direction = mesh.position.subtract(player.position);
         let direction2D = new BABYLON.Vector3(direction.x, direction.y, direction.z);

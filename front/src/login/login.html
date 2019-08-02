@@ -1,0 +1,51 @@
+<html>
+<head>
+    <meta charset=utf-8 />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubys</title>
+
+    <!--    &lt;!&ndash; Import and configure the Firebase SDK &ndash;&gt;-->
+    <!--    <script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>-->
+
+    <!--    &lt;!&ndash; Add Firebase products that you want to use &ndash;&gt;-->
+    <!--    <script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-auth.js"></script>-->
+
+</head>
+<body>
+
+<div class="form-structor">
+    <div class="signup slide-up">
+        <div class="center">
+            <h2 class="form-title" id="sign-up-slider"><span>or</span>Sign up</h2>
+            <!-- Container for the demo -->
+            <div class="form-holder">
+                <input class="input" type="text" id="name-sign-up" placeholder="Nom d'utilisateur" name="fakeusernameremembered" autocomplete="off"/>
+                <input class="input" type="email" id="email-sign-up" placeholder="Email" name="fakeusernameremembered" autocomplete="off"/>
+                <input class="input" type="password" id="password-sign-up" placeholder="Password" autocomplete="new-password"/>
+            </div>
+            <button class="submit-btn" id="quickstart-sign-up" name="signup">Sign Up</button>
+        </div>
+    </div>
+    <div class="login">
+        <div class="center">
+            <h2 class="form-title" id="log-in-slider"><span>or</span>Log in</h2>
+            <div class="form-holder">
+                <input id="email-log-in" type="email" class="input" placeholder="Email" autocomplete="on"/>
+                <input id="password-log-in" type="password" class="input" placeholder="Password" autocomplete="current-password" />
+            </div>
+            <button id="quickstart-log-in" class="submit-btn">Log in</button>
+
+            <button hidden id="quickstart-verify-email" name="verify-email">Send Email Verification</button>
+            <button hidden id="quickstart-password-reset" name="verify-email">Send Password Reset Email</button>
+
+            <div class="logo"></div>
+        </div>
+    </div>
+
+    <div>
+
+    </div>
+</div>
+</main>
+</body>
+</html>

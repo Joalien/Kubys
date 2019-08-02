@@ -9,14 +9,12 @@ export default class Camera {
         this.arcRotateCamera.upperBetaLimit = 9/10 * Math.PI/2;
         this.arcRotateCamera.upperRadiusLimit = 80;
 
-        this.setArcRotateCamera();
-
-
+        // this.setArcRotateCamera();
 
         this.universalCamera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 20, -50), scene);
         this.universalCamera.setTarget(new BABYLON.Vector3.Zero());
+        this.setUniversalCamera();
     }
-
 
     setUniversalCamera() {
         this.scene.activeCamera = this.universalCamera;
@@ -27,11 +25,9 @@ export default class Camera {
         // this.arcRotateCamera.setPosition(this.universalCamera.position);
         // this.arcRotateCamera.setTarget = this.universalCamera.direction;
         this.scene.activeCamera = this.arcRotateCamera;
+        console.log( this.arcRotateCamera);
+        console.log( this.canvas);
         this.arcRotateCamera.attachControl(this.canvas, true);
-    }
-
-    setPosition(position){
-        this.scene.activeCamera.setPosition(position);
     }
 };
 
