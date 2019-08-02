@@ -5,50 +5,51 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     watch: false,
     devtool: "source-map",
+    // Start of dependency graphs (2 independent graphs)
     entry: {
-        kubys: './src/js/Game.js'
+        kubys: './src/js/Game.js',
+        login: './src/login/login.js'
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: './src/index.html'
-        }),
         new HtmlWebpackPlugin({
             files: {
                 chunks: {
                     kubys: {
                         entry: './src/js/Game.js',
+                    },
+                    login: {
+                        entry: './src/login/login.js',
                     }
                 }
             }
         }),
+        // 2 entrypoints, linked with associated bundle
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/index.html',
+            favicon: 'kubys_favicon.ico',
             chunks: ['kubys']
         }),
         new HtmlWebpackPlugin({
             filename: 'login.html',
-            template: './src/login.html',
-        }),
-
-
+            favicon: 'kubys_favicon.ico',
+            template: './src/login/login.html',
+            chunks: [ 'login' ]
+        })
     ],
     output: {
-        filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
+        filename: '[name].bundle.js'
     },
     module: {
         rules: [
             {
-                test: /\.(scss|css)$/,
-                use: [
-                    'css-loader',
-                ]
+                test: /\.css$|\.scss$/,
+                use: ['style-loader', 'css-loader', 'sass-loader']
             },
             {
-                test: /\.jpg$/,
+                test: /\.jpg$|\.ico$/,
                 use: [
                     {
                         loader: 'file-loader',
@@ -57,10 +58,18 @@ module.exports = {
                 ],
             },
             {
-                test: /\.jsx?$/,
+                test: /\.js$/,
                 use: 'babel-loader',
                 exclude: /node_modules/
+            },
+            {
+                test: /\.(png|svg|woff|woff2|eot|ttf|otf)$/,
+                use: [{
+                    loader: 'url-loader',
+                    options: { limit: 100000 } // in bytes
+                }]
             }
+
         ]
     },
     externals: {

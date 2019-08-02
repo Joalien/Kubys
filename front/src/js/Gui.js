@@ -1,7 +1,9 @@
-import * as GUI from 'babylonjs-gui';
+import { AdvancedDynamicTexture, StackPanel, Control, TextBlock, Button } from 'babylonjs-gui';
 import Communication from "./Communication";
 import Map from "./Map.js";
-import * as firebase from "firebase";
+import firebase from "firebase/app";
+import 'firebase/auth';
+import FightMap from "./FightMap";
 
 
 export default class Gui {
@@ -14,13 +16,13 @@ export default class Gui {
 
     constructor() {
 
-        this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
-        Gui.panel = new BABYLON.GUI.StackPanel();
-        Gui.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
+        Gui.panel = new StackPanel();
+        Gui.panel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         this.advancedTexture.addControl(Gui.panel);
 
 
-        let connectionTextBlock = new BABYLON.GUI.TextBlock();
+        let connectionTextBlock = new TextBlock();
         connectionTextBlock.color = "white";
         connectionTextBlock.height = "40px";
         firebase.auth().onAuthStateChanged(function(user) {
@@ -32,7 +34,7 @@ export default class Gui {
         Gui.panel.addControl(connectionTextBlock);
 
 
-        Gui.logOutButton = BABYLON.GUI.Button.CreateSimpleButton("Gui.logOutButton", "Deconnexion");
+        Gui.logOutButton = Button.CreateSimpleButton("Gui.logOutButton", "Deconnexion");
         Gui.logOutButton.color = "white";
         Gui.logOutButton.height = "40px";
         Gui.logOutButton.onPointerClickObservable.add(function() {
@@ -50,7 +52,7 @@ export default class Gui {
         });
         Gui.panel.addControl(Gui.logOutButton);
 
-        Gui.playPlayerButton = BABYLON.GUI.Button.CreateSimpleButton("playPlayerButton", "Play");
+        Gui.playPlayerButton = Button.CreateSimpleButton("playPlayerButton", "Jouer");
         Gui.playPlayerButton.color = "white";
         Gui.playPlayerButton.height = "40px";
         Gui.playPlayerButton.onPointerClickObservable.add(function() {
@@ -60,37 +62,21 @@ export default class Gui {
         });
         // Gui.panel.addControl(Gui.playPlayerButton);
 
-
-
-        // let grid = new BABYLON.GUI.Grid();
-        // this.advancedTexture.addControl(grid);
-        // grid.background = "black";
-        // grid.height = "500px";
-        // grid.width = "500px";
-        //
-        //
-        // grid.addColumnDefinition(0.5);
-        // grid.addColumnDefinition(0.5);
-        // grid.addRowDefinition(0.25);
-        // grid.addRowDefinition(0.25);
-        // grid.addRowDefinition(0.25);
-        // grid.addRowDefinition(0.25);
-        //
-        //
-        // //Connection
-        // let connectionTextBlock = new BABYLON.GUI.TextBlock();
-        // connectionTextBlock.text = "Connection";
-        // connectionTextBlock.color = "white";
-        // connectionTextBlock.fontSize = 24;
-        // connectionTextBlock.width = "100%";
-        // connectionTextBlock.height = "100%";
-        // grid.addControl(connectionTextBlock, 0, 0);
-        //
-        // //Connection email
-        // let connectionEmail = new BABYLON.GUI.InputText();
-        // connectionEmail.color = "white";
-        // connectionEmail.background = null;
-        // grid.addControl(connectionEmail, 1, 0);
+        Gui.subscribeButton = Button.CreateSimpleButton("subscribeButton", "Rejoindre un combat");
+        Gui.subscribeButton.color = "white";
+        Gui.subscribeButton.height = "40px";
+        Gui.subscribeButton.onPointerClickObservable.add(function() {
+            Gui.isSubscribe = !Gui.isSubscribe;
+            if (Gui.isSubscribe) {
+                Communication.sendMessage("/fight/subscribe", {});
+                Gui.subscribeButton.textBlock.text = "Quitter la file d'attente";
+                Gui.subscription = Communication.clientSocket.subscribe("/user/fight", FightMap.startFight);
+            } else {
+                Communication.sendMessage("/fight/unsubscribe", {});
+                Gui.subscribeButton.textBlock.text = "Rejoindre un combat";
+                Gui.subscription.unsubscribe();
+            }
+        });
 
     }
 
@@ -99,7 +85,7 @@ export default class Gui {
         Gui.playerId = playerId;
         Gui.panel.addControl(Gui.playPlayerButton);
     };
-    static removePlayButton = function(){
+    static removePlayButton = function() {
         Gui.panel.removeControl(Gui.playPlayerButton);
     };
 };

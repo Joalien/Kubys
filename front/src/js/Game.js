@@ -1,18 +1,21 @@
 import Camera from './Camera.js';
 import Gui from './Gui.js';
 import Map from './Map.js';
-import '../css/MainStyle.css';
+import "../css/MainStyle.css";
+import "../../kubys_favicon.ico";
 
-import * as BABYLON from 'babylonjs';
+import {Engine, Scene} from 'babylonjs';
 import FightMap from "./FightMap";
 import Player from "./Player";
 import Communication from "./Communication";
-import {initializeApp} from "firebase/app";
 
+import firebase from "firebase/app";
+import 'firebase/auth';
 
 if (process.env.NODE_ENV !== 'production') {
     console.log('Development mode');
 }
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyDmXTP9dZiqvzc2o1d0VREobnx4sFVduxY",
@@ -23,7 +26,10 @@ const firebaseConfig = {
     messagingSenderId: "no-reply@kubys.fr",
     appID: "kubys-id",
 };
-initializeApp(firebaseConfig);
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", function () {
@@ -34,11 +40,13 @@ let Game = function(canvasId) {
 
     // Canvas et engine défini ici
     let canvas = document.getElementById(canvasId);
-    let engine = new BABYLON.Engine(canvas, true);
+    let engine = new Engine(canvas, true);
+    console.log(engine);
     let _this = this;
 
     // On initie la scène avec une fonction associé à l'objet Game
     this.scene = this._initScene(engine);
+    console.log(canvas);
     this.camera = new Camera(this.scene, canvas);
     this.gui = new Gui();
 
@@ -50,32 +58,18 @@ let Game = function(canvasId) {
     new FightMap();
     Player.init(() => new Communication());
 
-
-
     // Ajuste la vue 3D si la fenetre est agrandi ou diminué
     window.addEventListener("resize", function () {
         if (engine) {
             engine.resize();
         }
     },false);
-
-
-
 };
 
 Game.prototype = {
 
     // Prototype d'initialisation de la scène
     _initScene : function(engine) {
-        let scene = new BABYLON.Scene(engine);
-        scene.clearColor = new BABYLON.Color4(0,0,0, 0);
-        scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
-        scene.collisionsEnabled = true;
-        let options = {
-            groundColor: BABYLON.Color3.White()
-        };
-        // scene.createDefaultEnvironment(options);
-
-        return scene;
+        return new Scene(engine);
     }
 };

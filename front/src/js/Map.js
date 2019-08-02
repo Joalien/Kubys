@@ -45,13 +45,12 @@ export default class Map {
 
     //Function call only once to fetch all information about game
     static getAllMap = function(message) {
-        console.log("getAllMap ...");
         // called when the client receives a STOMP message from the server
         if (message.body) {
             //For each item in the map, we print it
 
-            for (let player of JSON.parse(message.body)){
-                if(player.hasOwnProperty("breed")){//Check if player could be optimized
+            for (let player of JSON.parse(message.body)) {
+                if(player.hasOwnProperty("breed")) {//Check if player could be optimized
                     let objPlayer = new Player(player);
                     objPlayer.setLabel(player.name);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
@@ -65,7 +64,7 @@ export default class Map {
         }
     };
 
-    static updateMap = function(message){
+    static updateMap = function(message) {
         if (message.body) {
 
             let player = JSON.parse(message.body);
@@ -79,7 +78,7 @@ export default class Map {
                                
 
                 //TODO Create new endpoint for disconnected users
-            // } else if(player.connected === false){// If player disconnect
+            // } else if(player.connected === false) {// If player disconnect
             //     console.log("Player "+player.id+" has left the game");
             //     Player.NAME_LABEL[mesh].dispose();
             //     mesh.dispose();
@@ -92,13 +91,13 @@ export default class Map {
                 // console.log("position : "+mesh.position);
                 // console.log("new position : " + newPosition);
 
-                if(newPosition.x - mesh.position.x === 1){
+                if(newPosition.x - mesh.position.x === 1) {
                     mesh.rotation.y = Math.PI / 2;
-                } else if(newPosition.x - mesh.position.x === -1){
+                } else if(newPosition.x - mesh.position.x === -1) {
                     mesh.rotation.y = - Math.PI / 2;
-                } else if(newPosition.z - mesh.position.z === 1){
+                } else if(newPosition.z - mesh.position.z === 1) {
                     mesh.rotation.y = 0;
-                } else if(newPosition.z - mesh.position.z === -1){
+                } else if(newPosition.z - mesh.position.z === -1) {
                     mesh.rotation.y = Math.PI;
                 }
 
@@ -129,7 +128,7 @@ export default class Map {
         }
     };
 
-    static createFloor(){
+    static createFloor() {
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
         let mainBox = this.createLandPlot(this.SCENE, 0, super.cubeSize/2, 0);
@@ -144,7 +143,7 @@ export default class Map {
         }
     }
 
-    static createTree(x, z){
+    static createTree(x, z) {
         let treeTexture = new BABYLON.Texture(Tree, this.SCENE);
         let leafTexture = new BABYLON.Texture(Leaf, this.SCENE);
         //Creation of a material
@@ -178,7 +177,7 @@ export default class Map {
         }
     }
 
-    static createLandPlot(x, y, z){
+    static createLandPlot(x, y, z) {
         let tex = new BABYLON.Texture(Grass, this.SCENE);
         //Creation of a material
         const grassMaterial = new BABYLON.StandardMaterial("groundTexture", this.SCENE);
@@ -199,7 +198,6 @@ export default class Map {
                 let distance = 3;
 
                 let objPlayer = new Player(player);
-                console.log("objPlayer:");
                 console.log(objPlayer);
                 objPlayer.setLabel(player.name);
                 objPlayer.mesh.position = new BABYLON.Vector3(Math.cos(alpha)*distance, 0, Math.sin(alpha)*distance);
@@ -224,8 +222,6 @@ export default class Map {
                 Map.ringPlayers[i] = objPlayer.mesh;
                 i++;
             }
-            console.log(Map.ringPlayers);
-
 
             Map.SCENE.onPointerObservable.add(function (evt) {
                 if (evt.type === BABYLON.PointerEventTypes.POINTERDOWN) {
@@ -269,13 +265,13 @@ export default class Map {
 
     static clearRingSelection = function() {
         console.log(Map.ringPlayers);
-        for (let mesh of Map.ringPlayers){
+        for (let mesh of Map.ringPlayers) {
             mesh.dispose();
             console.log("rect"+mesh.id);
             Player.NAME_LABEL["rect"+mesh.id].dispose();
             // Map.SCENE.getMeshByID("rect"+mesh.id).dispose();
         }
-        // for (let mesh of Player.NAME_LABEL){
+        // for (let mesh of Player.NAME_LABEL) {
         //     mesh.dispose();
         // }
 

@@ -1,7 +1,8 @@
 import Map from "./Map";
 import {Stomp} from "@stomp/stompjs/esm6";
 import FightMap from "./FightMap"
-import * as firebase from "firebase";
+import firebase from "firebase/app";
+import 'firebase/auth';
 import Player from "./Player";
 
 export default class Communication {
@@ -43,6 +44,7 @@ export default class Communication {
                 // Gui.logOutButton.children[0].text = "Deconnexion";
                 user.getIdToken().then((token) => {
                     Communication.clientSocket.connect(token, null, connect_callback, (error) => {
+                        console.error(error);
                         Communication.redirectUser();
                     });
                 });
@@ -60,13 +62,13 @@ export default class Communication {
     }
 
 
-    static sendMessage(endpoint, message){
+    static sendMessage(endpoint, message) {
         message = message===0?"0":message;
         Communication.clientSocket.send(endpoint, {}, message);
     }
 
 
-    static pressEvent = function(evt){
+    static pressEvent = function(evt) {
         switch (evt.key) {
             case 'z':
             case 's':
