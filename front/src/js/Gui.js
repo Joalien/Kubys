@@ -21,6 +21,7 @@ export default class Gui {
         Gui.logOutButton = Button.CreateImageOnlyButton("Log out", "resources/images/icon_logout.png");
         Gui.setDefaultButtonCharacteristics(Gui.logOutButton, 48, -45);
         Gui.logOutButton.onPointerClickObservable.add(function() {
+            Gui.panel.removeControl(Gui.subscribeButton);
             firebase.auth().signOut();
         });
         Gui.advancedTexture.addControl(Gui.logOutButton);
@@ -33,6 +34,7 @@ export default class Gui {
             Communication.sendMessage("/setPlayer", Gui.playerId);
             Gui.advancedTexture.removeControl(Gui.playPlayerButton);
             Map.clearRingSelection();
+            Gui.panel.addControl(Gui.subscribeButton);
         });
 
 

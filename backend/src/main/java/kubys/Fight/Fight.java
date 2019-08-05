@@ -16,8 +16,10 @@ import java.util.List;
 @Builder
 @Data
 public class Fight {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     List<Player> players;
-    //TODO add custom map pool
 }

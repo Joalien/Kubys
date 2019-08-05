@@ -1,34 +1,43 @@
 package kubys;
 
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import kubys.Player.Player;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
-@SpringBootTest(classes = Application.class)
+@SpringBootTest
 @DisplayName("Test WebSocket STOMP client")
 @AutoConfigureMockMvc
 @EnableWebSocketMessageBroker
-@ContextConfiguration
 @Slf4j
 class WebSocketClientIT {
+
+    private static final String KEY_PATH = "serviceAccountPrivateKey.json";
 
     @Test
     @DisplayName("Extremely simple exchange with server")
     void connectWebSocket() {
-
         StompSession session1 = createSession();
         session1.subscribe("/getAllMap", new MyStompFrameHandler());
         session1.send("/getAllMap", null);
@@ -66,24 +75,37 @@ class WebSocketClientIT {
         assert true;
     }
 
-    StompSession createSession(){
+    StompSession createSession() {
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        StompSessionHandler sessionHandler = new StompSessionHandlerAdapter() {};
+        String token = createToken();
 
-        StompSessionHandler sessionHandler = new StompSessionHandlerAdapter(){};
         try {
-            WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-            headers.add("login", "username");
-            headers.add("passcode", "passcode");
-            return stompClient.connect("ws://localhost:8080/connect", headers, sessionHandler).get();
+            StompHeaders headers = new StompHeaders();
+            headers.add("idToken", token);
+            return stompClient.connect("ws://127.0.0.1:8443/connect", (WebSocketHttpHeaders) null, headers, sessionHandler).get();
         } catch (InterruptedException | ExecutionException e) {
-            log.error("Unable to connect to server");
-            assert false;
+            throw new IllegalStateException(e);
         }
-        return null;
     }
 
-    private class MyStompFrameHandler implements StompFrameHandler {
+    String createToken() {
+        try {
+            FirebaseOptions options = null;
+            options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
+                    .build();
+            FirebaseApp.initializeApp(options);
+
+            String uid = "e4T2idn6rgPGFLpUXN8vpwpNzBy2";
+            return FirebaseAuth.getInstance().createCustomTokenAsync(uid).get(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static class MyStompFrameHandler implements StompFrameHandler {
         @Override
         public Type getPayloadType(StompHeaders headers) {
             return Player.class;

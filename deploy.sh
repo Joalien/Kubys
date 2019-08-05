@@ -2,6 +2,7 @@
 
 bash -c "cd backend && ./deploy.sh" 
 bash -c "cd front && ./deploy.sh"
+bash -c "cd nginx && ./deploy.sh"
 
 scp docker-compose.yml josquin@kubys.fr:~
 

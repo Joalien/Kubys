@@ -21,21 +21,21 @@ public class Position {
     }
 
 
-    public Position addX(int x){
+    public Position addX(int x) {
         return builder()
                 .x(this.getX()+x)
                 .y(this.getY())
                 .z(this.getZ())
                 .build();
     }
-    public Position addY(int y){
+    public Position addY(int y) {
         return builder()
                 .x(this.getX())
                 .y(this.getY()+y)
                 .z(this.getZ())
                 .build();
     }
-    public Position addZ(int z){
+    public Position addZ(int z) {
         return builder()
                 .x(this.getX())
                 .y(this.getY())

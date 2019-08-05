@@ -16,7 +16,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/connect", "/user", "/broker", "/getAllMap", "/getPlayers", "/getSpells", "/setPlayer").permitAll()
+                .authorizeRequests().antMatchers("/connect", "/user", "/broker", "/getAllMap", "/getPlayers", "/getSpells", "/setPlayer", "/fight").permitAll()
                 .anyRequest().denyAll();
 
     }
