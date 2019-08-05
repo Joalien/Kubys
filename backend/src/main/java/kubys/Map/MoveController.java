@@ -30,7 +30,7 @@ public class MoveController {
         Player player = sessionStore.getPlayer();
 
         //If player command, send changes to all players
-        if(PlayerService.movePlayer(player, command)){
+        if(PlayerService.movePlayer(player, command)) {
             return player;
         }
         return null;

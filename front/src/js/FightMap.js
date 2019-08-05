@@ -185,4 +185,7 @@ export default class FightMap {
 
     }
 
+    static startFight = function(fightId) {
+        Communication.clientSocket.subscribe("/fight/" + fightId, (payload) => console.log(payload));
+    }
 }

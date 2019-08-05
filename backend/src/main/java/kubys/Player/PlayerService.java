@@ -23,68 +23,72 @@ public class PlayerService {
         this.playerDao = playerDao;
     }
 
-    public void save(Player player){
+    public void save(Player player) {
         playerDao.save(player);
     }
 
-    public static Boolean movePlayer(Player player, Command command){
-        return switch(command) {
-            case FORWARD -> PlayerService.moveForward(player);
-            case BACKWARD -> PlayerService.moveBackward(player);
-            case LEFT -> PlayerService.moveLeft(player);
-            case RIGHT -> PlayerService.moveRight(player);
-            case CREATE -> {
+    public static Boolean movePlayer(Player player, Command command) {
+        switch(command) {
+            case FORWARD:
+                return PlayerService.moveForward(player);
+            case BACKWARD:
+                return PlayerService.moveBackward(player);
+            case LEFT:
+                return PlayerService.moveLeft(player);
+            case RIGHT:
+                return PlayerService.moveRight(player);
+            case CREATE:
                 map.addPlayer(player, Position.builder().y(5).build());
-                break movePosition(player, player.getPosition());
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + command);
-        };
+                return movePosition(player, player.getPosition());
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + command);
+        }
     }
 
-    private static Boolean moveForward(Player player){
+    private static Boolean moveForward(Player player) {
         Position position = player.getPosition().addZ(1);
         return movePosition(player, position);
     }
 
-    private static Boolean moveBackward(Player player){
+    private static Boolean moveBackward(Player player) {
         Position position = player.getPosition().addZ(-1);
 
         return movePosition(player, position);
     }
 
-    private static Boolean moveLeft(Player player){
+    private static Boolean moveLeft(Player player) {
         Position position = player.getPosition().addX(-1);
 
         return movePosition(player, position);
     }
 
-    private static Boolean moveRight(Player player){
+    private static Boolean moveRight(Player player) {
         Position position = player.getPosition().addX(1);
 
         return movePosition(player, position);
     }
 
-    private static Boolean movePosition(Player player, Position position){// This method contains logic
+    private static Boolean movePosition(Player player, Position position) {// This method contains logic
         if (position == null) return false;
         Position above = position.addY(1);
         Position below = position.addY(-1);
 
-        if(!map.getCells().containsKey(position) || map.getCells().get(position).equals(player)){
+        if(!map.getCells().containsKey(position) || map.getCells().get(position).equals(player)) {
             // Drop the ~~mic~~ player
-            while (!map.getCells().containsKey(below)){
+            while (!map.getCells().containsKey(below)) {
                 below = below.addY(-1);
 
             }
             updatePosition(player, below.addY(1));// Change map information
             return true;
 
-        }else if (!map.getCells().containsKey(above) && !map.getCells().containsKey(player.getPosition().addY(1))){
+        }else if (!map.getCells().containsKey(above) && !map.getCells().containsKey(player.getPosition().addY(1))) {
             updatePosition(player, above);
             return true;
         }else return false;
     }
 
-    private static void updatePosition(Player player, Position position){
+    private static void updatePosition(Player player, Position position) {
 
         map.getCells().remove(player.getPosition());
         map.getCells().put(position, player);

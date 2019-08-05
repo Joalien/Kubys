@@ -29,7 +29,7 @@ class PlayerCommandTest {
 
 
     @BeforeEach
-    void setup(){
+    void setup() {
 
         mainMap = new Map();
 

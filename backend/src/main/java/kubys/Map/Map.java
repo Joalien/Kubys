@@ -20,13 +20,13 @@ public class Map {
     public static final int MAX_Y_SIZE = 10;
     public static final int MAX_Z_SIZE = 10;
 
-    public Map(){
+    public Map() {
         this.cells = new ConcurrentHashMap<>();
         generateFightMap1();
     }
 
 
-    private void generateFightMap1(){
+    private void generateFightMap1() {
         log.debug("Generate Fight map");
         LandPlot.LandPlotBuilder lpb = LandPlot.builder();
         Position.PositionBuilder pb = Position.builder();
@@ -73,9 +73,9 @@ public class Map {
         addCell(pb.x(-4).y(11).z(-4).build(), lpb.build());
     }
 
-    public void generateEmptyMap(Position position){
-        for(int x = -position.getX(); x <= position.getX(); x++){
-            for(int z = -position.getZ(); z <= position.getZ(); z++){
+    public void generateEmptyMap(Position position) {
+        for(int x = -position.getX(); x <= position.getX(); x++) {
+            for(int z = -position.getZ(); z <= position.getZ(); z++) {
                 addCell(Position.builder()
                     .x(x)
                     .y(0)
@@ -85,14 +85,14 @@ public class Map {
         }
     }
 
-    private void addCell(Position position, Cell cell){
+    private void addCell(Position position, Cell cell) {
         try{
             this.cells.put(position, cell);
             cell.setPosition(position);
         } catch (NullPointerException ignored) {}
     }
 
-    public Position addPlayer(Player player, Position position){
+    public Position addPlayer(Player player, Position position) {
 //        log.debug("New player in "+cells.toString());
         if(cells.containsKey(position)) addPlayer(player, Position.builder().
                 x(position.getX())

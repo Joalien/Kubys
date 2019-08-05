@@ -14,8 +14,8 @@ export default class Communication {
 
     constructor(username) {
         // let url = "wss://kubys.fr:8443/connect"; // prod
-        // let url = "wss://localhost:8443/connect"; // docker-compose in dev
-        let url = "ws://localhost:8080/connect"; // dev
+        let url = "wss://localhost:8443/connect"; // docker-compose in dev
+        // let url = "ws://localhost:8080/connect"; // dev
         Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server

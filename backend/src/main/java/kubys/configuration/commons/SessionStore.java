@@ -21,17 +21,5 @@ public class SessionStore {
 
     private User user;
     private Player player;
-
-    @PostConstruct
-    public void init() {
-        // Invoked after dependencies injected
-    }
-
-    // ...
-
-    @PreDestroy
-    public void destroy() {
-        // Invoked when the WebSocket session ends
-    }
 }
 
