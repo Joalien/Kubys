@@ -4,36 +4,32 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserRecord;
 import kubys.Player.Player;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.*;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.socket.WebSocketHttpHeaders;
-import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
-@SpringBootTest
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("Test WebSocket STOMP client")
-@AutoConfigureMockMvc
-@EnableWebSocketMessageBroker
 @Slf4j
 class WebSocketClientIT {
 
     private static final String KEY_PATH = "serviceAccountPrivateKey.json";
+    @LocalServerPort
+    private int port;
 
     @Test
     @DisplayName("Extremely simple exchange with server")
@@ -41,7 +37,6 @@ class WebSocketClientIT {
         StompSession session1 = createSession();
         session1.subscribe("/getAllMap", new MyStompFrameHandler());
         session1.send("/getAllMap", null);
-
 
         try {
             Thread.sleep(5000);
@@ -64,7 +59,6 @@ class WebSocketClientIT {
         session2.subscribe("/broker/getAllMap", new MyStompFrameHandler());
         session1.send("/getAllMap", null);
 
-
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
@@ -83,8 +77,8 @@ class WebSocketClientIT {
 
         try {
             StompHeaders headers = new StompHeaders();
-            headers.add("idToken", token);
-            return stompClient.connect("ws://127.0.0.1:8443/connect", (WebSocketHttpHeaders) null, headers, sessionHandler).get();
+            headers.add("login", token);
+            return stompClient.connect("ws://127.0.0.1:" + port + "/connect", (WebSocketHttpHeaders) null, headers, sessionHandler).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new IllegalStateException(e);
         }
@@ -98,8 +92,12 @@ class WebSocketClientIT {
                     .build();
             FirebaseApp.initializeApp(options);
 
-            String uid = "e4T2idn6rgPGFLpUXN8vpwpNzBy2";
-            return FirebaseAuth.getInstance().createCustomTokenAsync(uid).get(10, TimeUnit.SECONDS);
+            UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmailAsync("josquin.cornec@kubys.fr").get();
+            log.info("Successfully fetched user data: " + userRecord.getUid());
+
+            String s = FirebaseAuth.getInstance().createCustomToken(userRecord.getUid());
+            log.info(s);
+            return s;
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
