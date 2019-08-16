@@ -16,17 +16,24 @@ public class Application {
 
     private static final String KEY_PATH = "serviceAccountPrivateKey.json";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        FirebaseOptions options = new FirebaseOptions.Builder()
+                .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
+                .build();
+        FirebaseApp.initializeApp(options);
+
         SpringApplication.run(Application.class, args);
 
-        try {
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
-                    .build();
-            FirebaseApp.initializeApp(options);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        /*
+        TODO : (MVP)
+        - Optimize payload (low)
+        - Use Spring Cloud Vault (low)
+        - Make tests run (low)
+        - Change scene in BabylonJS
+            - Refactor JS (low)
+            - Refactor Ring Selection with Scene switch (low)
+            - Add new Fight Scene (high)
+        - Add characteristic tree
+         */
     }
 }

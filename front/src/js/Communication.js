@@ -12,8 +12,9 @@ export default class Communication {
 
 
     constructor(username) {
-        let url = "wss://kubys.fr:8443/connect";
-        // let url = "ws://127.0.0.1:8443/connect";
+        // let url = "wss://kubys.fr:8443/connect"; // prod
+        // let url = "wss://localhost:8443/connect"; // docker-compose in dev
+        let url = "ws://localhost:8080/connect"; // dev
         Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server
@@ -22,7 +23,7 @@ export default class Communication {
             // called back after the client is connected and authenticated to the STOMP server
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Map.getAllMap);
             Communication.clientSocket.subscribe("/user/getSpells", FightMap.getSpells);
-            Communication.clientSocket.subscribe("/user/errors", (error) => alert(error));
+            Communication.clientSocket.subscribe("/user/errors", error => alert(error));
             Communication.clientSocket.subscribe("/user/getPlayers", Map.selectionRing);
             Communication.clientSocket.subscribe("/user/setPlayer", Player.refreshPlayer);
             Communication.clientSocket.subscribe("/broker/command", Map.updateMap);
