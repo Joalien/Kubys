@@ -45,3 +45,8 @@ B -- 6: save_DB --> DB
 B -- 7: update_map --> K 
 ```
 
+## I want to make the project run on my computer, how can I achieve this ?
+Build front with : ```npm run build-dev && rsync -avzc resources dist/```  
+Build back  
+Change the websocket url in Communication.js  
+And finally run ```docker-compose -f docker-compose.dev.yml up --build --force-recreate```

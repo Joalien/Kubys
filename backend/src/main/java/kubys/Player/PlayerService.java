@@ -1,16 +1,12 @@
 package kubys.Player;
 
-import kubys.Map.Map;
 import kubys.Map.Command;
+import kubys.Map.Map;
 import kubys.Map.Position;
-import kubys.User.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
 
 @Service
 @Slf4j
@@ -26,7 +22,6 @@ public class PlayerService {
         PlayerService.map = map;
         this.playerDao = playerDao;
     }
-
 
     public void save(Player player){
         playerDao.save(player);

@@ -9,11 +9,11 @@ export default class Camera {
         this.arcRotateCamera.upperBetaLimit = 9/10 * Math.PI/2;
         this.arcRotateCamera.upperRadiusLimit = 80;
 
-        // this.setArcRotateCamera();
+        this.setArcRotateCamera();
 
         this.universalCamera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 20, -50), scene);
         this.universalCamera.setTarget(new BABYLON.Vector3.Zero());
-        this.setUniversalCamera();
+        // this.setUniversalCamera();
     }
 
     setUniversalCamera() {

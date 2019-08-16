@@ -1,4 +1,4 @@
-FROM arm32v7/adoptopenjdk:12-jdk-hotspot-bionic
+FROM openjdk:12
 
 EXPOSE 8080
 
@@ -6,6 +6,4 @@ EXPOSE 8080
 COPY target/kubys-*.jar .
 
 CMD java --enable-preview -jar kubys-*.jar
-
-
 

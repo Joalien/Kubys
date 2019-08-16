@@ -1,13 +1,7 @@
 package kubys.Map;
 
-import kubys.Map.Cell;
-import kubys.Map.Map;
 import kubys.Player.Player;
-import kubys.Player.Breed;
 import kubys.Player.PlayerService;
-import kubys.Spell.Spells;
-import kubys.User.User;
-import kubys.User.UserService;
 import kubys.configuration.commons.SessionStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +19,6 @@ public class MapController {
 
     private Map map;
     private SessionStore sessionStore;
-
 
     @Autowired
     public MapController(Map map, SessionStore sessionStore) {

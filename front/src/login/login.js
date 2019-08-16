@@ -134,7 +134,6 @@ function initApp() {
             if(document.location.pathname !== "/login.html") document.location.href = "/login.html";
         }
     });
-    console.error(document.getElementById('quickstart-sign-up'));
     document.getElementById('quickstart-log-in').addEventListener('click', toggleLogIn, false);
     document.getElementById('quickstart-sign-up').addEventListener('click', handleSignUp, false);
     document.getElementById('quickstart-verify-email').addEventListener('click', sendEmailVerification, false);

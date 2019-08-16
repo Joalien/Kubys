@@ -1,3 +1,3 @@
 FROM arm32v7/nginx
 
-COPY default.conf /etc/nginx/conf.d/
+COPY reverse_proxy_nginx.conf /etc/nginx/conf.d/

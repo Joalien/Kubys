@@ -3,7 +3,6 @@ package kubys.configuration;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
-import kubys.Map.Position;
 import kubys.Player.Breed;
 import kubys.Player.Player;
 import kubys.Player.PlayerDao;
@@ -26,7 +25,6 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -40,9 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
 // https://stackoverflow.com/questions/45405332/websocket-authentication-and-authorization-in-spring
-
 @Configuration
 @EnableWebSocketMessageBroker
 @Slf4j
@@ -104,26 +100,25 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         });
     }
 
-    private UsernamePasswordAuthenticationToken getAuthenticatedOrFail(String token) throws AuthenticationException {
+    private UsernamePasswordAuthenticationToken getAuthenticatedOrFail(String token) {
         if (token == null || token.trim().length() == 0) {
             throw new AuthenticationCredentialsNotFoundException("token was null or empty.");
         }
 
-//        log.info("token : "+token);
-        String userId = null;
+        String userId;
         try {
-            // idToken comes from the client app (shown above)
+            // Execute a call to google API to fetch public key, then decrypt the JWT token with it
             FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdTokenAsync(token).get();
             UserRecord user = FirebaseAuth.getInstance().getUserAsync(firebaseToken.getUid()).get();
             userId = user.getUid();
-            log.info("1:"+user.getUid());
 
             //Get user from db
-            Optional<User> optionalUser = userDao.findById(user.getUid());
+            Optional<User> optionalUser = userDao.findById(userId);
             log.info("1.5:"+optionalUser);
             if(optionalUser.isEmpty()) {
-                User u = User.builder().uid(user.getUid()).displayName("Alexandre Dumas").build();
+                User u = User.builder().uid(userId).displayName("Alexandre Dumas").build();
                 log.info("No user find, creating 3 empty players");
+                // TODO let people create their own characters
                 u.setPlayers(List.of(
                         Player.builder()
                                 .breed(Breed.DWARF)
@@ -158,7 +153,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 System.out.println(playerDao.findAll());
                 System.out.println(userDao.findAll());
                 log.info("2.6");
-                optionalUser = userDao.findById(user.getUid());
+                optionalUser = userDao.findById(userId);
                 log.info("3"+optionalUser.toString());
 
             }
