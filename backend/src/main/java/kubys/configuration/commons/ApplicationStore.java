@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @Setter
 @ToString
+@Builder
+@Slf4j
 public class ApplicationStore {
 
     @Builder.Default
