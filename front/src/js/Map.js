@@ -241,7 +241,6 @@ export default class Map {
                         }
                     }
 
-
                     let animationCamera = new BABYLON.Animation("translateCamera", "alpha", 120, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                     let keys = [];
                     keys.push({
@@ -269,15 +268,7 @@ export default class Map {
             mesh.dispose();
             console.log("rect"+mesh.id);
             Player.NAME_LABEL["rect"+mesh.id].dispose();
-            // Map.SCENE.getMeshByID("rect"+mesh.id).dispose();
         }
-        // for (let mesh of Player.NAME_LABEL) {
-        //     mesh.dispose();
-        // }
-
-
-
-        console.log(Map.ringPlayers);
     };
 
     showWorldAxis(size) {

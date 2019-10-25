@@ -22,7 +22,7 @@ export default class Communication {
             console.log("Connected with server !");
             // called back after the client is connected and authenticated to the STOMP server
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Map.getAllMap);
-            Communication.clientSocket.subscribe("/user/getSpells", FightMap.getSpells);
+            // Communication.clientSocket.subscribe("/user/getSpells", FightMap.getSpells);
             Communication.clientSocket.subscribe("/user/errors", error => alert(error));
             Communication.clientSocket.subscribe("/user/getPlayers", Map.selectionRing);
             Communication.clientSocket.subscribe("/user/setPlayer", Player.refreshPlayer);
@@ -32,9 +32,6 @@ export default class Communication {
             Communication.clientSocket.send("/getPlayers", null);
             // Communication.sendMessage("/command", JSON.stringify("CREATE"));
             window.addEventListener("keypress", Communication.pressEvent);
-
-
-            // Communication.sendMessage("/getSpells", null);
         };
 
 

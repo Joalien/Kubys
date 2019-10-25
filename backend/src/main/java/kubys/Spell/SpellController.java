@@ -4,6 +4,7 @@ import kubys.Map.Map;
 import kubys.Player.Player;
 import kubys.configuration.commons.SessionStore;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -17,27 +18,25 @@ import java.security.Principal;
 @Slf4j
 public class SpellController {
 
-    private Map map;
     private SessionStore sessionStore;
+    private SpellService spellService;
 
     @Autowired
-    public SpellController(Map map, SessionStore sessionStore) {
-        this.map = map;
+    public SpellController(Map map, SessionStore sessionStore, SpellService spellService) {
         this.sessionStore = sessionStore;
+        this.spellService = spellService;
     }
 
     //When a player make a command, only return the diff with previous map
     @MessageMapping("/getSpells")
     @SendToUser("/getSpells")
     public Spell [] directionPlayer(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
-//        log.info("Server side : Spell");
-
         //Get the current player
         Player player = sessionStore.getPlayer();
 
+        log.info(spellService.getSpellsByPlayer(player).toString());
+
         //If player command, send changes to all players
-        return player.getSpells().toArray(new Spell[0]);
-
+        return spellService.getSpellsByPlayer(player).toArray(new Spell[0]);
     }
-
 }

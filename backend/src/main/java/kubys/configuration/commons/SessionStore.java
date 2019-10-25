@@ -22,7 +22,6 @@ public class SessionStore {
     private User user;
     private Player player;
 
-
     @PostConstruct
     public void init() {
         // Invoked after dependencies injected

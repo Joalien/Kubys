@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import kubys.Map.Cell;
 import kubys.Map.Position;
 import kubys.Spell.Spell;
+import kubys.Spell.SpellPlayer;
 import kubys.User.User;
 import lombok.*;
 
@@ -43,7 +44,7 @@ public class Player extends Cell {
     @OneToMany(fetch = FetchType.LAZY)
     @JsonBackReference
     @Builder.Default
-    private Set<Spell> spells = new LinkedHashSet<>();
+    private Set<SpellPlayer> spellsPlayer = new LinkedHashSet<>();
     @Column
     private int pm;
     @Column
