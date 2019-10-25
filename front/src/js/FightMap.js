@@ -77,7 +77,6 @@ export default class FightMap {
             for (let spell of JSON.parse(message.body)) {
                 FightMap.addButton(spell);
             }
-
         } else {
             console.log("got empty message");
         }

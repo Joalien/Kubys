@@ -4,15 +4,11 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.LinkedHashMap;
 
 @Data
 @Builder
-@Entity
 public class Spell {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column
     String name;
@@ -33,6 +29,39 @@ public class Spell {
     @Column
     int level;
 
+    static LinkedHashMap<Long, Spell> spells;
 
+    static {
+        spells = new LinkedHashMap<>();
+        spells.put(1L, Spell.builder()
+                .type(SpellType.CLASSIC)
+                .name("Tir simple")
+                .ammunition(-1)
+                .minScope(1)
+                .maxScope(12)
+                .zone(1)
+                .build());
 
+        spells.put(2L, Spell.builder()
+                .type(SpellType.DROP)
+                .name("Lacher simple")
+                .ammunition(-1)
+                .minScope(1)
+                .maxScope(3)
+                .zone(1)
+                .build());
+
+        spells.put(3L, Spell.builder()
+                .type(SpellType.THROW)
+                .name("Tir en cloche simple")
+                .ammunition(-1)
+                .minScope(1)
+                .maxScope(10)
+                .zone(1)
+                .build());
+    }
+
+    public static LinkedHashMap<Long, Spell> getSpells(){
+        return spells;
+    }
 }

@@ -6,6 +6,8 @@ import com.google.firebase.auth.UserRecord;
 import kubys.Player.Breed;
 import kubys.Player.Player;
 import kubys.Player.PlayerDao;
+import kubys.Spell.Spell;
+import kubys.Spell.SpellPlayer;
 import kubys.User.User;
 import kubys.User.UserDao;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +35,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 // https://stackoverflow.com/questions/45405332/websocket-authentication-and-authorization-in-spring
 @Configuration
@@ -145,7 +144,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                 .pm(5)
                                 .build()
                 ));
-                u.getPlayers().toArray(new Player[0])[0].setUser(u);
+                //Add random spell to all new player
+                u.getPlayers().forEach(player -> player.setSpellsPlayer(
+                        Set.of(getRandomSpell(player))));
 
                 log.info("2"+u);
                 userDao.save(u);
@@ -169,5 +170,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 null,
                 Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
         );
+    }
+
+    private SpellPlayer getRandomSpell(Player player) {
+        return SpellPlayer.builder()
+                .level(1)
+                .player(player)
+                .spell_id(Math.round(Math.random() * Spell.getSpells().size()))
+                .build();
     }
 }
