@@ -113,7 +113,7 @@ export default class Player {
         advancedTexture.addControl(rect1);
 
         this.label = new TextBlock();
-        this.label.text = "Error";
+        this.label.text = characteristics.name;
         rect1.addControl(this.label);
 
         rect1.linkWithMesh(mesh);
@@ -125,10 +125,6 @@ export default class Player {
 
         console.log(rect1);
         return this;
-    }
-
-    setLabel (label) {
-        this.label.text = label;
     }
 
     setPosition (position) {
@@ -165,11 +161,10 @@ export default class Player {
     };
 
     static refreshPlayer(player) {
-        // console.log("Current player id : "+Player.CURRENT_PLAYER_ID);
-        // console.log("Current player : "+player);
         Player.CURRENT_PLAYER_ID = player.id;
 
         Communication.sendMessage("/getAllMap", null);
+        Communication.sendMessage("/getSpells", null);
 
     }
 

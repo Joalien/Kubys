@@ -34,9 +34,7 @@ public class SpellController {
         //Get the current player
         Player player = sessionStore.getPlayer();
 
-        log.info(spellService.getSpellsByPlayer(player).toString());
-
-        //If player command, send changes to all players
-        return spellService.getSpellsByPlayer(player).toArray(new Spell[0]);
+//        return spellService.getSpellsByPlayer(player).toArray(new Spell[0]);
+        return spellService.getSpellsByBreed(player.getBreed()).toArray(new Spell[0]);
     }
 }

@@ -22,8 +22,4 @@ public class SpellPlayer {
     @Column
     @NotNull
     long spell_id;
-    @Column
-    @NotNull
-    int level;
-
 }

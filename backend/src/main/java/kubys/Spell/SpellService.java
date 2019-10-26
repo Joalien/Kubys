@@ -1,5 +1,6 @@
 package kubys.Spell;
 
+import kubys.Player.Breed;
 import kubys.Player.Player;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,12 @@ public class SpellService {
     public List<Spell> getSpellsByPlayer(Player player) {
         return spellPlayerDao.findAllByPlayer(player).stream()
                 .map(spellPlayer -> Spell.getSpells().get(spellPlayer.getSpell_id()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Spell> getSpellsByBreed(Breed breed) {
+        return Spell.getSpells().values().stream()
+                .filter(spell -> spell.getBreed().equals(breed))
                 .collect(Collectors.toList());
     }
 }
