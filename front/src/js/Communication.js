@@ -4,6 +4,7 @@ import FightMap from "./FightMap"
 import firebase from "firebase/app";
 import 'firebase/auth';
 import Player from "./Player";
+import Gui from "./Gui";
 
 export default class Communication {
 
@@ -22,7 +23,7 @@ export default class Communication {
             console.log("Connected with server !");
             // called back after the client is connected and authenticated to the STOMP server
             Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Map.getAllMap);
-            // Communication.clientSocket.subscribe("/user/getSpells", FightMap.getSpells);
+            Communication.clientSocket.subscribe("/user/getSpells", message => Gui.createComponentTreePanel(message));
             Communication.clientSocket.subscribe("/user/errors", error => alert(error));
             Communication.clientSocket.subscribe("/user/getPlayers", Map.selectionRing);
             Communication.clientSocket.subscribe("/user/setPlayer", Player.refreshPlayer);

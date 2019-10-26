@@ -41,12 +41,10 @@ let Game = function(canvasId) {
     // Canvas et engine défini ici
     let canvas = document.getElementById(canvasId);
     let engine = new Engine(canvas, true);
-    console.log(engine);
     let _this = this;
 
     // On initie la scène avec une fonction associé à l'objet Game
     this.scene = this._initScene(engine);
-    console.log(canvas);
     this.camera = new Camera(this.scene, canvas);
     this.gui = new Gui();
 

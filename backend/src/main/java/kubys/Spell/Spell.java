@@ -1,5 +1,6 @@
 package kubys.Spell;
 
+import kubys.Player.Breed;
 import lombok.Builder;
 import lombok.Data;
 
@@ -27,7 +28,7 @@ public class Spell {
     @Column
     int zone;
     @Column
-    int level;
+    Breed breed;
 
     static LinkedHashMap<Long, Spell> spells;
 
@@ -36,10 +37,11 @@ public class Spell {
         spells.put(1L, Spell.builder()
                 .type(SpellType.CLASSIC)
                 .name("Tir simple")
-                .ammunition(-1)
+                .ammunition(2)
                 .minScope(1)
                 .maxScope(12)
                 .zone(1)
+                .breed(Breed.DWARF)
                 .build());
 
         spells.put(2L, Spell.builder()
@@ -49,6 +51,7 @@ public class Spell {
                 .minScope(1)
                 .maxScope(3)
                 .zone(1)
+                .breed(Breed.DWARF)
                 .build());
 
         spells.put(3L, Spell.builder()
@@ -58,7 +61,20 @@ public class Spell {
                 .minScope(1)
                 .maxScope(10)
                 .zone(1)
+                .breed(Breed.DWARF)
                 .build());
+        for (long i = 4L; i<=17; i++) {
+            spells.put(i, Spell.builder()
+                    .type(SpellType.THROW)
+                    .name("Hachachinage " + i)
+                    .ammunition(-1)
+                    .minScope((int) (i % 3) + 1)
+                    .maxScope((int) (i % 3) + 1)
+                    .zone((int) ((i + 1) % 2) + 1)
+                    .breed(Breed.DWARF)
+                    .build());
+        }
+
     }
 
     public static LinkedHashMap<Long, Spell> getSpells(){

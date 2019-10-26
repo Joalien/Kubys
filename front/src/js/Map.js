@@ -52,7 +52,6 @@ export default class Map {
             for (let player of JSON.parse(message.body)) {
                 if(player.hasOwnProperty("breed")) {//Check if player could be optimized
                     let objPlayer = new Player(player);
-                    objPlayer.setLabel(player.name);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
                 }else
                     Map.createLandPlot(player.position.x, player.position.y ,player.position.z);
@@ -198,8 +197,6 @@ export default class Map {
                 let distance = 3;
 
                 let objPlayer = new Player(player);
-                console.log(objPlayer);
-                objPlayer.setLabel(player.name);
                 objPlayer.mesh.position = new BABYLON.Vector3(Math.cos(alpha)*distance, 0, Math.sin(alpha)*distance);
                 objPlayer.mesh.rotate(BABYLON.Axis.Y, Math.PI / 2, BABYLON.Space.WORLD);
                 objPlayer.mesh.rotate(BABYLON.Axis.Y, -alpha, BABYLON.Space.WORLD);
@@ -266,7 +263,6 @@ export default class Map {
         console.log(Map.ringPlayers);
         for (let mesh of Map.ringPlayers) {
             mesh.dispose();
-            console.log("rect"+mesh.id);
             Player.NAME_LABEL["rect"+mesh.id].dispose();
         }
     };

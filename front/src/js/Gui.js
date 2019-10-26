@@ -1,4 +1,4 @@
-import {AdvancedDynamicTexture, Button, Rectangle} from 'babylonjs-gui';
+import {AdvancedDynamicTexture, Button, Rectangle, TextBlock} from 'babylonjs-gui';
 import Communication from "./Communication";
 import Map from "./Map.js";
 import firebase from "firebase/app";
@@ -10,33 +10,34 @@ export default class Gui {
     static playPlayerButton;
     static playerId;
     static logOutButton;
-    static competenceTreeButton;
-    static competenceTreePanel;
+    static skillTreeButton;
+    static skillTreePanel;
     static advancedTexture;
+    static isComponentPanelOpen = false;
 
     constructor() {
         Gui.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
 
         Gui.logOutButton = Button.CreateImageOnlyButton("Log out", "resources/images/icon_logout.png");
-        this.setDefaultButtonCharacteristics(Gui.logOutButton, "-45%", "48%");
+        Gui.setDefaultButtonCharacteristics(Gui.logOutButton, 48, -45);
         Gui.logOutButton.onPointerClickObservable.add(function() {
             firebase.auth().signOut();
         });
         Gui.advancedTexture.addControl(Gui.logOutButton);
 
         Gui.playPlayerButton = Button.CreateSimpleButton("Play", "Jouer");
-        this.setDefaultButtonCharacteristics(Gui.playPlayerButton, "-35%", "0%");
+        Gui.setDefaultButtonCharacteristics(Gui.playPlayerButton, 0, -35);
+        Gui.playPlayerButton.color = "white";
         Gui.playPlayerButton.width = "80px";
         Gui.playPlayerButton.onPointerClickObservable.add(function() {
             Communication.sendMessage("/setPlayer", Gui.playerId);
-            Gui.removePlayButton();
+            Gui.advancedTexture.removeControl(Gui.playPlayerButton);
             Map.clearRingSelection();
-            Gui.advancedTexture.addControl(Gui.competenceTreeButton);
         });
 
 
         Gui.subscribeButton = Button.CreateSimpleButton("Fight", "Rejoindre un combat");
-        this.setDefaultButtonCharacteristics(Gui.subscribeButton, "20%", "0%");
+        Gui.setDefaultButtonCharacteristics(Gui.subscribeButton, 0, 20);
         Gui.subscribeButton.onPointerClickObservable.add(function() {
             Gui.isSubscribe = !Gui.isSubscribe;
             if (Gui.isSubscribe) {
@@ -50,66 +51,101 @@ export default class Gui {
             }
         });
 
-        Gui.competenceTreeButton = Button.CreateImageOnlyButton("Arbre de compétence", "resources/images/icon_parchemin.png");
-        this.setDefaultButtonCharacteristics(Gui.competenceTreeButton, "40%", "-40%");
-        Gui.competenceTreeButton.onPointerClickObservable.add(function() {
-            Communication.clientSocket.subscribe("/user/getSpells", message => {
-                if (message.body) {
-                    //For each item in the map, we print it
-                    for (let spell of JSON.parse(message.body)) {
-                        console.log(spell);
-                    }
-                } else {
-                    console.log("got empty message");
-                }
-            });
-            Communication.sendMessage("/getSpells", null);
-            Gui.advancedTexture.addControl(Gui.competenceTreePanel);
-        });
-        Gui.advancedTexture.addControl(Gui.competenceTreeButton); // TODO: remove me
 
-        // Create Competence tree
-        Gui.competenceTreePanel = new Rectangle("Panneau d'arbre de compétence");
-        Gui.competenceTreePanel.width = "80%";
-        Gui.competenceTreePanel.height = "80%";
-        Gui.competenceTreePanel.alpha = 0.8;
-        Gui.competenceTreePanel.cornerRadius = 100;
-        Gui.competenceTreePanel.background = "white";
-        Gui.competenceTreePanel.isPointerBlocker = true;
-
-        this.sword = Button.CreateImageOnlyButton("Sword", "resources/images/icon_sword.png");
-        this.setDefaultButtonCharacteristics(this.sword, "30%", "-30%");
-        Gui.competenceTreePanel.addControl(this.sword);
-
-        this.axe = Button.CreateImageOnlyButton("Axe", "resources/images/icon_axe.png");
-        this.setDefaultButtonCharacteristics(this.axe, "30%", "-10%");
-        Gui.competenceTreePanel.addControl(this.axe);
-
-        this.bow = Button.CreateImageOnlyButton("Bow", "resources/images/icon_bow.png");
-        this.setDefaultButtonCharacteristics(this.bow, "30%", "10%");
-        Gui.competenceTreePanel.addControl(this.bow);
-
-        this.poison = Button.CreateImageOnlyButton("Poison", "resources/images/icon_poison.png");
-        Gui.competenceTreePanel.addControl(this.poison);
-        this.setDefaultButtonCharacteristics(this.poison, "30%", "30%");
 
     }
 
-    static addPlayButton = function(playerId){
+    static addPlayButton(playerId) {
         Gui.playerId = playerId;
         Gui.advancedTexture.addControl(Gui.playPlayerButton);
     };
-    static removePlayButton = function() {
-        Gui.advancedTexture.removeControl(Gui.playPlayerButton);
-    };
 
-    setDefaultButtonCharacteristics(button, top, left) {
+    static setDefaultButtonCharacteristics(button, left, top) {
         button.width = "50px";
         button.height = "50px";
         button.cornerRadius = 40;
-        button.alpha = 0.8;
-        button.color = "white";
-        button.top = top;
-        button.left = left;
+        button.alpha = 0.9;
+        button.color = "grey";
+        button.top = top + "%";
+        button.left = left + "%";
+    }
+
+    static createComponentTreePanel(message) {
+        Gui.skillTreeButton = Button.CreateImageOnlyButton("Arbre de compétence", "resources/images/icon_parchemin.png");
+        Gui.setDefaultButtonCharacteristics(Gui.skillTreeButton, -40, 40);
+        Gui.skillTreeButton.onPointerClickObservable.add(function() {
+            if(Gui.isComponentPanelOpen)
+                Gui.advancedTexture.removeControl(Gui.skillTreePanel);
+            else Gui.advancedTexture.addControl(Gui.skillTreePanel);
+            Gui.isComponentPanelOpen = !Gui.isComponentPanelOpen;
+        });
+        Gui.advancedTexture.addControl(Gui.skillTreeButton);
+
+        // Create Skill tree
+        const height = 80;
+        const width = 80;
+        const treeWidth = 100 * 0.6;
+        const offset =  (100 - treeWidth) / 2;
+        Gui.skillTreePanel = new Rectangle("Panneau d'arbre de compétence");
+        Gui.skillTreePanel.height = height + "%";
+        Gui.skillTreePanel.width = width + "%";
+        Gui.skillTreePanel.alpha = 0.8;
+        Gui.skillTreePanel.cornerRadius = 100;
+        Gui.skillTreePanel.background = "white";
+        Gui.skillTreePanel.isPointerBlocker = true;
+
+        let nameOfSpell = new TextBlock();
+        nameOfSpell.left = treeWidth / 2 + "%";
+        Gui.skillTreePanel.addControl(nameOfSpell);
+
+        let positionValues = [
+            {width: -offset, height: 40},
+            {width: treeWidth/6 - offset, height: 30},
+            {width: -treeWidth/6 - offset, height: 30},
+            {width: -treeWidth * 2/6 - offset, height: 20},
+            {width: -offset, height: 20},
+            {width: treeWidth * 2/6 - offset, height: 20},
+            {width: -treeWidth/6 - offset, height: 10},
+            {width: treeWidth/6 - offset , height: 10},
+            {width: -treeWidth * 2/6 - offset, height: 0},
+            {width: -offset, height: 0},
+            {width: treeWidth * 2/6 - offset, height: 0},
+            {width: -treeWidth/6 - offset, height: -10},
+            {width: treeWidth/6 - offset, height: -10},
+            {width: -treeWidth * 2/6 - offset, height: -20},
+            {width: -offset, height: -20},
+            {width: treeWidth * 2/6 - offset, height: -20},
+            {width: -offset, height: -40},
+        ];
+
+
+        if (message.body) {
+            let i=0;
+            for (let spell of JSON.parse(message.body)) {
+                if (i > positionValues.length) console.error("More spells than supposed, crash !");
+                let axe = Button.CreateImageOnlyButton(spell.name, "resources/images/icon_axe.png");
+                Gui.setDefaultButtonCharacteristics(axe, positionValues[i].width, positionValues[i++].height);
+                axe.alpha = 0.6;
+                Gui.skillTreePanel.addControl(axe);
+                axe.onPointerEnterObservable.add(() => axe.alpha = 2);
+                axe.onPointerOutObservable.add(() => axe.alpha = 0.6);
+                axe.onPointerClickObservable.add(() => {
+                    nameOfSpell.text =
+                        `${spell.name}
+                                
+Type de sort : ${spell.type}
+Point d'action : ${spell.pa}
+Portée : ${spell.minScope} à ${spell.maxScope}
+Dégats : ${spell.damage}
+Zone : ${spell.zone}
+`;
+                    if (spell.ammunition === -1)
+                        nameOfSpell.text += "Munition : ∞";
+                    else nameOfSpell.text += "Munition : " + spell.ammunition;
+                });
+            }
+        } else {
+            console.log("got empty message");
+        }
     }
 };

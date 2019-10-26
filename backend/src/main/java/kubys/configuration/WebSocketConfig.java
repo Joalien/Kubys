@@ -174,7 +174,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private SpellPlayer getRandomSpell(Player player) {
         return SpellPlayer.builder()
-                .level(1)
                 .player(player)
                 .spell_id(Math.round(Math.random() * Spell.getSpells().size()))
                 .build();
