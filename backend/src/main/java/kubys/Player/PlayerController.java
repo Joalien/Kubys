@@ -4,8 +4,8 @@ import kubys.User.User;
 import kubys.User.UserService;
 import kubys.configuration.commons.ApplicationStore;
 import kubys.configuration.commons.SessionStore;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -17,19 +17,12 @@ import java.security.Principal;
 
 @Controller
 @Slf4j
-
+@AllArgsConstructor
 public class PlayerController {
 
     private UserService userService;
     private SessionStore sessionStore;
     private ApplicationStore applicationStore;
-
-    @Autowired
-    public PlayerController(UserService userService, SessionStore sessionStore, ApplicationStore applicationStore) {
-        this.userService = userService;
-        this.sessionStore = sessionStore;
-        this.applicationStore = applicationStore;
-    }
 
     @MessageMapping("/setPlayer")
     @SendToUser("/setPlayer")

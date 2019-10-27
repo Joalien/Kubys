@@ -3,8 +3,8 @@ package kubys.Map;
 import kubys.Player.Player;
 import kubys.Player.PlayerService;
 import kubys.configuration.commons.SessionStore;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -15,16 +15,10 @@ import java.security.Principal;
 
 @Controller
 @Slf4j
+@AllArgsConstructor
 public class MoveController {
 
     private SessionStore sessionStore;
-
-
-    @Autowired
-    public MoveController(SessionStore sessionStore) {
-        this.sessionStore = sessionStore;
-    }
-
 
     //When a player make a command, only return the diff with previous map
     @MessageMapping("/command")
