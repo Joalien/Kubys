@@ -3,8 +3,8 @@ package kubys.Map;
 import kubys.Player.Player;
 import kubys.Player.PlayerService;
 import kubys.configuration.commons.SessionStore;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -15,16 +15,11 @@ import java.security.Principal;
 
 @Controller
 @Slf4j
+@AllArgsConstructor
 public class MapController {
 
     private Map map;
     private SessionStore sessionStore;
-
-    @Autowired
-    public MapController(Map map, SessionStore sessionStore) {
-        this.map = map;
-        this.sessionStore = sessionStore;
-    }
 
     @MessageMapping("/getAllMap")
     @SendToUser("/getAllMap")

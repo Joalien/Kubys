@@ -10,8 +10,8 @@ import kubys.Spell.Spell;
 import kubys.Spell.SpellPlayer;
 import kubys.User.User;
 import kubys.User.UserDao;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -41,16 +41,11 @@ import java.util.*;
 @Configuration
 @EnableWebSocketMessageBroker
 @Slf4j
+@AllArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private UserDao userDao;
     private PlayerDao playerDao;
-
-    @Autowired
-    public WebSocketConfig(UserDao userDao, PlayerDao playerDao) {
-        this.userDao = userDao;
-        this.playerDao = playerDao;
-    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
