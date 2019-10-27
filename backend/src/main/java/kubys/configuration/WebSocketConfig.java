@@ -155,7 +155,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BadCredentialsException(e.getMessage());
         }
 
