@@ -11,23 +11,14 @@ import java.util.LinkedHashMap;
 @Builder
 public class Spell {
 
-    @Column
     String name;
-    @Enumerated(EnumType.STRING)
     SpellType type;
-    @Column
     int pa;
-    @Column
     int minScope;
-    @Column
     int maxScope;
-    @Column
     int damage;
-    @Column
     int ammunition;// -1 if infinity
-    @Column
     int zone;
-    @Column
     Breed breed;
 
     static LinkedHashMap<Long, Spell> spells;

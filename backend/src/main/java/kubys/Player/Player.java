@@ -7,6 +7,7 @@ import kubys.Spell.Spell;
 import kubys.Spell.SpellPlayer;
 import kubys.User.User;
 import lombok.*;
+import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
 import java.util.LinkedHashSet;
@@ -24,10 +25,9 @@ public class Player extends Cell {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JsonBackReference
     private User user;
-
 
     @Embedded
     private Position position;
@@ -38,16 +38,19 @@ public class Player extends Cell {
     @Column
     private String name;
     @Column
+    @NumberFormat
     private int level;
     //private Weapon [] weapons;
     //private Weapon currentWeapon;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "player")
     @JsonBackReference
     @Builder.Default
     private Set<SpellPlayer> spellsPlayer = new LinkedHashSet<>();
     @Column
+    @NumberFormat
     private int pm;
     @Column
+    @NumberFormat
     private int pa;
 
     public String toString() {

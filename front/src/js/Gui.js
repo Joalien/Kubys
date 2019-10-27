@@ -14,6 +14,7 @@ export default class Gui {
     static skillTreePanel;
     static advancedTexture;
     static isComponentPanelOpen = false;
+    static isSubscribingFight = false;
 
     constructor() {
         Gui.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
@@ -21,7 +22,6 @@ export default class Gui {
         Gui.logOutButton = Button.CreateImageOnlyButton("Log out", "resources/images/icon_logout.png");
         Gui.setDefaultButtonCharacteristics(Gui.logOutButton, 48, -45);
         Gui.logOutButton.onPointerClickObservable.add(function() {
-            Gui.panel.removeControl(Gui.subscribeButton);
             firebase.auth().signOut();
         });
         Gui.advancedTexture.addControl(Gui.logOutButton);
@@ -34,27 +34,23 @@ export default class Gui {
             Communication.sendMessage("/setPlayer", Gui.playerId);
             Gui.advancedTexture.removeControl(Gui.playPlayerButton);
             Map.clearRingSelection();
-            Gui.panel.addControl(Gui.subscribeButton);
+            Gui.advancedTexture.addControl(Gui.subscribeFightButton);
         });
 
 
-        Gui.subscribeButton = Button.CreateSimpleButton("Fight", "Rejoindre un combat");
-        Gui.setDefaultButtonCharacteristics(Gui.subscribeButton, 0, 20);
-        Gui.subscribeButton.onPointerClickObservable.add(function() {
-            Gui.isSubscribe = !Gui.isSubscribe;
-            if (Gui.isSubscribe) {
+        Gui.subscribeFightButton = Button.CreateImageOnlyButton("Fight !", "resources/images/icon_sword.png");
+        Gui.setDefaultButtonCharacteristics(Gui.subscribeFightButton, -45, 25);
+        Gui.surroundWithColor(Gui.subscribeFightButton);
+        Gui.subscribeFightButton.onPointerClickObservable.add(function() {
+            Gui.isSubscribingFight = !Gui.isSubscribingFight;
+            if (Gui.isSubscribingFight) {
                 Communication.sendMessage("/fight/subscribe", {});
-                Gui.subscribeButton.textBlock.text = "Quitter la file d'attente";
                 Gui.subscription = Communication.clientSocket.subscribe("/user/fight", FightMap.startFight);
             } else {
                 Communication.sendMessage("/fight/unsubscribe", {});
-                Gui.subscribeButton.textBlock.text = "Rejoindre un combat";
                 Gui.subscription.unsubscribe();
             }
         });
-
-
-
     }
 
     static addPlayButton(playerId) {
@@ -62,7 +58,12 @@ export default class Gui {
         Gui.advancedTexture.addControl(Gui.playPlayerButton);
     };
 
+    static removePlayButton(playerId) {
+        Gui.advancedTexture.removeControl(Gui.playPlayerButton);
+    };
+
     static setDefaultButtonCharacteristics(button, left, top) {
+        button.isClicked = false;
         button.width = "50px";
         button.height = "50px";
         button.cornerRadius = 40;
@@ -72,9 +73,23 @@ export default class Gui {
         button.left = left + "%";
     }
 
+    static surroundWithColor(button) {
+        button.onPointerClickObservable.add(() => {
+            button.isClicked = !button.isClicked;
+            if (button.isClicked) {
+                button.color = "orange";
+                button.thickness = 4;
+            } else {
+                button.color = "grey";
+                button.thickness = 1;
+            }
+        });
+    }
+
     static createComponentTreePanel(message) {
         Gui.skillTreeButton = Button.CreateImageOnlyButton("Arbre de compétence", "resources/images/icon_parchemin.png");
-        Gui.setDefaultButtonCharacteristics(Gui.skillTreeButton, -40, 40);
+        Gui.setDefaultButtonCharacteristics(Gui.skillTreeButton, -45, 40);
+        Gui.surroundWithColor(Gui.skillTreeButton);
         Gui.skillTreeButton.onPointerClickObservable.add(function() {
             if(Gui.isComponentPanelOpen)
                 Gui.advancedTexture.removeControl(Gui.skillTreePanel);
