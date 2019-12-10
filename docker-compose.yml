@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.6'
 
 networks:
   back:
@@ -36,8 +36,7 @@ services:
 
   front:
     container_name: kubys_frontend
-    build: front
-    image: kubys_frontend
+    image: arm32v7/nginx
     restart: always
     volumes:
       - ${PWD}/front/dist/:/usr/share/nginx/html:ro
