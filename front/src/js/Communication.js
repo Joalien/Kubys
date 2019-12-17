@@ -1,6 +1,5 @@
 import Map from "./Map";
 import {Stomp} from "@stomp/stompjs/esm6";
-import FightMap from "./FightMap"
 import firebase from "firebase/app";
 import 'firebase/auth';
 import Player from "./Player";
@@ -12,10 +11,17 @@ export default class Communication {
     static clientSocket;
 
 
-    constructor(username) {
-        // let url = "wss://kubys.fr:8443/connect"; // prod
-        let url = "wss://localhost:8443/connect"; // docker-compose in dev
-        // let url = "ws://localhost:8080/connect"; // dev
+    constructor() {
+        let url;
+        switch(process.env.NODE_ENV) {
+            case "production":
+                url = "wss://kubys.fr:8443/connect"; // prod
+                break;
+            case "development":
+                url = "wss://localhost:8443/connect"; // docker-compose in dev
+                break;
+        }
+
         Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server
