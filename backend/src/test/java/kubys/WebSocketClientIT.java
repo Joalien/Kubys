@@ -86,8 +86,7 @@ class WebSocketClientIT {
 
     String createToken() {
         try {
-            FirebaseOptions options = null;
-            options = new FirebaseOptions.Builder()
+            FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
                     .build();
             FirebaseApp.initializeApp(options);

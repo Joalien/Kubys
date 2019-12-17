@@ -123,7 +123,6 @@ export default class Player {
 
         this.mesh = mesh;
 
-        console.log(rect1);
         return this;
     }
 

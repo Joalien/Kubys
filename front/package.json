@@ -7,7 +7,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js --port 80 --mode=production -p",
     "dev": "webpack-dev-server --mode=development --port 4200 --hot --host 0.0.0.0",
-    "build-dev": "webpack --config webpack.config.js --port 80 --mode=development"
+    "build-dev": "webpack --env.BABYLON_ENV=local --config webpack.config.js --port 80 --mode=development && rsync -avzc resources dist/"
   },
   "keywords": [],
   "author": "",
