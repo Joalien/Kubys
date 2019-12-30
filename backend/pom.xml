@@ -51,7 +51,6 @@
         </dependency>
 
 
-
         <!-- JUnit 5 for test purpose -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -72,7 +71,7 @@
             <scope>provided</scope>
         </dependency>
 
-<!--         Firebase -->
+        <!--         Firebase -->
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>

@@ -10,6 +10,7 @@ import kubys.Map.Map;
 import kubys.Player.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,49 +25,60 @@ class PlayerCommandTest {
 
     private Map mainMap;
     private Player player;
-    private Position position;
-    private Position nextPosition;
+    private final Position position = Position.of(0, 1, 0);
 
+    @Autowired
+    PlayerCommandTest(Map mainMap) {
+        this.mainMap = mainMap;
+    }
 
     @BeforeEach
     void setup() {
 
-        mainMap = new Map();
+        mainMap.getCells().clear();
+        mainMap.generateEmptyMap(0, 1);
 
         player = Player.builder()
                 .breed(Breed.DWARF)
                 .level(1)
                 .name("Joalien")
-                .pa(10)
-                .pm(5)
                 .build();
 
-        position = mainMap.addPlayer(player, Position.builder()
-                .x(0)
-                .y(1)
-                .z(0)
-                .build());
+        mainMap.addPlayer(player, position);
 
-        nextPosition = Position.builder()
-                .x(position.getX())
-                .y(position.getY())
-                .z(position.getZ()+1)
-                .build();
-        mainMap.generateEmptyMap(Position.builder().build());
+        assertEquals(position, Position.of(0, 1, 0));
     }
 
     @Test
     @DisplayName("move forward")
     void moveForward() {
         PlayerService.movePlayer(player, Command.FORWARD);
-        assertEquals(player.getPosition(), nextPosition);
+        assertEquals(player.getPosition(), position.plusZ(1));
     }
 
     @Test
-    @DisplayName("Try to move forward et fail")
+    @DisplayName("climb landplot")
+    void climbLandPlot() {
+        Position landPlotPosition = position.plusZ(1);
+        mainMap.getCells().put(landPlotPosition, LandPlot.builder().build());
+        PlayerService.movePlayer(player, Command.FORWARD);
+        assertEquals(player.getPosition(), position.plusZ(1).plusY(1));
+    }
+
+    @Test
+    @DisplayName("Try to move forward and fail")
     void tryToMoveForward() {
-        mainMap.getCells().put(nextPosition, LandPlot.builder().build());
+        mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
+        mainMap.getCells().put(position.plusY(1).plusZ(1), LandPlot.builder().build());
         PlayerService.movePlayer(player, Command.FORWARD);
         assertEquals(player.getPosition(), position);
+    }
+
+    @Test
+    @DisplayName("move forward with no landplot")
+    void moveForwardThenFall() {
+        mainMap.getCells().put(position.plusX(1).plusY(-2), LandPlot.builder().build());
+        PlayerService.movePlayer(player, Command.RIGHT);
+        assertEquals(player.getPosition(), position.plusX(1).plusY(-1));
     }
 }

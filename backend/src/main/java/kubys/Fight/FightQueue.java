@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.Null;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -44,13 +46,17 @@ public class FightQueue {
             Fight fight = generateFight(players);
             //TODO make a real fight
             log.info("Players : " + players);
-            players.forEach(
-                    player -> this.template.convertAndSendToUser(
-                            applicationStore.getStringFromPlayer(player),
-                            "/fight",
-                            fight.getId()
-                    )
-            );
+            try {
+                players.forEach(
+                        player -> this.template.convertAndSendToUser(
+                                applicationStore.getStringFromPlayer(player),
+                                "/fight",
+                                fight.getId()
+                        )
+                );
+            } catch (NoSuchElementException | NullPointerException e) { // Happens in tests when no user in applicationStore
+                log.error(e.toString());
+            }
         }
     };
 

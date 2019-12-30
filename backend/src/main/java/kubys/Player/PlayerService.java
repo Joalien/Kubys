@@ -38,7 +38,7 @@ public class PlayerService {
             case RIGHT:
                 return PlayerService.moveRight(player);
             case CREATE:
-                map.addPlayer(player, Position.builder().y(5).build());
+                map.addPlayer(player, Position.of(0, 5, 0));
                 return movePosition(player, player.getPosition());
             default:
                 throw new IllegalArgumentException("Unexpected value: " + command);
@@ -46,43 +46,41 @@ public class PlayerService {
     }
 
     private static Boolean moveForward(Player player) {
-        Position position = player.getPosition().addZ(1);
+        Position position = player.getPosition().plusZ(1);
         return movePosition(player, position);
     }
 
     private static Boolean moveBackward(Player player) {
-        Position position = player.getPosition().addZ(-1);
+        Position position = player.getPosition().plusZ(-1);
 
         return movePosition(player, position);
     }
 
     private static Boolean moveLeft(Player player) {
-        Position position = player.getPosition().addX(-1);
+        Position position = player.getPosition().plusX(-1);
 
         return movePosition(player, position);
     }
 
     private static Boolean moveRight(Player player) {
-        Position position = player.getPosition().addX(1);
+        Position position = player.getPosition().plusX(1);
 
         return movePosition(player, position);
     }
 
     private static Boolean movePosition(Player player, Position position) {// This method contains logic
         if (position == null) return false;
-        Position above = position.addY(1);
-        Position below = position.addY(-1);
+        Position above = position.plusY(1);
+        Position below = position.plusY(-1);
 
         if(!map.getCells().containsKey(position) || map.getCells().get(position).equals(player)) {
             // Drop the ~~mic~~ player
             while (!map.getCells().containsKey(below)) {
-                below = below.addY(-1);
-
+                below = below.plusY(-1);
             }
-            updatePosition(player, below.addY(1));// Change map information
+            updatePosition(player, below.plusY(1));// Change map information
             return true;
-
-        }else if (!map.getCells().containsKey(above) && !map.getCells().containsKey(player.getPosition().addY(1))) {
+        }else if (!map.getCells().containsKey(above) && !map.getCells().containsKey(player.getPosition().plusY(1))) {
             updatePosition(player, above);
             return true;
         }else return false;
@@ -93,9 +91,9 @@ public class PlayerService {
         map.getCells().remove(player.getPosition());
         map.getCells().put(position, player);
 
-        if(map.getCells().containsKey(player.getPosition().addY(1)) &&
-                map.getCells().get(player.getPosition().addY(1)) instanceof Player) { // If they were a player on the cel above
-            movePosition((Player) map.getCells().get(player.getPosition().addY(1)), player.getPosition());
+        if(map.getCells().containsKey(player.getPosition().plusY(1)) &&
+                map.getCells().get(player.getPosition().plusY(1)) instanceof Player) { // If they were a player on the cel above
+            movePosition((Player) map.getCells().get(player.getPosition().plusY(1)), player.getPosition());
             PlayerService.template.convertAndSend("/broker/command", map.getCells().get(player.getPosition()));
         }
 
