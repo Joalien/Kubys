@@ -37,7 +37,7 @@ public class ApplicationStore {
                 .filter(s -> sessionIdPlayer.get(s).equals(p))
                 .peek(s -> log.info("Reverse dictionary : " + s))
                 .findAny()
-                .orElseThrow(() -> new NoSuchElementException(("No string are key for this player")));
+                .orElseThrow(() -> new NoSuchElementException("No string are key for this player"));
     }
 
 }

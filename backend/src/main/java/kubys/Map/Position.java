@@ -1,79 +1,54 @@
 package kubys.Map;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Optional;
 
-@Data
+@Getter
+@ToString
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Position {
     @Column private int x;
     @Column private int y;
     @Column private int z;
 
-    public static PositionBuilder builder() {
-        return new PositionBuilder();
+    private static HashSet<Position> instancesStore = new HashSet<>();
+
+
+
+    public Position plusX(int x) {
+        return Position.of(this.getX() + x, this.getY(), this.getZ());
+    }
+    public Position plusY(int y) {
+        return Position.of(this.getX(), this.getY() + y, this.getZ());
+    }
+    public Position plusZ(int z) {
+        return Position.of(this.getX(), this.getY(), this.getZ() + z);
     }
 
-
-    public Position addX(int x) {
-        return builder()
-                .x(this.getX()+x)
-                .y(this.getY())
-                .z(this.getZ())
-                .build();
-    }
-    public Position addY(int y) {
-        return builder()
-                .x(this.getX())
-                .y(this.getY()+y)
-                .z(this.getZ())
-                .build();
-    }
-    public Position addZ(int z) {
-        return builder()
-                .x(this.getX())
-                .y(this.getY())
-                .z(this.getZ()+z)
-                .build();
-    }
-
-    public static class PositionBuilder {
-        private int x;
-        private int y;
-        private int z;
-
-        PositionBuilder() {
-        }
-
-        public PositionBuilder x(int x) {
-            this.x = x;
-            return this;
-        }
-
-        public PositionBuilder y(int y) {
-            this.y = y;
-            return this;
-        }
-
-        public PositionBuilder z(int z) {
-            this.z = z;
-            return this;
-        }
-
-        public Position build() {
-            return Math.abs(x) > Map.MAX_X_SIZE ||
-                    Math.abs(y) > Map.MAX_Y_SIZE ||
-                    Math.abs(z) > Map.MAX_Z_SIZE ? null : new Position(x, y, z);
-        }
-
-        public String toString() {
-            return "Position.PositionBuilder(x=" + this.x + ", y=" + this.y + ", z=" + this.z + ")";
+    public static Position of(int x, int y, int z) {
+        if (Math.abs(x) > Map.MAX_X_SIZE ||
+                Math.abs(y) > Map.MAX_Y_SIZE ||
+                Math.abs(z) > Map.MAX_Z_SIZE)
+            throw new IndexOutOfBoundsException("Cell ( + " + x + ";" + y + ";" + z + ") is outside the map");
+        else {
+            Optional<Position> optionalPosition = instancesStore.parallelStream()
+                                                                .filter(p -> p.x == x && p.y == y && p.z == z)
+                                                                .findFirst();
+            if (optionalPosition.isPresent()) {
+                return optionalPosition.get();
+            } else {
+                Position position = new Position(x, y, z);
+                instancesStore.add(position);
+                return position;
+            }
         }
     }
 }

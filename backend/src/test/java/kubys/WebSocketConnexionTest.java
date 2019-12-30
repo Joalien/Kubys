@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserRecord;
 import kubys.Player.Player;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,16 +22,24 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import java.lang.reflect.Type;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("Test WebSocket STOMP client")
 @Slf4j
-class WebSocketClientIT {
+class WebSocketConnexionTest {
 
     private static final String KEY_PATH = "serviceAccountPrivateKey.json";
     @LocalServerPort
     private int port;
 
+    @Test
+    @DisplayName("Verify that credentials file exists")
+    void testCredentialFilePresence() {
+        assertTrue(new ClassPathResource(KEY_PATH).exists());
+    }
+
+    @Disabled
     @Test
     @DisplayName("Extremely simple exchange with server")
     void connectWebSocket() {
@@ -48,28 +57,7 @@ class WebSocketClientIT {
         assert true;
     }
 
-
-    @Test
-    @DisplayName("Exchange simple message with server")
-    void setup() {
-
-        StompSession session1 = createSession();
-        session1.subscribe("/broker/getAllMap", new MyStompFrameHandler());
-        StompSession session2 = createSession();
-        session2.subscribe("/broker/getAllMap", new MyStompFrameHandler());
-        session1.send("/getAllMap", null);
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //TODO: Improve test
-        assert true;
-    }
-
-    StompSession createSession() {
+    private StompSession createSession() {
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         StompSessionHandler sessionHandler = new StompSessionHandlerAdapter() {};
@@ -84,19 +72,15 @@ class WebSocketClientIT {
         }
     }
 
-    String createToken() {
+    private String createToken() {
         try {
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
                     .build();
             FirebaseApp.initializeApp(options);
 
-            UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmailAsync("josquin.cornec@kubys.fr").get();
-            log.info("Successfully fetched user data: " + userRecord.getUid());
-
-            String s = FirebaseAuth.getInstance().createCustomToken(userRecord.getUid());
-            log.info(s);
-            return s;
+            UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmail("josquin.cornec@kubys.fr");
+            return FirebaseAuth.getInstance().createCustomTokenAsync(userRecord.getUid()).get();
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -110,48 +94,6 @@ class WebSocketClientIT {
 
         @Override
         public void handleFrame(StompHeaders headers,Object payload) {
-//            log.info(((Player)payload).getName());
         }
     }
-
-
-//
-//    @Nested
-//    @DisplayName("Test that users authenticate well")
-//    class AuthenticationTest {
-//
-//        @Test
-//        @DisplayName("Unauthenticated user can't connect ")
-//        void getMessageUnauthenticated() {
-//            assertThatThrownBy(this::getMessage).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
-//        }
-//
-//        @Test
-//        @PreAuthorize("authenticated")
-//        @DisplayName("Authenticated user can't connect ")
-//        void getMessage() {
-//            Authentication authentication = SecurityContextHolder.getContext()
-//                    .getAuthentication();
-//            log.debug(authentication.toString());
-//            assert true;
-//        }
-//
-//        @Test
-//        @WithMockUser
-//        @DisplayName("What will happend with mock user ?")
-//        void getMessageWithMockUser() {
-//            getMessage();
-//            assert true;
-//        }
-//
-//        @Test
-//        @WithAnonymousUser
-//        @DisplayName("Anonymous user can't connect ")
-//        void getMessageWithAnonymousUser() {
-//            assertThatThrownBy(this::getMessage).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
-//        }
-//    }
-
-
-
 }

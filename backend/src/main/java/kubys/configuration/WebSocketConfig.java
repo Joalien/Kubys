@@ -102,7 +102,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         String userId;
         try {
             // Execute a call to google API to fetch public key, then decrypt the JWT token with it
-            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdTokenAsync(token).get();
+            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(token);
             UserRecord user = FirebaseAuth.getInstance().getUserAsync(firebaseToken.getUid()).get();
             userId = user.getUid();
 

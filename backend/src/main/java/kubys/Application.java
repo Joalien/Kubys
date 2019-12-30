@@ -33,7 +33,6 @@ public class Application {
             - Refactor JS (low)
             - Refactor Ring Selection with Scene switch (low)
             - Add new Fight Scene (high)
-        - Add characteristic tree
          */
     }
 }
