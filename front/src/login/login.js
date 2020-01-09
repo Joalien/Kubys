@@ -41,6 +41,7 @@ function toggleLogIn() {
         document.getElementById('quickstart-log-in').disabled = false;
     });
     document.getElementById('quickstart-log-in').disabled = true;
+    event.preventDefault();
 }
 
 /**
