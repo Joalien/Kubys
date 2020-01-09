@@ -63,6 +63,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         }
                         return true;
                     }
+
                     @Override
                     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                                Exception ex) {
@@ -102,16 +103,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         String userId;
         try {
             // Execute a call to google API to fetch public key, then decrypt the JWT token with it
-            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(token);
-            UserRecord user = FirebaseAuth.getInstance().getUserAsync(firebaseToken.getUid()).get();
-            userId = user.getUid();
+            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdTokenAsync(token).get();
+            //FIXME Security issue, we do not double check token sent from the client !!
+//            UserRecord user = FirebaseAuth.getInstance().getUser(firebaseToken.getUid());
+            userId = firebaseToken.getUid();
 
             //Get user from db
             Optional<User> optionalUser = userDao.findById(userId);
-            log.info("1.5:"+optionalUser);
-            if(optionalUser.isEmpty()) {
+            if (optionalUser.isEmpty()) {
                 User u = User.builder().uid(userId).displayName("Alexandre Dumas").build();
-                log.info("No user find, creating 3 empty players");
                 // TODO let people create their own characters
                 u.setPlayers(List.of(
                         Player.builder()
@@ -143,15 +143,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 u.getPlayers().forEach(player -> player.setSpellsPlayer(
                         Set.of(getRandomSpell(player))));
 
-                log.info("2"+u);
                 userDao.save(u);
-                log.info("2.5");
                 System.out.println(playerDao.findAll());
                 System.out.println(userDao.findAll());
-                log.info("2.6");
-                optionalUser = userDao.findById(userId);
-                log.info("3"+optionalUser.toString());
-
             }
 
         } catch (Exception e) {

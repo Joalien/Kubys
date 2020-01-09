@@ -39,7 +39,7 @@ class WebSocketConnexionTest {
         assertTrue(new ClassPathResource(KEY_PATH).exists());
     }
 
-    @Disabled
+//    @Disabled
     @Test
     @DisplayName("Extremely simple exchange with server")
     void connectWebSocket() {

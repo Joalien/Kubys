@@ -47,7 +47,7 @@ export default class Communication {
 
             if (user) { // User is signed in.
                 // Gui.logOutButton.children[0].text = "Deconnexion";
-                user.getIdToken().then((token) => {
+                user.getIdToken(true).then((token) => {
                     Communication.clientSocket.connect(token, null, connect_callback, (error) => {
                         console.error(error);
                         Communication.redirectUser();
