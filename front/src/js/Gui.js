@@ -1,6 +1,6 @@
 import {AdvancedDynamicTexture, Button, Rectangle, TextBlock} from 'babylonjs-gui';
 import Communication from "./Communication";
-import Map from "./Map.js";
+import Game from "./Game.js";
 import firebase from "firebase/app";
 import 'firebase/auth';
 import FightMap from "./FightMap";
@@ -12,40 +12,39 @@ export default class Gui {
     static logOutButton;
     static skillTreeButton;
     static skillTreePanel;
-    static advancedTexture;
     static isComponentPanelOpen = false;
     static isSubscribingFight = false;
 
-    constructor() {
-        Gui.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal");
+    constructor(scene) {
+        this.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Menu Principal", true, scene);
 
         Gui.logOutButton = Button.CreateImageOnlyButton("Log out", "resources/images/icon_logout.png");
-        Gui.setDefaultButtonCharacteristics(Gui.logOutButton, 48, -45);
-        Gui.logOutButton.onPointerClickObservable.add(function() {
+        this.setDefaultButtonCharacteristics(Gui.logOutButton, 48, -45);
+        Gui.logOutButton.onPointerClickObservable.add(() => {
             firebase.auth().signOut();
         });
-        Gui.advancedTexture.addControl(Gui.logOutButton);
+        this.advancedTexture.addControl(Gui.logOutButton);
 
         Gui.playPlayerButton = Button.CreateSimpleButton("Play", "Jouer");
-        Gui.setDefaultButtonCharacteristics(Gui.playPlayerButton, 0, -35);
+        this.setDefaultButtonCharacteristics(Gui.playPlayerButton, 0, -35);
         Gui.playPlayerButton.color = "white";
         Gui.playPlayerButton.width = "80px";
-        Gui.playPlayerButton.onPointerClickObservable.add(function() {
+        Gui.playPlayerButton.onPointerClickObservable.add(() => {
             Communication.sendMessage("/setPlayer", Gui.playerId);
-            Gui.advancedTexture.removeControl(Gui.playPlayerButton);
-            Map.clearRingSelection();
-            Gui.advancedTexture.addControl(Gui.subscribeFightButton);
+            this.advancedTexture.removeControl(Gui.playPlayerButton);
+            Game.CURRENT_SCENE.MAP.clearRingSelection();
+            this.advancedTexture.addControl(Gui.subscribeFightButton);
         });
 
 
         Gui.subscribeFightButton = Button.CreateImageOnlyButton("Fight !", "resources/images/icon_sword.png");
-        Gui.setDefaultButtonCharacteristics(Gui.subscribeFightButton, -45, 25);
-        Gui.surroundWithColor(Gui.subscribeFightButton);
-        Gui.subscribeFightButton.onPointerClickObservable.add(function() {
+        this.setDefaultButtonCharacteristics(Gui.subscribeFightButton, -45, 25);
+        this.surroundWithColor(Gui.subscribeFightButton);
+        Gui.subscribeFightButton.onPointerClickObservable.add(() => {
             Gui.isSubscribingFight = !Gui.isSubscribingFight;
             if (Gui.isSubscribingFight) {
                 Communication.sendMessage("/fight/subscribe", {});
-                Gui.subscription = Communication.clientSocket.subscribe("/user/fight", FightMap.startFight);
+                Gui.subscription = Communication.clientSocket.subscribe("/user/fight", response => FightMap.startFight(response));
             } else {
                 Communication.sendMessage("/fight/unsubscribe", {});
                 Gui.subscription.unsubscribe();
@@ -53,16 +52,16 @@ export default class Gui {
         });
     }
 
-    static addPlayButton(playerId) {
+    addPlayButton(playerId) {
         Gui.playerId = playerId;
-        Gui.advancedTexture.addControl(Gui.playPlayerButton);
+        this.advancedTexture.addControl(Gui.playPlayerButton);
     };
 
-    static removePlayButton(playerId) {
-        Gui.advancedTexture.removeControl(Gui.playPlayerButton);
+    removePlayButton(playerId) {
+        this.advancedTexture.removeControl(Gui.playPlayerButton);
     };
 
-    static setDefaultButtonCharacteristics(button, left, top) {
+    setDefaultButtonCharacteristics(button, left, top) {
         button.isClicked = false;
         button.width = "50px";
         button.height = "50px";
@@ -73,7 +72,7 @@ export default class Gui {
         button.left = left + "%";
     }
 
-    static surroundWithColor(button) {
+    surroundWithColor(button) {
         button.onPointerClickObservable.add(() => {
             button.isClicked = !button.isClicked;
             if (button.isClicked) {
@@ -86,17 +85,17 @@ export default class Gui {
         });
     }
 
-    static createComponentTreePanel(message) {
+    createComponentTreePanel(message) {
         Gui.skillTreeButton = Button.CreateImageOnlyButton("Arbre de compétence", "resources/images/icon_parchemin.png");
-        Gui.setDefaultButtonCharacteristics(Gui.skillTreeButton, -45, 40);
-        Gui.surroundWithColor(Gui.skillTreeButton);
-        Gui.skillTreeButton.onPointerClickObservable.add(function() {
+        this.setDefaultButtonCharacteristics(Gui.skillTreeButton, -45, 40);
+        this.surroundWithColor(Gui.skillTreeButton);
+        Gui.skillTreeButton.onPointerClickObservable.add(() => {
             if(Gui.isComponentPanelOpen)
-                Gui.advancedTexture.removeControl(Gui.skillTreePanel);
-            else Gui.advancedTexture.addControl(Gui.skillTreePanel);
+                this.advancedTexture.removeControl(Gui.skillTreePanel);
+            else this.advancedTexture.addControl(Gui.skillTreePanel);
             Gui.isComponentPanelOpen = !Gui.isComponentPanelOpen;
         });
-        Gui.advancedTexture.addControl(Gui.skillTreeButton);
+        this.advancedTexture.addControl(Gui.skillTreeButton);
 
         // Create Skill tree
         const height = 80;
@@ -141,7 +140,7 @@ export default class Gui {
             for (let spell of JSON.parse(message.body)) {
                 if (i > positionValues.length) console.error("More spells than supposed, crash !");
                 let axe = Button.CreateImageOnlyButton(spell.name, "resources/images/icon_axe.png");
-                Gui.setDefaultButtonCharacteristics(axe, positionValues[i].width, positionValues[i++].height);
+                this.setDefaultButtonCharacteristics(axe, positionValues[i].width, positionValues[i++].height);
                 axe.alpha = 0.6;
                 Gui.skillTreePanel.addControl(axe);
                 axe.onPointerEnterObservable.add(() => axe.alpha = 2);

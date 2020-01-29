@@ -64,11 +64,11 @@ function handleSignUp() {
         return;
     }
     // Sign in with email and pass.
-    firebase.auth().createUserWithEmailAndPassword(email, password).then(function() {
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
         let user = firebase.auth().currentUser;
         user.updateProfile({
             displayName: name,
-        }).then(function() {
+        }).then(() => {
             // Update successful.
         }).catch(function(error) {
             // An error happened.
@@ -89,14 +89,14 @@ function handleSignUp() {
  * Sends an email verification to the user.
  */
 function sendEmailVerification() {
-    firebase.auth().currentUser.sendEmailVerification().then(function() {
+    firebase.auth().currentUser.sendEmailVerification().then(() => {
         alert('Email Verification Sent!');
     });
 }
 
 function sendPasswordReset() {
     let email = document.getElementById('email').value;
-    firebase.auth().sendPasswordResetEmail(email).then(function() {
+    firebase.auth().sendPasswordResetEmail(email).then(() => {
         // Password Reset Email Sent!
         alert('Password Reset Email Sent!');
     }).catch(function(error) {
@@ -164,7 +164,7 @@ function addEvent() {
         });
     });
 }
-window.onload = function() {
+window.onload = () => {
     initApp();
     addEvent();
 };

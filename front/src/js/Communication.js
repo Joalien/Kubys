@@ -1,4 +1,4 @@
-import Map from "./Map";
+import Game from "./Game";
 import {Stomp} from "@stomp/stompjs/esm6";
 import firebase from "firebase/app";
 import 'firebase/auth';
@@ -10,7 +10,6 @@ export default class Communication {
     static getAllMapSubscription;
     static clientSocket;
 
-
     constructor() {
         let url;
         switch(process.env.NODE_ENV) {
@@ -20,20 +19,23 @@ export default class Communication {
             case "development":
                 url = "wss://localhost:8443/connect"; // docker-compose in dev
                 break;
+            case "none":
+                url = "ws://localhost:8080/connect"; // only dev
+                break;
         }
 
         Communication.clientSocket = Stomp.client(url);
 
         //Try to connect to the server
-        let connect_callback = function () {
+        let connect_callback = () => {
             console.log("Connected with server !");
             // called back after the client is connected and authenticated to the STOMP server
-            Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Map.getAllMap);
-            Communication.clientSocket.subscribe("/user/getSpells", message => Gui.createComponentTreePanel(message));
-            Communication.clientSocket.subscribe("/user/errors", error => alert(error));
-            Communication.clientSocket.subscribe("/user/getPlayers", Map.selectionRing);
+            Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Game.CURRENT_SCENE.MAP.getAllMap);
+            Communication.clientSocket.subscribe("/user/getSpells", message => Game.CURRENT_SCENE.GUI.createComponentTreePanel(message));
+            Communication.clientSocket.subscribe("/user/errors", error => console.log(error));
+            Communication.clientSocket.subscribe("/user/getPlayers", Game.CURRENT_SCENE.MAP.selectionRing);
             Communication.clientSocket.subscribe("/user/setPlayer", Player.refreshPlayer);
-            Communication.clientSocket.subscribe("/broker/command", Map.updateMap);
+            Communication.clientSocket.subscribe("/broker/command", Game.CURRENT_SCENE.MAP.updateMap);
 
             // Communication.sendMessage("/getAllMap", null);
             Communication.clientSocket.send("/getPlayers", null);
@@ -41,12 +43,8 @@ export default class Communication {
             window.addEventListener("keypress", Communication.pressEvent);
         };
 
-
-
         firebase.auth().onAuthStateChanged(function (user) {
-
             if (user) { // User is signed in.
-                // Gui.logOutButton.children[0].text = "Deconnexion";
                 user.getIdToken(true).then((token) => {
                     Communication.clientSocket.connect(token, null, connect_callback, (error) => {
                         console.error(error);
@@ -54,7 +52,6 @@ export default class Communication {
                     });
                 });
             } else {
-                // Gui.logOutButton.children[0].text = "Se connecter";
                 Communication.redirectUser();
             }
         });

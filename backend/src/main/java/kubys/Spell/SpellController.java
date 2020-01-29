@@ -27,7 +27,6 @@ public class SpellController {
         //Get the current player
         Player player = sessionStore.getPlayer();
 
-//        return spellService.getSpellsByPlayer(player).toArray(new Spell[0]);
         return spellService.getSpellsByBreed(player.getBreed()).toArray(new Spell[0]);
     }
 }

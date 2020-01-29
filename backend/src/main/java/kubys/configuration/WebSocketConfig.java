@@ -1,8 +1,8 @@
 package kubys.configuration;
 
+import com.google.api.core.ApiFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import com.google.firebase.auth.UserRecord;
 import kubys.Player.Breed;
 import kubys.Player.Player;
 import kubys.Player.PlayerDao;
@@ -33,9 +33,14 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import javax.servlet.http.HttpSession;
+import java.security.Principal;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // https://stackoverflow.com/questions/45405332/websocket-authentication-and-authorization-in-spring
 @Configuration
@@ -54,13 +59,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     @Override
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                                    Map attributes) {
-
-                        log.info("Before handshake");
-                        if (request instanceof ServletServerHttpRequest) {
-                            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-                            HttpSession session = servletRequest.getServletRequest().getSession();
-                            attributes.put("sessionId", session.getId());
-                        }
+                        // TODO remove this if no error
+//                        if (request instanceof ServletServerHttpRequest) {
+//                            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+//                            HttpSession session = servletRequest.getServletRequest().getSession();
+//                            attributes.put("sessionId", session.getId());
+//                        }
                         return true;
                     }
 
@@ -74,7 +78,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         //BROADCAST TO ALL USER WHO SUBSCRIBED
-        config.enableSimpleBroker("/broker", "/error", "/getAllMap", "/getPlayers", "/getSpells", "/setPlayer");
+        config.enableSimpleBroker("/broker", "/error", "/getAllMap", "/getPlayers", "/getSpells", "/setPlayer", "/fight");
         config.setUserDestinationPrefix("/user");
     }
 
@@ -101,55 +105,40 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         }
 
         String userId;
+        log.info("token : " + token);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        log.info("firebaseAuth : " + firebaseAuth);
+        ApiFuture<FirebaseToken> future = firebaseAuth.verifyIdTokenAsync(token);
+        log.info("future " + future);
         try {
-            // Execute a call to google API to fetch public key, then decrypt the JWT token with it
-            FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdTokenAsync(token).get();
+            FirebaseToken firebaseToken = future.get();
             //FIXME Security issue, we do not double check token sent from the client !!
 //            UserRecord user = FirebaseAuth.getInstance().getUser(firebaseToken.getUid());
             userId = firebaseToken.getUid();
-
-            //Get user from db
-            Optional<User> optionalUser = userDao.findById(userId);
-            if (optionalUser.isEmpty()) {
-                User u = User.builder().uid(userId).displayName("Alexandre Dumas").build();
-                // TODO let people create their own characters
-                u.setPlayers(List.of(
-                        Player.builder()
-                                .breed(Breed.DWARF)
-                                .user(u)
-                                .level(1)
-                                .name("Athos")
-                                .pa(10)
-                                .pm(5)
-                                .build(),
-                        Player.builder()
-                                .breed(Breed.DWARF)
-                                .user(u)
-                                .level(1)
-                                .name("Porthos")
-                                .pa(10)
-                                .pm(5)
-                                .build(),
-                        Player.builder()
-                                .breed(Breed.DWARF)
-                                .user(u)
-                                .level(1)
-                                .name("Aramis")
-                                .pa(10)
-                                .pm(5)
-                                .build()
-                ));
-                //Add random spell to all new player
-                u.getPlayers().forEach(player -> player.setSpellsPlayer(
-                        Set.of(getRandomSpell(player))));
-
-                userDao.save(u);
-                System.out.println(playerDao.findAll());
-                System.out.println(userDao.findAll());
-            }
-
-        } catch (Exception e) {
+        } catch (ExecutionException | InterruptedException e) {
             throw new BadCredentialsException(e.getMessage());
+        }
+
+        //Get user from db
+        Optional<User> optionalUser = userDao.findById(userId);
+        if (optionalUser.isEmpty()) {
+            User u = User.builder().uid(userId).displayName("Alexandre Dumas").build();
+            // TODO let people create their own characters
+            u.setPlayers(Stream.of("Athos", "Porthos", "Aramis")
+                    .map(name -> Player.builder()
+                            .user(u)
+                            .name(name)
+                            .level(1)
+                            .breed(Breed.DWARF)
+                            .pa(10)
+                            .pm(5)
+                    .build())
+                    .collect(Collectors.toList()));
+
+            //Add random spell to all new player
+            u.getPlayers().forEach(player -> player.setSpellsPlayer(
+                    Set.of(getRandomSpell(player))));
+            userDao.save(u);
         }
 
         // null credentials, we do not pass the password along

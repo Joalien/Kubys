@@ -20,6 +20,7 @@ public class Map {
 
     public Map() {
         this.cells = new ConcurrentHashMap<>();
+        this.generateFightMap1();
     }
 
 

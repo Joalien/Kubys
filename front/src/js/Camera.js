@@ -25,8 +25,6 @@ export default class Camera {
         // this.arcRotateCamera.setPosition(this.universalCamera.position);
         // this.arcRotateCamera.setTarget = this.universalCamera.direction;
         this.scene.activeCamera = this.arcRotateCamera;
-        console.log( this.arcRotateCamera);
-        console.log( this.canvas);
         this.arcRotateCamera.attachControl(this.canvas, true);
     }
 };
