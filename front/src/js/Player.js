@@ -1,6 +1,6 @@
 import { Rectangle, AdvancedDynamicTexture, TextBlock } from 'babylonjs-gui'
 import 'babylonjs-loaders'
-import Map from "./Map";
+import Game from "./Game";
 import Communication from "./Communication";
 
 export default class Player {
@@ -8,6 +8,7 @@ export default class Player {
     static NAME_LABEL = {};
     static CURRENT_PLAYER_ID;
     static PLAYERS = {};
+    static advancedTexture;
 
     static areObjectLoaded = false;
     static elf;
@@ -20,7 +21,7 @@ export default class Player {
         if(!Player.areObjectLoaded) {
             Player.areObjectLoaded = true;
             console.log("load asset");
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", Map.SCENE, function (container) {
+            BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", Game.CURRENT_SCENE, function (container) {
                 Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
                 Player.wizard.visibility = 0;
 
@@ -31,7 +32,7 @@ export default class Player {
                 // TODO Improve me !
                 callback();
             });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/centor/", "cent.obj", Map.SCENE, function (container) {
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/centor/", "cent.obj", Game.CURRENT_SCENE, function (container) {
             //
             //
             // Player.elf = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
@@ -46,17 +47,17 @@ export default class Player {
             // Player.elf.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
             //
             // });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/dwarf/", "dwarf.obj", Map.SCENE, function (container) {
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/dwarf/", "dwarf.obj", Game.CURRENT_SCENE, function (container) {
             //     Player.dwarf = BABYLON.Mesh.MergeMeshes(container.meshes);
             //     Player.resize(Player.dwarf.scaling);
             //
             // });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/assassin/", "assassin.obj", Map.SCENE, function (container) {
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/assassin/", "assassin.obj", Game.CURRENT_SCENE, function (container) {
             //     Player.assassin = BABYLON.Mesh.MergeMeshes(container.meshes);
             //     Player.resize(Player.assassin.scaling);
             //
             // });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/berserker/", "berserker.obj", Map.SCENE, function (container) {
+            // BABYLON.SceneLoader.LoadAssetContainer("/resources/berserker/", "berserker.obj", Game.CURRENT_SCENE, function (container) {
             //     Player.berserker = BABYLON.Mesh.MergeMeshes(container.meshes);
             //     Player.resize(Player.berserker.scaling);
             //
@@ -102,7 +103,7 @@ export default class Player {
         mesh.id = characteristics.id;
         mesh.visibility = 1;
 
-        let advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        Player.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         let rect1 = new Rectangle("rect"+characteristics.id);
         rect1.id = "rect"+characteristics.id;
         rect1.width = (characteristics.name.length+1) * 10 + "px";
@@ -110,7 +111,7 @@ export default class Player {
         rect1.cornerRadius = 20;
         rect1.color = "blue";
         rect1.thickness = 4;
-        advancedTexture.addControl(rect1);
+        Player.advancedTexture.addControl(rect1);
 
         this.label = new TextBlock();
         this.label.text = characteristics.name;
@@ -172,22 +173,22 @@ export default class Player {
     //     let pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [
     //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
     //         new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-    //     ], Map.SCENE);
+    //     ], Game.CURRENT_SCENE);
     //     pilot_local_axisX.color = new BABYLON.Color3(1, 0, 0);
     //
     //     let pilot_local_axisY = BABYLON.Mesh.CreateLines("pilot_local_axisY", [
     //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
     //         new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
-    //     ], Map.SCENE);
+    //     ], Game.CURRENT_SCENE);
     //     pilot_local_axisY.color = new BABYLON.Color3(0, 1, 0);
     //
     //     let pilot_local_axisZ = BABYLON.Mesh.CreateLines("pilot_local_axisZ", [
     //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
     //         new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-    //     ], Map.SCENE);
+    //     ], Game.CURRENT_SCENE);
     //     pilot_local_axisZ.color = new BABYLON.Color3(0, 0, 1);
     //
-    //     let local_origin = BABYLON.MeshBuilder.CreateBox("local_origin", {size:1}, Map.SCENE);
+    //     let local_origin = BABYLON.MeshBuilder.CreateBox("local_origin", {size:1}, Game.CURRENT_SCENE);
     //     local_origin.isVisible = false;
     //
     //     pilot_local_axisX.parent = local_origin;

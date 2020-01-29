@@ -4,6 +4,9 @@ import kubys.Player.Player;
 import kubys.configuration.commons.ApplicationStore;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -14,10 +17,7 @@ import javax.validation.constraints.Null;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +28,7 @@ public class FightQueue {
 
     private Set<Player> waitingQueue = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private static final int NUMBER_OF_PLAYER = 2;
+    private static final int NUMBER_OF_PLAYER = 1;
     public static final int DELAY = 10; // Delay in seconds each time the queue is processed
     @NonNull
     private SimpMessagingTemplate template;
@@ -37,7 +37,6 @@ public class FightQueue {
 
     private Runnable launchFight = () -> {
         while (waitingQueue.size() >= NUMBER_OF_PLAYER) {
-            log.info("Waiting queue : " + waitingQueue);
             List<Player> players = waitingQueue
                     .stream()
                     .limit(NUMBER_OF_PLAYER)
@@ -45,14 +44,18 @@ public class FightQueue {
             waitingQueue.removeAll(players);
             Fight fight = generateFight(players);
             //TODO make a real fight
-            log.info("Players : " + players);
+            log.info("Fight : " + fight);
             try {
                 players.forEach(
-                        player -> this.template.convertAndSendToUser(
-                                applicationStore.getStringFromPlayer(player),
-                                "/fight",
-                                fight.getId()
-                        )
+                        player -> {
+                            String sessionId = applicationStore.getStringFromPlayer(player);
+                            this.template.convertAndSendToUser(
+                                    sessionId,
+                                    "/fight",
+                                    fight.getId(),
+                                    createHeaders(sessionId)
+                            );
+                        }
                 );
             } catch (NoSuchElementException | NullPointerException e) { // Happens in tests when no user in applicationStore
                 log.error(e.toString());
@@ -72,6 +75,7 @@ public class FightQueue {
 
     private Fight generateFight(List<Player> players) {
         return new Fight.FightBuilder()
+                .id((long) ThreadLocalRandom.current().nextInt())
                 .players(players)
                 .build();
     }
@@ -79,5 +83,12 @@ public class FightQueue {
 
     public boolean removePlayer(Player player) {
         return waitingQueue.remove(player);
+    }
+
+    private static MessageHeaders createHeaders(String sessionId) {
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        headerAccessor.setSessionId(sessionId);
+        headerAccessor.setLeaveMutable(true);
+        return headerAccessor.getMessageHeaders();
     }
 }

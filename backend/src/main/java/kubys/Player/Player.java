@@ -53,6 +53,6 @@ public class Player extends Cell {
     private int pa;
 
     public String toString() {
-        return "Player(id=" + this.getId() + (this.getUser() != null ? ", user(uid, name)=" + this.getUser().getUid() + ", " +  this.getUser().getDisplayName():"") + ", position=" + this.getPosition() + ", breed=" + this.getBreed() + ", name=" + this.getName() + ", level=" + this.getLevel() + ", pm=" + this.getPm() + ", pa=" + this.getPa() + ")";
+        return "Player(id=" + this.getId() + (this.getUser() != null ? ", user(uid, name)=(" + this.getUser().getUid() + "), " +  this.getUser().getDisplayName():"") + ", position=" + this.getPosition() + ", breed=" + this.getBreed() + ", name=" + this.getName() + ", level=" + this.getLevel() + ", pm=" + this.getPm() + ", pa=" + this.getPa() + ")";
     }
 }

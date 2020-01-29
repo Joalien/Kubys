@@ -4,38 +4,36 @@ import Tree from "../../resources/textures/tree.jpg"
 import Leaf from "../../resources/textures/leaf.jpg"
 import Player from "./Player";
 import Gui from "./Gui";
+import Game from "./Game";
 
 import Communication from "./Communication"
 
 export default class Map {
 
-    static SCENE;
-    static CAMERA;
     static ringPlayers = [];
 
-    constructor(game, camera) {
+    constructor(scene, camera) {
         // Appel des letiables nécéssaires
         this.cubeSize = 1;
-        Map.CAMERA = camera;
-        Map.SCENE = game.scene;
-
-        this.showWorldAxis(1);
+        this.camera = camera;
+        this.scene = scene;
 
         //Uncomment to see axis (debug purpose)
-        // this.showWorldAxis(5);
+        this.showWorldAxis(1);
+
 
         // Création de notre lumière principale
-        let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), Map.SCENE);
+        let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene);
         light.diffuse = new BABYLON.Color3(1, 1, 1);
         light.specular = new BABYLON.Color3(1, 1, 1);
         light.intensity = 1;
 
 
         // Skybox
-        let skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, Map.SCENE);
-        let skyboxMaterial = new BABYLON.StandardMaterial("skyBox", Map.SCENE);
+        let skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, this.scene);
+        let skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
         skyboxMaterial.backFaceCulling = false;
-        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("resources/textures/skybox", Map.SCENE);
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("resources/textures/skybox", this.scene);
         skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
         skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -43,18 +41,15 @@ export default class Map {
         skybox.infiniteDistance = true;
     }
 
-    //Function call only once to fetch all information about game
-    static getAllMap = function(message) {
+    getAllMap = (message) => {
         // called when the client receives a STOMP message from the server
         if (message.body) {
             //For each item in the map, we print it
-
             for (let player of JSON.parse(message.body)) {
-                if(player.hasOwnProperty("breed")) {//Check if player could be optimized
+                if (player.hasOwnProperty("breed")) {//Check if player could be optimized
                     let objPlayer = new Player(player);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
-                }else
-                    Map.createLandPlot(player.position.x, player.position.y ,player.position.z);
+                } else Game.CURRENT_SCENE.MAP.createLandPlot(player.position.x, player.position.y ,player.position.z);
             }
 
             Communication.getAllMapSubscription.unsubscribe();
@@ -63,12 +58,12 @@ export default class Map {
         }
     };
 
-    static updateMap = function(message) {
+    updateMap = (message) => {
         if (message.body) {
 
             let player = JSON.parse(message.body);
 
-            let mesh = Map.SCENE.getMeshByID(player.id);
+            let mesh = this.scene.getMeshByID(player.id);
 
             if (mesh == null) { //If new player
                 let objPlayer = new Player(player);
@@ -118,7 +113,7 @@ export default class Map {
                 mesh.animations = [];
                 mesh.animations.push(animationBox);
                 mesh.position = newPosition;
-                Map.SCENE.beginAnimation(mesh, 0, 100, true);
+                this.scene.beginAnimation(mesh, 0, 100, true);
 
 
             }
@@ -127,10 +122,10 @@ export default class Map {
         }
     };
 
-    static createFloor() {
+    createFloor() {
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
-        let mainBox = this.createLandPlot(this.SCENE, 0, super.cubeSize/2, 0);
+        let mainBox = this.createLandPlot(this.scene, 0, super.cubeSize/2, 0);
 
         const sizeOfMap = 50;
 
@@ -142,17 +137,17 @@ export default class Map {
         }
     }
 
-    static createTree(x, z) {
-        let treeTexture = new BABYLON.Texture(Tree, this.SCENE);
-        let leafTexture = new BABYLON.Texture(Leaf, this.SCENE);
+    createTree(x, z) {
+        let treeTexture = new BABYLON.Texture(Tree, this.scene);
+        let leafTexture = new BABYLON.Texture(Leaf, this.scene);
         //Creation of a material
-        const treeMaterial = new BABYLON.StandardMaterial("treeTexture", this.SCENE);
+        const treeMaterial = new BABYLON.StandardMaterial("treeTexture", this.scene);
         treeMaterial.diffuseTexture = treeTexture;
-        const leafMaterial = new BABYLON.StandardMaterial("leafTexture", this.SCENE);
+        const leafMaterial = new BABYLON.StandardMaterial("leafTexture", this.scene);
         leafMaterial.diffuseTexture = leafTexture;
 
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
-        let tree = BABYLON.Mesh.CreateBox("tree", super.cubeSize, this.SCENE);
+        let tree = BABYLON.Mesh.CreateBox("tree", super.cubeSize, this.scene);
         tree.position = new BABYLON.Vector3(x, super.cubeSize / 2 + super.cubeSize, z);
         tree.scaling = new BABYLON.Vector3(0.95, 0.95, 0.95);
         tree.material = treeMaterial;
@@ -161,7 +156,7 @@ export default class Map {
             secondaryBox.position.y = tree.position.y + super.cubeSize * i;
         }
 
-        let leaf = BABYLON.Mesh.CreateBox("leaf", super.cubeSize, this.SCENE);
+        let leaf = BABYLON.Mesh.CreateBox("leaf", super.cubeSize, this.scene);
         leaf.position = new BABYLON.Vector3(x, super.cubeSize / 2 + super.cubeSize + super.cubeSize * 4, z);
         leaf.scaling = new BABYLON.Vector3(0.95, 0.95, 0.95);
         leaf.material = leafMaterial;
@@ -176,19 +171,19 @@ export default class Map {
         }
     }
 
-    static createLandPlot(x, y, z) {
-        let tex = new BABYLON.Texture(Grass, this.SCENE);
+    createLandPlot(x, y, z) {
+        let tex = new BABYLON.Texture(Grass, this.scene);
         //Creation of a material
-        const grassMaterial = new BABYLON.StandardMaterial("groundTexture", this.SCENE);
+        const grassMaterial = new BABYLON.StandardMaterial("groundTexture", this.scene);
         grassMaterial.diffuseTexture = tex;
 
-        let mainBox = BABYLON.Mesh.CreateBox("box1", super.cubeSize, this.SCENE);
+        let mainBox = BABYLON.Mesh.CreateBox("box1", super.cubeSize, this.scene);
         mainBox.position = new BABYLON.Vector3(x, y, z);
         mainBox.scaling = new BABYLON.Vector3(0.95, 0.95, 0.95);
         mainBox.material = grassMaterial;
     }
 
-    static selectionRing = function(message) {
+    selectionRing = (message) => {
         if (message.body) {
             let i = 0;
             //For each item in the map, we print i
@@ -220,21 +215,21 @@ export default class Map {
                 i++;
             }
 
-            Map.SCENE.onPointerObservable.add(function (evt) {
+            this.scene.onPointerObservable.add((evt) => {
                 if (evt.type === BABYLON.PointerEventTypes.POINTERDOWN) {
-                    let pickInfo = Map.SCENE.pick(Map.SCENE.pointerX,Map.SCENE.pointerY,null,null).pickedMesh;
+                    let pickInfo = this.scene.pick(this.scene.pointerX,this.scene.pointerY,null,null).pickedMesh;
                     if(pickInfo.animations.length === 0) return;
                     let numberOfPlayer;
                     for (let i=0; i<Map.ringPlayers.length; i++) {
                         if(Map.ringPlayers[i].position.equals(new BABYLON.Vector3.Zero())) {
-                            Map.SCENE.beginAnimation(Map.ringPlayers[i], 100, 0, true);
+                            this.scene.beginAnimation(Map.ringPlayers[i], 100, 0, true);
                             Gui.removePlayButton();
                             if (Map.ringPlayers[i] === pickInfo) return;// If we click against on same mesh
                         }
                         if(Map.ringPlayers[i] === pickInfo) {
                             numberOfPlayer = i;
                             console.log(pickInfo);
-                            Gui.addPlayButton(i);
+                            Game.CURRENT_SCENE.GUI.addPlayButton(i);
                         }
                     }
 
@@ -242,24 +237,24 @@ export default class Map {
                     let keys = [];
                     keys.push({
                         frame: 0,
-                        value: Map.CAMERA.arcRotateCamera.alpha
+                        value: this.camera.arcRotateCamera.alpha
                     });
                     keys.push({
                         frame: 100,
                         value:(2 * Math.PI / JSON.parse(message.body).length * numberOfPlayer) - Math.PI/2
                     });
                     animationCamera.setKeys(keys);
-                    Map.CAMERA.arcRotateCamera.animations = [];
-                    Map.CAMERA.arcRotateCamera.animations.push(animationCamera);
-                    Map.SCENE.beginAnimation(Map.CAMERA.arcRotateCamera, 0, 100, false, 1, () =>
-                        Map.SCENE.beginAnimation(pickInfo, 0, 100, true)
+                    this.camera.arcRotateCamera.animations = [];
+                    this.camera.arcRotateCamera.animations.push(animationCamera);
+                    this.scene.beginAnimation(this.camera.arcRotateCamera, 0, 100, false, 1, () =>
+                        this.scene.beginAnimation(pickInfo, 0, 100, true)
                     );
                 }
             });
         }
     };
 
-    static clearRingSelection = function() {
+    clearRingSelection = () => {
         console.log(Map.ringPlayers);
         for (let mesh of Map.ringPlayers) {
             mesh.dispose();
@@ -268,12 +263,12 @@ export default class Map {
     };
 
     showWorldAxis(size) {
-        let makeTextPlane = function(text, color, size) {
-            let dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, Map.SCENE, true);
+        let makeTextPlane = (text, color, size) => {
+            let dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, this.scene, true);
             dynamicTexture.hasAlpha = true;
             dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true);
-            let plane = BABYLON.Mesh.CreatePlane("TextPlane", size, Map.SCENE, true);
-            plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", Map.SCENE);
+            let plane = BABYLON.Mesh.CreatePlane("TextPlane", size, this.scene, true);
+            plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", this.scene);
             plane.material.backFaceCulling = false;
             plane.material.specularColor = new BABYLON.Color3(0, 0, 0);
             plane.material.diffuseTexture = dynamicTexture;
@@ -282,21 +277,21 @@ export default class Map {
         let axisX = BABYLON.Mesh.CreateLines("axisX", [
             BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
             new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-        ], Map.SCENE);
+        ], this.scene);
         axisX.color = new BABYLON.Color3(1, 0, 0);
         let xChar = makeTextPlane("X", "red", size / 10);
         xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0);
         let axisY = BABYLON.Mesh.CreateLines("axisY", [
             BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0),
             new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
-        ], Map.SCENE);
+        ], this.scene);
         axisY.color = new BABYLON.Color3(0, 1, 0);
         let yChar = makeTextPlane("Y", "green", size / 10);
         yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size);
         let axisZ = BABYLON.Mesh.CreateLines("axisZ", [
             BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
             new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-        ], Map.SCENE);
+        ], this.scene);
         axisZ.color = new BABYLON.Color3(0, 0, 1);
         let zChar = makeTextPlane("Z", "blue", size / 10);
         zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);

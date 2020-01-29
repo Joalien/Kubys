@@ -12,10 +12,7 @@ import Communication from "./Communication";
 import firebase from "firebase/app";
 import 'firebase/auth';
 
-if (process.env.NODE_ENV !== 'production') {
-    console.log('Development mode');
-}
-
+console.trace(process.env.NODE_ENV + ' mode');
 
 const firebaseConfig = {
     apiKey: "AIzaSyDmXTP9dZiqvzc2o1d0VREobnx4sFVduxY",
@@ -32,42 +29,57 @@ firebase.initializeApp(firebaseConfig);
 
 
 // Page entièrement chargé, on lance le jeu
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     new Game('renderCanvas');
 }, false);
 
-let Game = function(canvasId) {
 
-    // Canvas et engine défini ici
-    let canvas = document.getElementById(canvasId);
-    let engine = new Engine(canvas, true);
-    let _this = this;
+export default class Game {
+    static CANVAS;
+    static ENGINE;
+    static CURRENT_SCENE;
+    static MAIN_SCENE;
+    static FIGHT_SCENE;
 
-    // On initie la scène avec une fonction associé à l'objet Game
-    this.scene = this._initScene(engine);
-    this.camera = new Camera(this.scene, canvas);
-    this.gui = new Gui();
+    constructor(canvasId) {
+        // Canvas et engine défini ici
+        Game.CANVAS = document.getElementById(canvasId);
+        Game.ENGINE = new Engine(Game.CANVAS, true);
 
-    let _map = new Map(_this, this.camera);
-    engine.runRenderLoop(function () {
-        _this.scene.render();
-    });
+        // On initie les scènes avec une fonction associé à l'objet Game
+        Game.MAIN_SCENE = new Scene(Game.ENGINE);
+        Game.MAIN_SCENE.GUI = new Gui(Game.MAIN_SCENE);
+        Game.MAIN_SCENE.CAMERA = new Camera(Game.MAIN_SCENE, Game.CANVAS);
+        Game.MAIN_SCENE.MAP = new Map(Game.MAIN_SCENE, Game.MAIN_SCENE.CAMERA);
 
-    new FightMap();
-    Player.init(() => new Communication());
+        Game.FIGHT_SCENE = new Scene(Game.ENGINE);
+        Game.FIGHT_SCENE.GUI = new FightMap();
+        Game.FIGHT_SCENE.CAMERA = new Camera(Game.FIGHT_SCENE, Game.CANVAS);
+        Game.FIGHT_SCENE.MAP = new Map(Game.FIGHT_SCENE, Game.FIGHT_SCENE.CAMERA);
 
-    // Ajuste la vue 3D si la fenetre est agrandi ou diminué
-    window.addEventListener("resize", function () {
-        if (engine) {
-            engine.resize();
-        }
-    },false);
-};
+        Game.CURRENT_SCENE = Game.MAIN_SCENE;
+        Game.ENGINE.runRenderLoop( () => {
+            Game.CURRENT_SCENE.render();
+        });
 
-Game.prototype = {
+        Player.init(() => new Communication());
 
-    // Prototype d'initialisation de la scène
-    _initScene : function(engine) {
-        return new Scene(engine);
+        // Ajuste la vue 3D si la fenetre est agrandi ou diminué
+        window.addEventListener("resize", () => {
+            if (Game.ENGINE) {
+                Game.ENGINE.resize();
+            }
+        },false);
     }
-};
+
+    static switchScene = (scene) => {
+        // Remove old advancedTexture
+        Game.CURRENT_SCENE.GUI.advancedTexture.dispose(); // Maybe bug if we want to switch scene again
+        Player.advancedTexture.dispose();
+        Game.CURRENT_SCENE = scene;
+        Game.ENGINE.runRenderLoop( () => {
+            Game.CURRENT_SCENE.render();
+        });
+    }
+}
+
