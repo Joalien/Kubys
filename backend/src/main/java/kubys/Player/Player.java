@@ -1,7 +1,8 @@
 package kubys.Player;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import kubys.Map.Cell;
+import kubys.Map.Model.Cell;
+import kubys.Map.Model.Map;
 import kubys.Map.Position;
 import kubys.Spell.SpellPlayer;
 import kubys.User.User;
@@ -28,6 +29,9 @@ public class Player extends Cell {
     @JsonBackReference
     private User user;
 
+    @Transient
+    @JsonBackReference
+    private Map map;
     @Embedded
     private Position position;
 
@@ -53,6 +57,6 @@ public class Player extends Cell {
     private int pa;
 
     public String toString() {
-        return "Player(id=" + this.getId() + (this.getUser() != null ? ", user(uid, name)=(" + this.getUser().getUid() + "), " +  this.getUser().getDisplayName():"") + ", position=" + this.getPosition() + ", breed=" + this.getBreed() + ", name=" + this.getName() + ", level=" + this.getLevel() + ", pm=" + this.getPm() + ", pa=" + this.getPa() + ")";
+        return "Player(id=" + this.getId() + ", map=" + (map!=null?map.getName():"null") + ", position=" + this.getPosition() + ", name=" + this.getName() + ")";
     }
 }

@@ -1,25 +1,20 @@
 package kubys.Fight;
 
 
+import kubys.Map.Model.Map;
 import kubys.Player.Player;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.List;
 
 @Slf4j
 @Builder
 @Data
 public class Fight {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    private Long id;
+    private String uuid;
 
-    List<Player> players;
+    private Map map;
+    private List<Player> players;
 }

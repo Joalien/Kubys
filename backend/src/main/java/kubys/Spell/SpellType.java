@@ -8,14 +8,14 @@ public enum SpellType {
     DROP("Laché"),
     THROW("En cloche");
 
-    private String frenchName;
+    private String name;
 
-    SpellType(String frenchName) {
-        this.frenchName = frenchName;
+    SpellType(String name) {
+        this.name = name;
     }
 
     @JsonValue
-    public String getFrenchName() {
-        return frenchName;
+    public String getName() {
+        return name;
     }
 }

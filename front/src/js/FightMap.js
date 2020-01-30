@@ -4,7 +4,7 @@ import Communication from "./Communication";
 
 import 'babylonjs-loaders'
 
-export default class FightMap { // TODO: renamed FightGui
+export default class FightMap { // TODO: renamed to FightGui
 
     static PANEL;
     static PICKED_MESH = null;
@@ -185,7 +185,10 @@ export default class FightMap { // TODO: renamed FightGui
     };
 
     static startFight = function(fightId) {
-        Communication.clientSocket.subscribe("/fight/" + fightId, payload => console.log("FightMap : " + payload));
+        Communication.clientSocket.subscribe("/fight/" + fightId, payload => console.log("Received from /fight/" + fightId + " : " + payload));
+        Communication.sendMessage("/fight/" + fightId, null);
         Game.switchScene(Game.FIGHT_SCENE);
+        Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Game.CURRENT_SCENE.MAP.getAllMap);
+        Communication.sendMessage("/getAllMap", null);
     }
 }

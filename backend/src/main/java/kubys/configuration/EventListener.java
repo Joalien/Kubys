@@ -1,9 +1,8 @@
 package kubys.configuration;
 
 import kubys.Fight.FightQueue;
-import kubys.Map.Map;
 import kubys.Player.Player;
-import kubys.Player.PlayerService;
+import kubys.Player.PlayerDao;
 import kubys.configuration.commons.ApplicationStore;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +16,10 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @AllArgsConstructor
 public class EventListener implements ApplicationListener<SessionDisconnectEvent> {
 
-    private Map map;
     private SimpMessagingTemplate template;
     private ApplicationStore applicationStore;
-    private PlayerService playerService;
+    private PlayerDao playerDao;
     private FightQueue fightQueue;
-
-
-
 
     @Override
     public void onApplicationEvent(SessionDisconnectEvent sessionDisconnectEvent) {
@@ -36,8 +31,8 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
             applicationStore.getSessionIdPlayer().remove(sessionId);
             fightQueue.removePlayer(oldPlayer);
 
-            this.map.getCells().remove(oldPlayer.getPosition(), oldPlayer);
-            playerService.save(oldPlayer);
+            oldPlayer.getMap().getCells().remove(oldPlayer.getPosition(), oldPlayer);
+            playerDao.save(oldPlayer);
 
             //TODO Create new endpoint for disconnected users
 //            this.template.convertAndSend("/broker/command", oldPlayer);

@@ -1,4 +1,4 @@
-package kubys.Map;
+package kubys.Player;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

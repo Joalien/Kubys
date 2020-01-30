@@ -18,6 +18,7 @@ export default class Player {
     static berserker;
 
     static init(callback) {
+        Player.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
         if(!Player.areObjectLoaded) {
             Player.areObjectLoaded = true;
             console.log("load asset");
@@ -103,7 +104,7 @@ export default class Player {
         mesh.id = characteristics.id;
         mesh.visibility = 1;
 
-        Player.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
         let rect1 = new Rectangle("rect"+characteristics.id);
         rect1.id = "rect"+characteristics.id;
         rect1.width = (characteristics.name.length+1) * 10 + "px";

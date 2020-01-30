@@ -1,5 +1,7 @@
 package kubys.Map;
 
+import kubys.Map.Model.Cell;
+import kubys.Player.Command;
 import kubys.Player.Player;
 import kubys.Player.PlayerService;
 import kubys.configuration.commons.SessionStore;
@@ -24,13 +26,10 @@ public class MoveController {
     @MessageMapping("/command")
     @SendTo("/broker/command")
     public Cell directionPlayer(Principal principal, Command command, SimpMessageHeaderAccessor headerAccessor) {
-        log.info("Command controller");
-
-        //Get the current player
         Player player = sessionStore.getPlayer();
 
         //If player command, send changes to all players
-        if(PlayerService.movePlayer(player, command)) {
+        if (PlayerService.movePlayer(player, command)) {
             return player;
         }
         return null;

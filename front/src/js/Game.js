@@ -64,7 +64,7 @@ export default class Game {
 
         Player.init(() => new Communication());
 
-        // Ajuste la vue 3D si la fenetre est agrandi ou diminué
+            // Ajuste la vue 3D si la fenetre est agrandi ou diminué
         window.addEventListener("resize", () => {
             if (Game.ENGINE) {
                 Game.ENGINE.resize();
@@ -75,7 +75,7 @@ export default class Game {
     static switchScene = (scene) => {
         // Remove old advancedTexture
         Game.CURRENT_SCENE.GUI.advancedTexture.dispose(); // Maybe bug if we want to switch scene again
-        Player.advancedTexture.dispose();
+        // Game.PLAYER.advancedTexture.dispose();
         Game.CURRENT_SCENE = scene;
         Game.ENGINE.runRenderLoop( () => {
             Game.CURRENT_SCENE.render();

@@ -4,15 +4,14 @@ import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
 @Getter
 @ToString
 @Embeddable
-@NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class Position {
     @Column private int x;
@@ -34,21 +33,15 @@ public class Position {
     }
 
     public static Position of(int x, int y, int z) {
-        if (Math.abs(x) > Map.MAX_X_SIZE ||
-                Math.abs(y) > Map.MAX_Y_SIZE ||
-                Math.abs(z) > Map.MAX_Z_SIZE)
-            throw new IndexOutOfBoundsException("Cell ( + " + x + ";" + y + ";" + z + ") is outside the map");
-        else {
-            Optional<Position> optionalPosition = instancesStore.parallelStream()
-                                                                .filter(p -> p.x == x && p.y == y && p.z == z)
-                                                                .findFirst();
-            if (optionalPosition.isPresent()) {
-                return optionalPosition.get();
-            } else {
-                Position position = new Position(x, y, z);
-                instancesStore.add(position);
-                return position;
-            }
+        Optional<Position> optionalPosition = instancesStore.parallelStream()
+                                                            .filter(p -> p.x == x && p.y == y && p.z == z)
+                                                            .findFirst();
+        if (optionalPosition.isPresent()) {
+            return optionalPosition.get();
+        } else {
+            Position position = new Position(x, y, z);
+            instancesStore.add(position);
+            return position;
         }
     }
 }

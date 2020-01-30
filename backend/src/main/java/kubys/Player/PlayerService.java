@@ -1,31 +1,23 @@
 package kubys.Player;
 
-import kubys.Map.Command;
-import kubys.Map.Map;
+import kubys.Map.MapService;
+import kubys.Map.Model.Cell;
+import kubys.Map.Model.Map;
 import kubys.Map.Position;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
+@Data
 public class PlayerService {
 
-    static private Map map;
+    static private MapService mapService;
     static private SimpMessagingTemplate template;
-    private PlayerDao playerDao;
-
-    @Autowired
-    public PlayerService(SimpMessagingTemplate template, Map map, PlayerDao playerDao) {
-        PlayerService.template = template;
-        PlayerService.map = map;
-        this.playerDao = playerDao;
-    }
-
-    public void save(Player player) {
-        playerDao.save(player);
-    }
 
     public static Boolean movePlayer(Player player, Command command) {
         switch(command) {
@@ -38,8 +30,9 @@ public class PlayerService {
             case RIGHT:
                 return PlayerService.moveRight(player);
             case CREATE:
-                map.addPlayer(player, Position.of(0, 5, 0));
-                return movePosition(player, player.getPosition());
+                PlayerService.switchMap(player, MapService.MAIN_MAP);
+                // Make user fall if he is created in the air
+                return moveToPosition(player, player.getPosition());
             default:
                 throw new IllegalArgumentException("Unexpected value: " + command);
         }
@@ -47,57 +40,86 @@ public class PlayerService {
 
     private static Boolean moveForward(Player player) {
         Position position = player.getPosition().plusZ(1);
-        return movePosition(player, position);
+        return moveToPosition(player, position);
     }
 
     private static Boolean moveBackward(Player player) {
         Position position = player.getPosition().plusZ(-1);
 
-        return movePosition(player, position);
+        return moveToPosition(player, position);
     }
 
     private static Boolean moveLeft(Player player) {
         Position position = player.getPosition().plusX(-1);
 
-        return movePosition(player, position);
+        return moveToPosition(player, position);
     }
 
     private static Boolean moveRight(Player player) {
         Position position = player.getPosition().plusX(1);
 
-        return movePosition(player, position);
+        return moveToPosition(player, position);
     }
 
-    private static Boolean movePosition(Player player, Position position) {// This method contains logic
-        if (position == null) return false;
+    // This method contains logic
+    private static Boolean moveToPosition(Player player, Position position) {
+        java.util.Map<Position, Cell> cells = player.getMap().getCells();
+        if (position == null || !player.getMap().isInsideMap(position)) throw new IllegalArgumentException("Position should not be null !");
         Position above = position.plusY(1);
         Position below = position.plusY(-1);
 
-        if(!map.getCells().containsKey(position) || map.getCells().get(position).equals(player)) {
-            // Drop the ~~mic~~ player
-            while (!map.getCells().containsKey(below)) {
+        // Make user fall if he is created in the air
+        if(!cells.containsKey(position) || cells.get(position).equals(player)) {
+            // Drop the ~mic~ player
+            while (!cells.containsKey(below)) {
                 below = below.plusY(-1);
+                if (!player.getMap().isInsideMap(below)) {
+                    return false;
+                }
             }
-            updatePosition(player, below.plusY(1));// Change map information
+            updatePosition(player, below.plusY(1));
             return true;
-        }else if (!map.getCells().containsKey(above) && !map.getCells().containsKey(player.getPosition().plusY(1))) {
+        } else if (!cells.containsKey(above) && !cells.containsKey(player.getPosition().plusY(1))) {
             updatePosition(player, above);
             return true;
-        }else return false;
+        } else return false;
     }
 
     private static void updatePosition(Player player, Position position) {
+        java.util.Map<Position, Cell> cells = player.getMap().getCells();
+        cells.remove(player.getPosition());
+        cells.put(position, player);
 
-        map.getCells().remove(player.getPosition());
-        map.getCells().put(position, player);
-
-        if(map.getCells().containsKey(player.getPosition().plusY(1)) &&
-                map.getCells().get(player.getPosition().plusY(1)) instanceof Player) { // If they were a player on the cel above
-            movePosition((Player) map.getCells().get(player.getPosition().plusY(1)), player.getPosition());
-            PlayerService.template.convertAndSend("/broker/command", map.getCells().get(player.getPosition()));
+        // If they were a player on the cell above
+        // Refactor if other cells's children need to drop (create intermediary class, implement behaviour ...)
+        if(cells.containsKey(player.getPosition().plusY(1)) &&
+                cells.get(player.getPosition().plusY(1)) instanceof Player) {
+            moveToPosition((Player) cells.get(player.getPosition().plusY(1)), player.getPosition());
+            PlayerService.template.convertAndSend("/broker/command", cells.get(player.getPosition()));
         }
 
         player.setPosition(position);
     }
 
+    public static boolean switchMap(Player player, Map destinationMap) {
+        try {
+            player.getMap().removeCell(player.getPosition());
+        } catch (NullPointerException ignored) {
+            // Might happens if user has no map nor position
+        }
+        Optional<Position> newPosition = destinationMap.getStartingPositions()
+                .stream()
+                .filter(p -> !destinationMap.getCells().containsKey(p))
+                .findAny();
+
+        if (newPosition.isEmpty()) {
+            return false;
+        }
+
+        //Should be atomic
+        destinationMap.addCell(newPosition.get(), player);
+        player.setMap(destinationMap);
+        player.setPosition(newPosition.get());
+        return true;
+    }
 }
