@@ -44,7 +44,7 @@ export default class Gui {
             Gui.isSubscribingFight = !Gui.isSubscribingFight;
             if (Gui.isSubscribingFight) {
                 Communication.sendMessage("/fight/subscribe", {});
-                Gui.subscription = Communication.clientSocket.subscribe("/user/fight", response => FightMap.startFight(response));
+                Gui.subscription = Communication.clientSocket.subscribe("/broker/fight", message => FightMap.startFight(message.body));
             } else {
                 Communication.sendMessage("/fight/unsubscribe", {});
                 Gui.subscription.unsubscribe();

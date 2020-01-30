@@ -17,6 +17,7 @@ import javax.validation.constraints.Null;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class FightQueue {
                             this.template.convertAndSendToUser(
                                     sessionId,
                                     "/fight",
-                                    fight.getId(),
+                                    fight.getUuid(),
                                     createHeaders(sessionId)
                             );
                         }
@@ -75,11 +76,10 @@ public class FightQueue {
 
     private Fight generateFight(List<Player> players) {
         return new Fight.FightBuilder()
-                .id((long) ThreadLocalRandom.current().nextInt())
+                .uuid(UUID.randomUUID().toString())
                 .players(players)
                 .build();
     }
-
 
     public boolean removePlayer(Player player) {
         return waitingQueue.remove(player);

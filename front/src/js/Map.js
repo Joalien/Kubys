@@ -42,16 +42,17 @@ export default class Map {
     }
 
     getAllMap = (message) => {
+        console.log("GET ALL MAP !!!");
         // called when the client receives a STOMP message from the server
         if (message.body) {
             //For each item in the map, we print it
             for (let player of JSON.parse(message.body)) {
                 if (player.hasOwnProperty("breed")) {//Check if player could be optimized
+                    console.log(player);
                     let objPlayer = new Player(player);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
                 } else Game.CURRENT_SCENE.MAP.createLandPlot(player.position.x, player.position.y ,player.position.z);
             }
-
             Communication.getAllMapSubscription.unsubscribe();
         } else {
             console.log("got empty message");
@@ -95,8 +96,6 @@ export default class Map {
                     mesh.rotation.y = Math.PI;
                 }
 
-                console.log(mesh.rotation);
-
                 let animationBox = new BABYLON.Animation("translatePlayer", "position", 500, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                 let keys = [];
 
@@ -114,8 +113,6 @@ export default class Map {
                 mesh.animations.push(animationBox);
                 mesh.position = newPosition;
                 this.scene.beginAnimation(mesh, 0, 100, true);
-
-
             }
         } else {
             console.log("got empty message, maybe player can't move");
@@ -223,7 +220,7 @@ export default class Map {
                     for (let i=0; i<Map.ringPlayers.length; i++) {
                         if(Map.ringPlayers[i].position.equals(new BABYLON.Vector3.Zero())) {
                             this.scene.beginAnimation(Map.ringPlayers[i], 100, 0, true);
-                            Gui.removePlayButton();
+                            Game.MAIN_SCENE.GUI.removePlayButton();
                             if (Map.ringPlayers[i] === pickInfo) return;// If we click against on same mesh
                         }
                         if(Map.ringPlayers[i] === pickInfo) {

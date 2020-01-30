@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,12 @@ public class FightController {
     @MessageMapping("/unsubscribe")
     public void unsubscribe(SimpMessageHeaderAccessor headerAccessor) {
         fightQueue.removePlayer(applicationStore.getSessionIdPlayer().get(headerAccessor.getSessionId()));
+    }
+
+    @MessageMapping("/{fightId}")
+    @SendTo("/broker/fight/{fightId}")
+    public void toRename(SimpMessageHeaderAccessor headerAccessor) {
+        System.out.println("PARAMETRIZED FIGHT !!!");
     }
 
     @MessageExceptionHandler

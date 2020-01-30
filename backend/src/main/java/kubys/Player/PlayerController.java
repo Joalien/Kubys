@@ -27,16 +27,9 @@ public class PlayerController {
     @MessageMapping("/setPlayer")
     @SendToUser("/setPlayer")
     public Player setPlayer(@Payload Integer playerIndex, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
-//        log.info("setPlayer controller");
-//        log.info(String.valueOf(playerIndex));
-
         User u = userService.findById(principal.getName());
         Player player = u.getPlayers().get(playerIndex);
 
-//        log.info(u.toString());
-//        log.info(player.toString());
-//        log.info(principal.toString());
-//        log.info(headerAccessor.toString());
         applicationStore.getSessionIdPlayer().put(headerAccessor.getSessionId(), player);
 
         sessionStore.setPlayer(player);
