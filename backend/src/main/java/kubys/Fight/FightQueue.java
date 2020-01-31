@@ -70,7 +70,7 @@ public class FightQueue {
         log.info(String.valueOf(applicationStore));
     }
 
-    public boolean addPlayer(Player player){
+    public boolean addPlayer(Player player) {
         return waitingQueue.add(player);
     }
 
