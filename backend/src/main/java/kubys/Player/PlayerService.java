@@ -64,7 +64,7 @@ public class PlayerService {
     // This method contains logic
     private static Boolean moveToPosition(Player player, Position position) {
         java.util.Map<Position, Cell> cells = player.getMap().getCells();
-        if (position == null || !player.getMap().isInsideMap(position)) throw new IllegalArgumentException("Position should not be null !");
+        if (position == null || !player.getMap().isInsideMap(position)) throw new IllegalArgumentException("Position should not be null nor outside of the map !");
         Position above = position.plusY(1);
         Position below = position.plusY(-1);
 

@@ -14,8 +14,6 @@ export default class FightMap { // TODO: renamed to FightGui
     static advancedTexture;
 
     constructor() {
-        console.log("new FightMap");
-
         FightMap.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu de combat", true, Game.FIGHT_SCENE);
         FightMap.PANEL = new BABYLON.GUI.StackPanel();
         FightMap.PANEL.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
@@ -30,7 +28,7 @@ export default class FightMap { // TODO: renamed to FightGui
         });
     }
 
-    static addButton = function (spell) {
+    addButton = spell => {
         let transparentMeshes = [];
         let inScopeMeshes = [];
         //Let's connect to your account
@@ -46,7 +44,6 @@ export default class FightMap { // TODO: renamed to FightGui
                     mesh.visibility = 0.5;
                     transparentMeshes.push(mesh);
                 }else{
-
                     inScopeMeshes.push(mesh);
                 }
             }
@@ -70,7 +67,7 @@ export default class FightMap { // TODO: renamed to FightGui
         FightMap.PANEL.addControl(connection);
     };
 
-    static getSpells = function (message) {
+    getSpells = message => {
         if (message.body) {
 
             //For each item in the map, we print it
@@ -81,7 +78,6 @@ export default class FightMap { // TODO: renamed to FightGui
             console.log("got empty message");
         }
     };
-
 
     static isMeshInsideScope = function(player, mesh, spell) {
         if(mesh.name === "skyBox") return false;
@@ -103,7 +99,7 @@ export default class FightMap { // TODO: renamed to FightGui
         }else return false;
     };
 
-    static highlightPickedMesh = function (inScopeMeshes) {
+    highlightPickedMesh = inScopeMeshes => {
 
         let newPickedMesh = Game.CURRENT_SCENE.pick(Game.CURRENT_SCENE.pointerX, Game.CURRENT_SCENE.pointerY).pickedMesh;
 
@@ -116,7 +112,7 @@ export default class FightMap { // TODO: renamed to FightGui
         }
     };
 
-    static isLightOfSight = function (mesh, player) {
+    isLightOfSight = (mesh, player) => {
 
         let origin = player.position;
 
@@ -131,7 +127,7 @@ export default class FightMap { // TODO: renamed to FightGui
 
     };
 
-    static castSpell = function(player, mesh) {
+    castSpell = (player, mesh) => {
         let time = 1; // second
         let direction = mesh.position.subtract(player.position);
         let direction2D = new BABYLON.Vector3(direction.x, direction.y, direction.z);
@@ -183,12 +179,4 @@ export default class FightMap { // TODO: renamed to FightGui
         setTimeout(() => Game.CURRENT_SCENE.removeMesh(ephemeralAxe), time*1000);
 
     };
-
-    static startFight = function(fightId) {
-        Communication.clientSocket.subscribe("/fight/" + fightId, payload => console.log("Received from /fight/" + fightId + " : " + payload));
-        Communication.sendMessage("/fight/" + fightId, null);
-        Game.switchScene(Game.FIGHT_SCENE);
-        Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Game.CURRENT_SCENE.MAP.getAllMap);
-        Communication.sendMessage("/getAllMap", null);
-    }
 }

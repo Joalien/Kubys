@@ -9,6 +9,9 @@ export default class Communication {
 
     static getAllMapSubscription;
     static clientSocket;
+    static updateMapSubscription;
+    static getPlayerSubscription;
+    static getSpellSubscription;
 
     constructor() {
         let url;
@@ -30,12 +33,9 @@ export default class Communication {
         let connect_callback = () => {
             console.log("Connected with server !");
             // called back after the client is connected and authenticated to the STOMP server
-            Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", Game.CURRENT_SCENE.MAP.getAllMap);
-            Communication.clientSocket.subscribe("/user/getSpells", message => Game.CURRENT_SCENE.GUI.createComponentTreePanel(message));
+            Communication.updateSubscription(Game.CURRENT_SCENE);
             Communication.clientSocket.subscribe("/user/errors", error => console.log(error));
-            Communication.clientSocket.subscribe("/user/getPlayers", Game.CURRENT_SCENE.MAP.selectionRing);
             Communication.clientSocket.subscribe("/user/setPlayer", Player.refreshPlayer);
-            Communication.clientSocket.subscribe("/broker/command", Game.CURRENT_SCENE.MAP.updateMap);
 
             // Communication.sendMessage("/getAllMap", null);
             Communication.clientSocket.send("/getPlayers", null);
@@ -80,6 +80,15 @@ export default class Communication {
         }
     }
 
+    static updateSubscription(scene) {
+        Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", scene.MAP.getAllMap);
+        Communication.getPlayerSubscription = Communication.clientSocket.subscribe("/user/getPlayers", scene.MAP.selectionRing);
+        Communication.getSpellSubscription = Communication.clientSocket.subscribe("/user/getSpells", message => scene.GUI.createComponentTreePanel(message));
+        Communication.updateMapSubscription = Communication.clientSocket.subscribe("/broker/command", scene.MAP.updateMap);
+    }
 
+    static unsubscribeAll() {
+        [Communication.getAllMapSubscription, Communication.updateMapSubscription, Communication.getPlayerSubscription, Communication.getSpellSubscription].map(s => s.unsubscribe());
+    }
 }
 
