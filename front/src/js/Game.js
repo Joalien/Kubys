@@ -30,7 +30,8 @@ firebase.initializeApp(firebaseConfig);
 
 // Page entièrement chargé, on lance le jeu
 document.addEventListener("DOMContentLoaded", () => {
-    new Game('renderCanvas');
+    let game = new Game();
+    game.init('renderCanvas');
 }, false);
 
 
@@ -41,7 +42,7 @@ export default class Game {
     static MAIN_SCENE;
     static FIGHT_SCENE;
 
-    constructor(canvasId) {
+    init(canvasId) {
         // Canvas et engine défini ici
         Game.CANVAS = document.getElementById(canvasId);
         Game.ENGINE = new Engine(Game.CANVAS, true);
@@ -51,18 +52,22 @@ export default class Game {
         Game.MAIN_SCENE.GUI = new Gui(Game.MAIN_SCENE);
         Game.MAIN_SCENE.CAMERA = new Camera(Game.MAIN_SCENE, Game.CANVAS);
         Game.MAIN_SCENE.MAP = new Map(Game.MAIN_SCENE, Game.MAIN_SCENE.CAMERA);
+        Game.MAIN_SCENE.MAP.NAME = "Main map";
+        Game.MAIN_SCENE.NAME = "Main scene";
 
         Game.FIGHT_SCENE = new Scene(Game.ENGINE);
         Game.FIGHT_SCENE.GUI = new FightMap();
         Game.FIGHT_SCENE.CAMERA = new Camera(Game.FIGHT_SCENE, Game.CANVAS);
         Game.FIGHT_SCENE.MAP = new Map(Game.FIGHT_SCENE, Game.FIGHT_SCENE.CAMERA);
+        Game.FIGHT_SCENE.MAP.NAME = "Fight map";
+        Game.FIGHT_SCENE.NAME = "Fight scene";
 
         Game.CURRENT_SCENE = Game.MAIN_SCENE;
         Game.ENGINE.runRenderLoop( () => {
             Game.CURRENT_SCENE.render();
         });
 
-        Player.init(() => new Communication());
+        new Communication();
 
             // Ajuste la vue 3D si la fenetre est agrandi ou diminué
         window.addEventListener("resize", () => {
@@ -74,12 +79,13 @@ export default class Game {
 
     static switchScene = (scene) => {
         // Remove old advancedTexture
-        Game.CURRENT_SCENE.GUI.advancedTexture.dispose(); // Maybe bug if we want to switch scene again
+        Game.CURRENT_SCENE.GUI.advancedTexture.dispose(); // Maybe bug if we want to switch back previous scene again
         // Game.PLAYER.advancedTexture.dispose();
         Game.CURRENT_SCENE = scene;
         Game.ENGINE.runRenderLoop( () => {
             Game.CURRENT_SCENE.render();
         });
+        console.log("end switch scene");
     }
 }
 

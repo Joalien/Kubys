@@ -21,13 +21,11 @@ export default class Map {
         //Uncomment to see axis (debug purpose)
         this.showWorldAxis(1);
 
-
         // Création de notre lumière principale
         let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene);
         light.diffuse = new BABYLON.Color3(1, 1, 1);
         light.specular = new BABYLON.Color3(1, 1, 1);
         light.intensity = 1;
-
 
         // Skybox
         let skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, this.scene);
@@ -41,36 +39,33 @@ export default class Map {
         skybox.infiniteDistance = true;
     }
 
-    getAllMap = (message) => {
+    getAllMap = async message => {
         console.log("GET ALL MAP !!!");
         // called when the client receives a STOMP message from the server
         if (message.body) {
+            Communication.getAllMapSubscription.unsubscribe();
             //For each item in the map, we print it
             for (let player of JSON.parse(message.body)) {
-                if (player.hasOwnProperty("breed")) {//Check if player could be optimized
-                    console.log(player);
-                    let objPlayer = new Player(player);
+                if (player.hasOwnProperty("breed")) {// Check if player could be optimized
+                    let objPlayer = await Player.build(player);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
                 } else Game.CURRENT_SCENE.MAP.createLandPlot(player.position.x, player.position.y ,player.position.z);
             }
-            Communication.getAllMapSubscription.unsubscribe();
         } else {
             console.log("got empty message");
         }
     };
 
-    updateMap = (message) => {
+    updateMap = async message => {
+        console.log("update the map");
         if (message.body) {
-
             let player = JSON.parse(message.body);
-
             let mesh = this.scene.getMeshByID(player.id);
 
             if (mesh == null) { //If new player
-                let objPlayer = new Player(player);
+                let objPlayer = await Player.build(player);
                 objPlayer.setLabel(player.name);
                 objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
-                               
 
                 //TODO Create new endpoint for disconnected users
             // } else if(player.connected === false) {// If player disconnect
@@ -78,13 +73,8 @@ export default class Map {
             //     Player.NAME_LABEL[mesh].dispose();
             //     mesh.dispose();
             } else {//If player had already been created and should move (normal case)
-
-                Player.PLAYERS[player.id] = player;
                 let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
                 // try to find the direction in order to rotate the player around y axis
-
-                // console.log("position : "+mesh.position);
-                // console.log("new position : " + newPosition);
 
                 if(newPosition.x - mesh.position.x === 1) {
                     mesh.rotation.y = Math.PI / 2;
@@ -120,7 +110,6 @@ export default class Map {
     };
 
     createFloor() {
-
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
         let mainBox = this.createLandPlot(this.scene, 0, super.cubeSize/2, 0);
 
@@ -180,7 +169,7 @@ export default class Map {
         mainBox.material = grassMaterial;
     }
 
-    selectionRing = (message) => {
+    selectionRing = async message => {
         if (message.body) {
             let i = 0;
             //For each item in the map, we print i
@@ -188,7 +177,7 @@ export default class Map {
                 let alpha = (2 * Math.PI / JSON.parse(message.body).length * i) - Math.PI/2;
                 let distance = 3;
 
-                let objPlayer = new Player(player);
+                let objPlayer = await Player.build(player);
                 objPlayer.mesh.position = new BABYLON.Vector3(Math.cos(alpha)*distance, 0, Math.sin(alpha)*distance);
                 objPlayer.mesh.rotate(BABYLON.Axis.Y, Math.PI / 2, BABYLON.Space.WORLD);
                 objPlayer.mesh.rotate(BABYLON.Axis.Y, -alpha, BABYLON.Space.WORLD);
@@ -252,7 +241,6 @@ export default class Map {
     };
 
     clearRingSelection = () => {
-        console.log(Map.ringPlayers);
         for (let mesh of Map.ringPlayers) {
             mesh.dispose();
             Player.NAME_LABEL["rect"+mesh.id].dispose();

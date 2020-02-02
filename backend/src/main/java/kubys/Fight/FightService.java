@@ -16,8 +16,11 @@ import java.util.UUID;
 @Data
 public class FightService {
     public static final java.util.Map<String, Fight> FIGHTS = new HashMap<>();
+    public static final int MIN_NUMBER_OF_PLAYER = 1; // TODO -> move to 2
 
     public Fight generateFight(List<Player> players) {
+        if (players.size() < MIN_NUMBER_OF_PLAYER) throw new IllegalArgumentException("Fight should comport at least 2 players");
+
         Fight fight = new Fight.FightBuilder()
                 .uuid(UUID.randomUUID().toString())
                 .map(MapService.generateFightMap())

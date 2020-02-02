@@ -25,6 +25,7 @@ public class MapController {
     @MessageMapping("/getAllMap")
     @SendToUser("/getAllMap")
     public Cell[] getAllMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+        log.info("getAllMap");
         Player player = sessionStore.getPlayer();
         if (player.getPosition() == null || player.getMap() == null) {
             PlayerService.movePlayer(player, Command.CREATE);

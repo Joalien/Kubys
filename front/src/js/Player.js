@@ -1,4 +1,4 @@
-import { Rectangle, AdvancedDynamicTexture, TextBlock } from 'babylonjs-gui'
+import {Rectangle, AdvancedDynamicTexture, TextBlock} from 'babylonjs-gui'
 import 'babylonjs-loaders'
 import Game from "./Game";
 import Communication from "./Communication";
@@ -7,135 +7,94 @@ export default class Player {
 
     static NAME_LABEL = {};
     static CURRENT_PLAYER_ID;
-    static PLAYERS = {};
-    static advancedTexture;
 
-    static areObjectLoaded = false;
     static elf;
     static dwarf;
     static assassin;
     static wizard;
     static berserker;
 
-    static init(callback) {
-        Player.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
-        if(!Player.areObjectLoaded) {
-            Player.areObjectLoaded = true;
-            console.log("load asset");
-            BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", Game.CURRENT_SCENE, function (container) {
-                Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
-                Player.wizard.visibility = 0;
+    static init() {
+        return new Promise(resolve => {
+            if (!Player.wizard || Player.wizard._scene !== Game.CURRENT_SCENE) {
+                BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", Game.CURRENT_SCENE, (container) => {
+                    Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
+                    Player.wizard.visibility = 0;
 
-                let scaleFactor = Player.getScalingVectorToFit(Player.wizard);
-                scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
-                Player.wizard.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
-                console.log('Texture loaded !');
-                // TODO Improve me !
-                callback();
-            });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/centor/", "cent.obj", Game.CURRENT_SCENE, function (container) {
-            //
-            //
-            // Player.elf = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
-            // Player.elf.visibility = 0;
-
-            // Player.elf = container.meshes[1];
-            // console.log(Player.elf);
-            // container.addAllToScene();
-
-            // let scaleFactor = Player.getScalingVectorToFit(Player.elf);
-            // scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
-            // Player.elf.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
-            //
-            // });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/dwarf/", "dwarf.obj", Game.CURRENT_SCENE, function (container) {
-            //     Player.dwarf = BABYLON.Mesh.MergeMeshes(container.meshes);
-            //     Player.resize(Player.dwarf.scaling);
-            //
-            // });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/assassin/", "assassin.obj", Game.CURRENT_SCENE, function (container) {
-            //     Player.assassin = BABYLON.Mesh.MergeMeshes(container.meshes);
-            //     Player.resize(Player.assassin.scaling);
-            //
-            // });
-            // BABYLON.SceneLoader.LoadAssetContainer("/resources/berserker/", "berserker.obj", Game.CURRENT_SCENE, function (container) {
-            //     Player.berserker = BABYLON.Mesh.MergeMeshes(container.meshes);
-            //     Player.resize(Player.berserker.scaling);
-            //
-            // });
-        }
+                    let scaleFactor = Player.getScalingVectorToFit(Player.wizard);
+                    scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
+                    Player.wizard.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
+                    // TODO Improve me !
+                    resolve();
+                });
+            } else {
+                resolve();
+            }
+        });
     }
 
-    constructor(characteristics)
-    {
-        Player.PLAYERS[characteristics.id] = characteristics;
-        // Appel des variables nécéssaires
-        const cubeSize = 1;
-        const playerSize = 1;
+    static async build(characteristics) {
+        await Player.init();
 
-        // Player.CURRENT_PLAYER_ID = characteristics.id;
-
-        let mesh;
+        let myObj = new Player();
+        myObj.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Player's name", true, Game.CURRENT_SCENE);
 
         switch (characteristics.breed) {
             case "DWARF":
-                // mesh = Player.dwarf.clone();
-                mesh = Player.wizard.clone();
+                // myObj.mesh = Player.dwarf.clone();
+                myObj.mesh = Player.wizard.clone();
                 break;
             case "ELF":
-                // mesh = Player.elf.clone();
-                mesh = Player.wizard.clone();
+                // myObj.mesh = Player.elf.clone();
+                myObj.mesh = Player.wizard.clone();
                 break;
             case "ASSASSIN":
-                // mesh = Player.assassin.clone();
-                mesh = Player.wizard.clone();
+                // myObj.mesh = Player.assassin.clone();
+                myObj.mesh = Player.wizard.clone();
                 break;
             case "WIZARD":
-                mesh = Player.wizard.clone();
+                myObj.mesh = Player.wizard.clone();
                 break;
             case "BERSERKER":
-                // mesh = Player.berserker.clone();
-                mesh = Player.wizard.clone();
+                // myObj.mesh = Player.berserker.clone();
+                myObj.mesh = Player.wizard.clone();
                 break;
             default :
                 console.error("Breed not found !");
                 break;
         }
-        mesh.id = characteristics.id;
-        mesh.visibility = 1;
+        myObj.mesh.id = characteristics.id;
+        myObj.mesh.visibility = 1;
 
 
-        let rect1 = new Rectangle("rect"+characteristics.id);
-        rect1.id = "rect"+characteristics.id;
-        rect1.width = (characteristics.name.length+1) * 10 + "px";
+        let label = new TextBlock();
+        label.text = characteristics.name;
+
+        let rect1 = new Rectangle("rect" + characteristics.id);
+        rect1.id = "rect" + characteristics.id;
+        rect1.width = (characteristics.name.length + 1) * 10 + "px";
         rect1.height = "40px";
         rect1.cornerRadius = 20;
         rect1.color = "blue";
-        rect1.thickness = 4;
-        Player.advancedTexture.addControl(rect1);
-
-        this.label = new TextBlock();
-        this.label.text = characteristics.name;
-        rect1.addControl(this.label);
-
-        rect1.linkWithMesh(mesh);
+        rect1.thickness = 3;
+        rect1.addControl(label);
         rect1.linkOffsetY = -70;
 
-        Player.NAME_LABEL["rect"+characteristics.id] = rect1;
+        myObj.advancedTexture.addControl(rect1);
+        rect1.linkWithMesh(myObj.mesh);
 
-        this.mesh = mesh;
-
-        return this;
+        Player.NAME_LABEL["rect" + characteristics.id] = rect1;
+        return myObj;
     }
 
-    setPosition (position) {
+    setPosition(position) {
         this.mesh.position = position;
     }
 
 
-    static getScalingVectorToFit (mesh) {
+    static getScalingVectorToFit(mesh) {
         let otherVector = BABYLON.Vector3.One();
-        if(!mesh.__scaleVectorCache) {
+        if (!mesh.__scaleVectorCache) {
             mesh.__scaleVectorCache = BABYLON.Vector3.Zero();
         }
 
@@ -149,7 +108,7 @@ export default class Player {
 
 
     static getAbsoluteSize(mesh) {
-        if(!mesh.__size) {
+        if (!mesh.__size) {
             mesh.__size = BABYLON.Vector3.Zero();
         }
 
@@ -163,7 +122,7 @@ export default class Player {
 
     static refreshPlayer(player) {
         Player.CURRENT_PLAYER_ID = player.id;
-
+        console.log("refresh player");
         Communication.sendMessage("/getAllMap", null);
         Communication.sendMessage("/getSpells", null);
 

@@ -19,8 +19,6 @@ public class FightController {
     private FightQueue fightQueue;
     private ApplicationStore applicationStore;
 
-
-
     @MessageMapping("/subscribe")
     public void subscribe(SimpMessageHeaderAccessor headerAccessor) {
         fightQueue.addPlayer(applicationStore.getSessionIdPlayer().get(headerAccessor.getSessionId()));
@@ -31,10 +29,35 @@ public class FightController {
         fightQueue.removePlayer(applicationStore.getSessionIdPlayer().get(headerAccessor.getSessionId()));
     }
 
-    @MessageMapping("/{fightId}")
+    @Controller
+    @MessageMapping("/fight")
     @SendTo("/broker/fight/{fightId}")
-    public void toRename(SimpMessageHeaderAccessor headerAccessor) {
-        System.out.println("PARAMETRIZED FIGHT !!!");
+    public static class FightIdController {
+
+        @MessageMapping("/{fightId}/move/{cell}")
+        @SendTo("/broker/fight/{fightId}")
+        public void moveToCell(SimpMessageHeaderAccessor headerAccessor, int cell) {
+            System.out.println("moveToCell " + cell);
+        }
+
+        @MessageMapping("/{fightId}/use/{spell}/on/{cell}")
+        @SendTo("/broker/fight/{fightId}")
+        public void useSpellOnCell(SimpMessageHeaderAccessor headerAccessor, long spell, int cell) {
+            System.out.println("use " + spell + " on " + " cell");
+        }
+
+        @MessageMapping("/{fightId}/endTurn")
+        @SendTo("/broker/fight/{fightId}")
+        public void endTurn(SimpMessageHeaderAccessor headerAccessor) {
+            System.out.println("endTurn");
+        }
+
+        @MessageMapping("/{fightId}/winGame")
+        @SendTo("/broker/fight/{fightId}")
+        public void toRename(SimpMessageHeaderAccessor headerAccessor) {
+            System.out.println("winGame");
+        }
+
     }
 
     @MessageExceptionHandler
@@ -43,5 +66,4 @@ public class FightController {
         exception.printStackTrace();
         return exception.getMessage();
     }
-
 }

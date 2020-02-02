@@ -3,7 +3,6 @@ import Communication from "./Communication";
 import Game from "./Game.js";
 import firebase from "firebase/app";
 import 'firebase/auth';
-import FightMap from "./FightMap";
 
 export default class Gui {
 
@@ -44,7 +43,19 @@ export default class Gui {
             Gui.isSubscribingFight = !Gui.isSubscribingFight;
             if (Gui.isSubscribingFight) {
                 Communication.sendMessage("/fight/subscribe", {});
-                Gui.subscription = Communication.clientSocket.subscribe("/broker/fight", message => FightMap.startFight(message.body));
+                Gui.subscription = Communication.clientSocket.subscribe("/broker/fight", message => {
+                    let fightId = message.body;
+                    Gui.subscription.unsubscribe();
+                    Communication.clientSocket.subscribe("/broker/fight/" + fightId, payload => console.log("Received from /fight/" + fightId + " : " + payload.body));
+                    Communication.sendMessage("/fight/" + fightId + "/move/53", null);
+                    Communication.sendMessage("/fight/" + fightId + "/use/52/on/48", null);
+                    Communication.sendMessage("/fight/" + fightId + "/endTurn", null);
+                    Communication.sendMessage("/fight/" + fightId + "/winGame", null);
+                    Game.switchScene(Game.FIGHT_SCENE);
+                    Communication.unsubscribeAll();
+                    Communication.updateSubscription(Game.FIGHT_SCENE);
+                    Communication.sendMessage("/getAllMap", null);
+                });
             } else {
                 Communication.sendMessage("/fight/unsubscribe", {});
                 Gui.subscription.unsubscribe();
