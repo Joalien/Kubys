@@ -1,8 +1,5 @@
 package kubys.Map;
 
-import kubys.Map.Model.FightMap;
-import kubys.Map.Model.MainMap;
-import kubys.Map.Model.Map;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

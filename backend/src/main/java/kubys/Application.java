@@ -28,11 +28,9 @@ public class Application {
         TODO : (MVP)
         - Optimize payload (low)
         - Use Spring Cloud Vault (low)
-        - Make tests run (low)
         - Change scene in BabylonJS
-            - Refactor JS (low)
+            - Refactor JS (ongoing)
             - Refactor Ring Selection with Scene switch (low)
-            - Add new Fight Scene (high)
          */
     }
 }

@@ -1,6 +1,5 @@
-package kubys.Map.Model;
+package kubys.Map;
 
-import kubys.Map.Position;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;

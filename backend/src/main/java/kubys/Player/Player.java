@@ -1,8 +1,8 @@
 package kubys.Player;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import kubys.Map.Model.Cell;
-import kubys.Map.Model.Map;
+import kubys.Map.Cell;
+import kubys.Map.Map;
 import kubys.Map.Position;
 import kubys.Spell.Breed;
 import kubys.User.User;

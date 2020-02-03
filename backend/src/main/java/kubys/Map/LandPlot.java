@@ -1,4 +1,4 @@
-package kubys.Map.Model;
+package kubys.Map;
 
 import lombok.Builder;
 import lombok.Data;
