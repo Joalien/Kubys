@@ -4,27 +4,23 @@ import Communication from "./Communication";
 
 import 'babylonjs-loaders'
 
-export default class FightMap { // TODO: renamed to FightGui
+export default class FightGui { // TODO: renamed to FightGui
 
-    static PANEL;
-    static PICKED_MESH = null;
-    static HIGHLIGHT_LAYER;
     static axe;
     static container;
-    static advancedTexture;
 
     constructor() {
-        FightMap.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu de combat", true, Game.FIGHT_SCENE);
-        FightMap.PANEL = new BABYLON.GUI.StackPanel();
-        FightMap.PANEL.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu de combat", true, Game.FIGHT_SCENE);
+        this.panel = new BABYLON.GUI.StackPanel();
+        this.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
-        FightMap.advancedTexture.addControl(FightMap.PANEL);
+        this.advancedTexture.addControl(this.panel);
 
         BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/axe/", "axe.obj", Game.CURRENT_SCENE, function (container) {
-            FightMap.axe = container.meshes[0];
-            FightMap.axe.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
-            FightMap.axe.scaling = new BABYLON.Vector3(0.03, 0.03, 0.03);
-            FightMap.container = container;
+            FightGui.axe = container.meshes[0];
+            FightGui.axe.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
+            FightGui.axe.scaling = new BABYLON.Vector3(0.03, 0.03, 0.03);
+            FightGui.container = container;
         });
     }
 
@@ -36,11 +32,18 @@ export default class FightMap { // TODO: renamed to FightGui
         connection.height = "40px";
         connection.color = "white";
         connection.onPointerClickObservable.add(() => {
-            if(FightMap.HIGHLIGHT_LAYER) FightMap.HIGHLIGHT_LAYER.dispose();
-            FightMap.HIGHLIGHT_LAYER = new BABYLON.HighlightLayer("hl1", Game.CURRENT_SCENE);
+            if(this.hightlightLayer) this.hightlightLayer.dispose();
+            this.hightlightLayer = new BABYLON.HighlightLayer("hl1", Game.CURRENT_SCENE);
+            console.log(Player);
+            console.log(Player.CURRENT_PLAYER_ID);
+            console.log(Game);
+            console.log(Game.CURRENT_SCENE);
+            console.log(Game.CURRENT_SCENE.getMeshByID(3));
+            console.log(Game.CURRENT_SCENE.getMeshByID("3"));
+            console.log(Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID));
             for (let mesh of Game.CURRENT_SCENE.meshes) {
-                if (!FightMap.isMeshInsideScope(Player.PLAYERS[Player.CURRENT_PLAYER_ID], mesh, spell) // If outside of the scope
-                    || !FightMap.isLightOfSight(mesh, Player.PLAYERS[Player.CURRENT_PLAYER_ID])) {// Or no light of sight
+                if (!FightGui.isMeshInsideScope(Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID), mesh, spell) // If outside of the scope
+                    || !this.isLightOfSight(mesh, Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID))) {// Or no light of sight
                     mesh.visibility = 0.5;
                     transparentMeshes.push(mesh);
                 }else{
@@ -48,15 +51,15 @@ export default class FightMap { // TODO: renamed to FightGui
                 }
             }
 
-            window.addEventListener("pointermove", () => FightMap.highlightPickedMesh(inScopeMeshes));
+            window.addEventListener("pointermove", () => this.highlightPickedMesh(inScopeMeshes));
 
             setTimeout(() => window.addEventListener("click", () => {// Remove spell casting
                 for (let mesh of transparentMeshes) mesh.visibility = 1;
-                FightMap.HIGHLIGHT_LAYER.dispose();
-                window.removeEventListener("pointermove", () => FightMap.highlightPickedMesh(inScopeMeshes));
+                this.hightlightLayer.dispose();
+                window.removeEventListener("pointermove", () => this.highlightPickedMesh(inScopeMeshes));
 
                 if (inScopeMeshes.includes(Game.CURRENT_SCENE.pick(Game.CURRENT_SCENE.pointerX, Game.CURRENT_SCENE.pointerY).pickedMesh)) {
-                    FightMap.castSpell(Player.PLAYERS[Player.CURRENT_PLAYER_ID], Game.CURRENT_SCENE.pick(Game.CURRENT_SCENE.pointerX, Game.CURRENT_SCENE.pointerY).pickedMesh);
+                    this.castSpell(Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID), Game.CURRENT_SCENE.pick(Game.CURRENT_SCENE.pointerX, Game.CURRENT_SCENE.pointerY).pickedMesh);
                 }
 
             }, {once: true}), 10);
@@ -64,15 +67,17 @@ export default class FightMap { // TODO: renamed to FightGui
         });
 
 
-        FightMap.PANEL.addControl(connection);
+        this.panel.addControl(connection);
     };
 
-    getSpells = message => {
+    createComponentTreePanel = message => {
+        console.log("Spell received !");
         if (message.body) {
-
             //For each item in the map, we print it
+            let i = 0;
             for (let spell of JSON.parse(message.body)) {
-                FightMap.addButton(spell);
+                this.addButton(spell);
+                if (i++ > 3) break; // Todo: remove this line
             }
         } else {
             console.log("got empty message");
@@ -103,12 +108,12 @@ export default class FightMap { // TODO: renamed to FightGui
 
         let newPickedMesh = Game.CURRENT_SCENE.pick(Game.CURRENT_SCENE.pointerX, Game.CURRENT_SCENE.pointerY).pickedMesh;
 
-        if(newPickedMesh !== FightMap.PICKED_MESH && inScopeMeshes.includes(newPickedMesh)) {
-            if(FightMap.PICKED_MESH !== null) {
-                FightMap.HIGHLIGHT_LAYER.removeMesh(FightMap.PICKED_MESH);
+        if(newPickedMesh !== this.pickedMesh && inScopeMeshes.includes(newPickedMesh)) {
+            if(this.pickedMesh !== null) {
+                this.hightlightLayer.removeMesh(this.pickedMesh);
             }
-            FightMap.PICKED_MESH = newPickedMesh;
-            FightMap.HIGHLIGHT_LAYER.addMesh(FightMap.PICKED_MESH, BABYLON.Color3.Green());
+            this.pickedMesh = newPickedMesh;
+            this.hightlightLayer.addMesh(this.pickedMesh, BABYLON.Color3.Green());
         }
     };
 
@@ -135,7 +140,7 @@ export default class FightMap { // TODO: renamed to FightGui
         direction2D.normalize();
 
 
-        let ephemeralAxe = FightMap.axe.clone();
+        let ephemeralAxe = FightGui.axe.clone();
         ephemeralAxe.rotate(BABYLON.Axis.Y, Math.atan2(-direction2D.z, direction2D.x), BABYLON.Space.WORLD);
         ephemeralAxe.position = player.position;
 

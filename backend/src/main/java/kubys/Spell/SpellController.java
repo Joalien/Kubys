@@ -23,7 +23,7 @@ public class SpellController {
     //When a player make a command, only return the diff with previous map
     @MessageMapping("/getSpells")
     @SendToUser("/getSpells")
-    public Spell [] directionPlayer(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+    public Spell[] directionPlayer(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
         //Get the current player
         Player player = sessionStore.getPlayer();
 

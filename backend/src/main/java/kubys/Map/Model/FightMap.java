@@ -23,7 +23,7 @@ public class FightMap extends Map {
     public void initMap() {
         super.initMap();
         LandPlot.LandPlotBuilder lpb = LandPlot.builder();
-        
+
         this.addCell(Position.of(-10, 1, -10), lpb.build());
         this.addCell(Position.of(-10, 1, -9), lpb.build());
         this.addCell(Position.of(-10, 2, -9), lpb.build());

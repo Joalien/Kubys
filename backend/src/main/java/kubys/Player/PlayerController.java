@@ -26,7 +26,7 @@ public class PlayerController {
 
     @MessageMapping("/setPlayer")
     @SendToUser("/setPlayer")
-    public Player setPlayer(@Payload Integer playerIndex, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+    public long setPlayer(@Payload Integer playerIndex, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
         User u = userService.findById(principal.getName());
         Player player = u.getPlayers().get(playerIndex);
 
@@ -35,7 +35,7 @@ public class PlayerController {
         sessionStore.setPlayer(player);
         sessionStore.setUser(u);
 
-        return player;
+        return player.getId();
     }
 
 

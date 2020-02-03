@@ -120,12 +120,11 @@ export default class Player {
         return mesh.__size;
     };
 
-    static refreshPlayer(player) {
-        Player.CURRENT_PLAYER_ID = player.id;
-        console.log("refresh player");
+    static refreshPlayer(playerId) {
+        console.log(playerId);
+        Player.CURRENT_PLAYER_ID = Number(playerId);
         Communication.sendMessage("/getAllMap", null);
         Communication.sendMessage("/getSpells", null);
-
     }
 
     // //Local Axes

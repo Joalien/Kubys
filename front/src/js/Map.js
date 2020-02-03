@@ -214,7 +214,6 @@ export default class Map {
                         }
                         if(Map.ringPlayers[i] === pickInfo) {
                             numberOfPlayer = i;
-                            console.log(pickInfo);
                             Game.CURRENT_SCENE.GUI.addPlayButton(i);
                         }
                     }

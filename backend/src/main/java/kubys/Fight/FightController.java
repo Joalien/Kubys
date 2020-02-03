@@ -34,6 +34,7 @@ public class FightController {
     @SendTo("/broker/fight/{fightId}")
     public static class FightIdController {
 
+        //TODO Add @Param to properly handle method argument
         @MessageMapping("/{fightId}/move/{cell}")
         @SendTo("/broker/fight/{fightId}")
         public void moveToCell(SimpMessageHeaderAccessor headerAccessor, int cell) {
