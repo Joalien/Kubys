@@ -1,6 +1,5 @@
 package kubys.Spell;
 
-import kubys.Player.Breed;
 import kubys.Player.Player;
 import lombok.AllArgsConstructor;
 import lombok.Data;

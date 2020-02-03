@@ -1,5 +1,6 @@
 package kubys.Player;
 
+import kubys.Map.Model.Cell;
 import kubys.User.User;
 import kubys.User.UserService;
 import kubys.configuration.commons.ApplicationStore;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
@@ -38,9 +40,6 @@ public class PlayerController {
         return player.getId();
     }
 
-
-
-
     @MessageMapping("/getPlayers")
     @SendToUser("/getPlayers")
     public Player[] initMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
@@ -53,6 +52,31 @@ public class PlayerController {
         }
 
         return u.getPlayers().toArray(new Player[0]);
+    }
+
+    @MessageMapping("/getAllMap")
+    @SendToUser("/getAllMap")
+    public Cell[] getAllMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+        log.info("getAllMap");
+        Player player = sessionStore.getPlayer();
+        if (player.getPosition() == null || player.getMap() == null) {
+            PlayerService.movePlayer(player, Command.CREATE);
+        }
+
+        return player.getMap().getCells().values().toArray(new Cell[0]);
+    }
+
+    //When a player make a command, only return the diff with previous map
+    @MessageMapping("/command")
+    @SendTo("/broker/command")
+    public Cell applyCommand(Principal principal, Command command, SimpMessageHeaderAccessor headerAccessor) {
+        Player player = sessionStore.getPlayer();
+
+        //If player command, send changes to all players
+        if (PlayerService.movePlayer(player, command)) {
+            return player;
+        }
+        return null;
     }
 
     @MessageExceptionHandler

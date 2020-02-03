@@ -4,7 +4,7 @@ import kubys.Map.MapService;
 import kubys.Map.Model.LandPlot;
 import kubys.Map.Model.Map;
 import kubys.Map.Position;
-import kubys.Player.Breed;
+import kubys.Spell.Breed;
 import kubys.Player.Command;
 import kubys.Player.Player;
 import kubys.Player.PlayerService;

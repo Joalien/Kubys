@@ -1,4 +1,4 @@
-package kubys.Spell;
+package kubys.Player;
 
 import kubys.Player.Player;
 import lombok.AllArgsConstructor;

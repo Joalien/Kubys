@@ -1,6 +1,7 @@
 package kubys.Spell;
 
 import kubys.Player.Player;
+import kubys.Player.SpellPlayer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

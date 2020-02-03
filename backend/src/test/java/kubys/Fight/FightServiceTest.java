@@ -1,50 +1,66 @@
-//package kubys.Fight;
-//
-//import kubys.TestHelper;
-//import lombok.extern.slf4j.Slf4j;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//
-//import java.util.Collections;
-//
-//@SpringBootTest
-//@Slf4j
-//class FightServiceTest {
-//
-//    @Autowired
-//    FightService fightService;
-//
-//    @Test
-//    @DisplayName("create a new fight map")
-//    void createFightMaps() {
-//        fightService.generateFight(TestHelper.);
-//    }
-//
-//
-//    @DisplayName("create two different fight map")
-//    void createFightMaps() {
-//        fightService.generateFight()
-//    }
-//
-//    @Test
-//    @DisplayName("Verify that ApplicationStore is not null after initialisation")
-//    void testApplicationStoreNotNull() {
-//        assertNotNull(fightQueue.getApplicationStore());
-//    }
-//
-//    @Test
-//    @DisplayName("create a map with no player")
-//    void createMapWithNoPlayer() {
-//        Assertions.assertThrows(IllegalArgumentException.class, () -> fightService.generateFight(Collections.emptyList()));
-//        Assertions.assertThrows(IllegalArgumentException.class, () -> fightService.generateFight(Collections.singletonList(TestHelper.)));
-//    }
-//
-//
-//@Test
-//@DisplayName("If a player is already inside a fight, he can't join a new one")
-//public void playerOnlyInOneFight() {}
-//
-//}
+package kubys.Fight;
+
+import kubys.TestHelper;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@SpringBootTest
+@Slf4j
+class FightServiceTest {
+
+    @Autowired
+    FightService fightService;
+
+    @BeforeEach
+    void verifyThereIsNoFight() {
+        assertTrue(FightService.FIGHTS.isEmpty());
+    }
+
+    @Test
+    @DisplayName("create a simple fight map")
+    void createFightMap() {
+        Fight fight = fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
+        assertEquals(FightService.FIGHTS.size(), 1);
+        assertTrue(FightService.FIGHTS.containsKey(fight.getUuid()));
+        assertTrue(FightService.FIGHTS.containsValue(fight));
+    }
+
+    @Test
+    @DisplayName("create three different fight map")
+    void createMultiplesFightMaps() {
+        fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
+        fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
+        fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
+        assertEquals(FightService.FIGHTS.size(), 3);
+    }
+
+    @Test
+    @DisplayName("verify map can't afford more player that has staring position")
+    void createMapWithTooManyPlayers() {
+        int tooManyPlayers = 10; // May depends on fight map starting position (should not introduce coupling)
+        assertThrows(IllegalStateException.class, () -> fightService.generateFight(TestHelper.createNewPlayers(tooManyPlayers)));
+    }
+
+    @Test
+    @DisplayName("create map with no player")
+    void createMapWithTooFewPlayers() {
+        int tooFewPlayers = FightService.MIN_NUMBER_OF_PLAYER - 1;
+        assertThrows(IllegalArgumentException.class, () -> fightService.generateFight(TestHelper.createNewPlayers(tooFewPlayers)));
+    }
+
+    @AfterEach
+    void clearAllFight() {
+        FightService.FIGHTS.clear();
+    }
+}

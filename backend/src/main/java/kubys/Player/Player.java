@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import kubys.Map.Model.Cell;
 import kubys.Map.Model.Map;
 import kubys.Map.Position;
-import kubys.Spell.SpellPlayer;
+import kubys.Spell.Breed;
 import kubys.User.User;
 import lombok.*;
 import org.springframework.format.annotation.NumberFormat;
