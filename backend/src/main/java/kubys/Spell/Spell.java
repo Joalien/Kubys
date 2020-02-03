@@ -1,10 +1,8 @@
 package kubys.Spell;
 
-import kubys.Player.Breed;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.LinkedHashMap;
 
 @Data

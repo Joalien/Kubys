@@ -1,6 +1,7 @@
 package kubys.Fight;
 
 import kubys.Player.Player;
+import kubys.TestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -19,11 +20,12 @@ class FightQueueTest {
     FightQueue fightQueue;
 
     @Test
-    @DisplayName("Improve me ...")
+    @DisplayName("Improve me (find what depends on number of players inside a fight) ...")
     void testGenerateFight() {
-        fightQueue.addPlayer(Player.builder().id(1L).name("Player 1").build());
-        fightQueue.addPlayer(Player.builder().id(2L).name("Player 2").build());
-        Assertions.assertThat(fightQueue.getWaitingQueue().size()).isEqualTo(2);
+        for (int i = 0; i < FightQueue.NUMBER_OF_PLAYER; i++) {
+            fightQueue.addPlayer(TestHelper.createNewPlayer());
+        }
+        Assertions.assertThat(fightQueue.getWaitingQueue().size()).isEqualTo(FightQueue.NUMBER_OF_PLAYER);
 
         fightQueue.getLaunchFight().run();
 

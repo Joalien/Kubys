@@ -1,4 +1,4 @@
-package kubys.Player;
+package kubys.Spell;
 
 
 public enum Breed {

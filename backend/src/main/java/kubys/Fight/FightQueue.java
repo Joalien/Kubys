@@ -27,7 +27,7 @@ public class FightQueue {
 
     private Set<Player> waitingQueue = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private static final int NUMBER_OF_PLAYER = 1;
+    public static final int NUMBER_OF_PLAYER = 1;
     public static final int DELAY = 10; // Delay in seconds each time the queue is processed
     @NonNull
     private SimpMessagingTemplate template;
