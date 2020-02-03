@@ -3,6 +3,10 @@ import Communication from "./Communication";
 import Game from "./Game.js";
 import firebase from "firebase/app";
 import 'firebase/auth';
+import {Scene} from "babylonjs";
+import FightGui from "./FightGui";
+import Camera from "./Camera";
+import Map from "./Map";
 
 export default class Gui {
 
@@ -44,17 +48,29 @@ export default class Gui {
             if (Gui.isSubscribingFight) {
                 Communication.sendMessage("/fight/subscribe", {});
                 Gui.subscription = Communication.clientSocket.subscribe("/broker/fight", message => {
+                    // First, let's create the fight map
+                    Game.FIGHT_SCENE = new Scene(Game.ENGINE);
+                    Game.FIGHT_SCENE.GUI = new FightGui();
+                    Game.FIGHT_SCENE.CAMERA = new Camera(Game.FIGHT_SCENE, Game.CANVAS);
+                    Game.FIGHT_SCENE.MAP = new Map(Game.FIGHT_SCENE, Game.FIGHT_SCENE.CAMERA);
+                    Game.FIGHT_SCENE.MAP.NAME = "Fight map";
+                    Game.FIGHT_SCENE.NAME = "Fight scene";
+
+                    // Then, let's update the topic's subscription
                     let fightId = message.body;
                     Gui.subscription.unsubscribe();
+                    Communication.unsubscribeAll();
+
+                    Communication.updateSubscription(Game.FIGHT_SCENE);
+                    Communication.sendMessage("/getAllMap", null);
+                    Communication.sendMessage("/getSpells", null);
                     Communication.clientSocket.subscribe("/broker/fight/" + fightId, payload => console.log("Received from /fight/" + fightId + " : " + payload.body));
                     Communication.sendMessage("/fight/" + fightId + "/move/53", null);
                     Communication.sendMessage("/fight/" + fightId + "/use/52/on/48", null);
                     Communication.sendMessage("/fight/" + fightId + "/endTurn", null);
                     Communication.sendMessage("/fight/" + fightId + "/winGame", null);
+
                     Game.switchScene(Game.FIGHT_SCENE);
-                    Communication.unsubscribeAll();
-                    Communication.updateSubscription(Game.FIGHT_SCENE);
-                    Communication.sendMessage("/getAllMap", null);
                 });
             } else {
                 Communication.sendMessage("/fight/unsubscribe", {});

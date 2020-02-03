@@ -5,8 +5,6 @@ import "../css/MainStyle.css";
 import "../../kubys_favicon.ico";
 
 import {Engine, Scene} from 'babylonjs';
-import FightMap from "./FightMap";
-import Player from "./Player";
 import Communication from "./Communication";
 
 import firebase from "firebase/app";
@@ -54,13 +52,6 @@ export default class Game {
         Game.MAIN_SCENE.MAP = new Map(Game.MAIN_SCENE, Game.MAIN_SCENE.CAMERA);
         Game.MAIN_SCENE.MAP.NAME = "Main map";
         Game.MAIN_SCENE.NAME = "Main scene";
-
-        Game.FIGHT_SCENE = new Scene(Game.ENGINE);
-        Game.FIGHT_SCENE.GUI = new FightMap();
-        Game.FIGHT_SCENE.CAMERA = new Camera(Game.FIGHT_SCENE, Game.CANVAS);
-        Game.FIGHT_SCENE.MAP = new Map(Game.FIGHT_SCENE, Game.FIGHT_SCENE.CAMERA);
-        Game.FIGHT_SCENE.MAP.NAME = "Fight map";
-        Game.FIGHT_SCENE.NAME = "Fight scene";
 
         Game.CURRENT_SCENE = Game.MAIN_SCENE;
         Game.ENGINE.runRenderLoop( () => {

@@ -35,7 +35,7 @@ export default class Communication {
             // called back after the client is connected and authenticated to the STOMP server
             Communication.updateSubscription(Game.CURRENT_SCENE);
             Communication.clientSocket.subscribe("/user/errors", error => console.log(error));
-            Communication.clientSocket.subscribe("/user/setPlayer", Player.refreshPlayer);
+            Communication.clientSocket.subscribe("/user/setPlayer", message => Player.refreshPlayer(message.body));
 
             // Communication.sendMessage("/getAllMap", null);
             Communication.clientSocket.send("/getPlayers", null);
