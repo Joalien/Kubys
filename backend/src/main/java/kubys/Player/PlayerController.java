@@ -1,6 +1,8 @@
 package kubys.Player;
 
-import kubys.Map.Model.Cell;
+import kubys.Map.Cell;
+import kubys.Spell.Spell;
+import kubys.Spell.SpellService;
 import kubys.User.User;
 import kubys.User.UserService;
 import kubys.configuration.commons.ApplicationStore;
@@ -25,6 +27,7 @@ public class PlayerController {
     private UserService userService;
     private SessionStore sessionStore;
     private ApplicationStore applicationStore;
+    private SpellService spellService;
 
     @MessageMapping("/setPlayer")
     @SendToUser("/setPlayer")
@@ -64,6 +67,16 @@ public class PlayerController {
         }
 
         return player.getMap().getCells().values().toArray(new Cell[0]);
+    }
+
+    //When a player make a command, only return the diff with previous map
+    @MessageMapping("/getSpells")
+    @SendToUser("/getSpells")
+    public Spell[] directionPlayer(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+        //Get the current player
+        Player player = sessionStore.getPlayer();
+
+        return spellService.getSpellsByBreed(player.getBreed()).toArray(new Spell[0]);
     }
 
     //When a player make a command, only return the diff with previous map

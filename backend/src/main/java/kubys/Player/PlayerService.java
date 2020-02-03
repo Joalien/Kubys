@@ -1,8 +1,8 @@
 package kubys.Player;
 
 import kubys.Map.MapService;
-import kubys.Map.Model.Cell;
-import kubys.Map.Model.Map;
+import kubys.Map.Cell;
+import kubys.Map.Map;
 import kubys.Map.Position;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,6 @@
-package kubys.Map.Model;
+package kubys.Map;
 
-import kubys.Map.Position;
-import kubys.Player.Player;
+import kubys.Player.Player; // Only use in toString method, it doesn't mean Map relies on Player
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

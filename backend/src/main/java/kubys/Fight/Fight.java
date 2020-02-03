@@ -1,7 +1,7 @@
 package kubys.Fight;
 
 
-import kubys.Map.Model.Map;
+import kubys.Map.Map;
 import kubys.Player.Player;
 import lombok.Builder;
 import lombok.Data;

@@ -1,8 +1,8 @@
 package kubys.Move;
 
 import kubys.Map.MapService;
-import kubys.Map.Model.LandPlot;
-import kubys.Map.Model.Map;
+import kubys.Map.LandPlot;
+import kubys.Map.Map;
 import kubys.Map.Position;
 import kubys.Spell.Breed;
 import kubys.Player.Command;
