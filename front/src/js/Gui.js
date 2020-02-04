@@ -173,10 +173,10 @@ export default class Gui {
                 axe.onPointerEnterObservable.add(() => axe.alpha = 2);
                 axe.onPointerOutObservable.add(() => axe.alpha = 0.6);
                 axe.onPointerClickObservable.add(() => {
-                    nameOfSpell.text =
+                    nameOfSpell.text = // TODO uncomment
                         `${spell.name}
                                 
-Type de sort : ${spell.type}
+Type de sort : ${spell.type/*.label*/}
 Point d'action : ${spell.pa}
 Portée : ${spell.minScope} à ${spell.maxScope}
 Dégats : ${spell.damage}

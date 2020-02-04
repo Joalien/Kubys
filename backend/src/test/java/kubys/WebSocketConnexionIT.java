@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("Test WebSocket STOMP client")
 @Slf4j
-class WebSocketConnexionTest {
+class WebSocketConnexionIT {
 
     private static final String KEY_PATH = "serviceAccountPrivateKey.json";
     @LocalServerPort
