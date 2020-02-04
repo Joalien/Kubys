@@ -1,6 +1,6 @@
 package kubys.Spell;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Map;
 
 public enum SpellType {
 
@@ -8,14 +8,17 @@ public enum SpellType {
     DROP("Laché"),
     THROW("En cloche");
 
-    private String name;
+    private String label;
 
-    SpellType(String name) {
-        this.name = name;
+    SpellType(String label) {
+        this.label = label;
     }
 
-    @JsonValue
-    public String getName() {
-        return name;
+    @Override
+    public String toString() {
+        return Map.of(
+                "value", this.name(),
+                "label", label
+        ).toString();
     }
 }

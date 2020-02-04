@@ -4,7 +4,7 @@ import Communication from "./Communication";
 
 import 'babylonjs-loaders'
 
-export default class FightGui { // TODO: renamed to FightGui
+export default class FightGui {
 
     static axe;
     static container;
@@ -13,10 +13,9 @@ export default class FightGui { // TODO: renamed to FightGui
         this.advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("Menu de combat", true, Game.FIGHT_SCENE);
         this.panel = new BABYLON.GUI.StackPanel();
         this.panel.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-
         this.advancedTexture.addControl(this.panel);
 
-        BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/axe/", "axe.obj", Game.CURRENT_SCENE, function (container) {
+        BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/axe/", "axe.obj", Game.FIGHT_SCENE, function (container) {
             FightGui.axe = container.meshes[0];
             FightGui.axe.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
             FightGui.axe.scaling = new BABYLON.Vector3(0.03, 0.03, 0.03);
@@ -32,28 +31,22 @@ export default class FightGui { // TODO: renamed to FightGui
         connection.height = "40px";
         connection.color = "white";
         connection.onPointerClickObservable.add(() => {
-            if(this.hightlightLayer) this.hightlightLayer.dispose();
+            if (this.hightlightLayer) this.hightlightLayer.dispose();
             this.hightlightLayer = new BABYLON.HighlightLayer("hl1", Game.CURRENT_SCENE);
-            console.log(Player);
-            console.log(Player.CURRENT_PLAYER_ID);
-            console.log(Game);
-            console.log(Game.CURRENT_SCENE);
-            console.log(Game.CURRENT_SCENE.getMeshByID(3));
-            console.log(Game.CURRENT_SCENE.getMeshByID("3"));
-            console.log(Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID));
             for (let mesh of Game.CURRENT_SCENE.meshes) {
+                // if (mesh === FightGui.axe) continue;
                 if (!FightGui.isMeshInsideScope(Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID), mesh, spell) // If outside of the scope
-                    || !this.isLightOfSight(mesh, Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID))) {// Or no light of sight
+                    || !this.isLightOfSight(mesh, Game.CURRENT_SCENE.getMeshByID(Player.CURRENT_PLAYER_ID))) { // Or no light of sight
                     mesh.visibility = 0.5;
                     transparentMeshes.push(mesh);
-                }else{
+                } else {
                     inScopeMeshes.push(mesh);
                 }
             }
 
             window.addEventListener("pointermove", () => this.highlightPickedMesh(inScopeMeshes));
 
-            setTimeout(() => window.addEventListener("click", () => {// Remove spell casting
+            setTimeout(() => window.addEventListener("click", () => { // Remove spell casting
                 for (let mesh of transparentMeshes) mesh.visibility = 1;
                 this.hightlightLayer.dispose();
                 window.removeEventListener("pointermove", () => this.highlightPickedMesh(inScopeMeshes));
@@ -65,8 +58,6 @@ export default class FightGui { // TODO: renamed to FightGui
             }, {once: true}), 10);
 
         });
-
-
         this.panel.addControl(connection);
     };
 
@@ -84,11 +75,11 @@ export default class FightGui { // TODO: renamed to FightGui
         }
     };
 
-    static isMeshInsideScope = function(player, mesh, spell) {
-        if(mesh.name === "skyBox") return false;
+    static isMeshInsideScope = (player, mesh, spell) => {
+        if (mesh.name === "skyBox")  return false;
         let distance = Math.abs(player.position.x - mesh.position.x) + Math.abs(player.position.z - mesh.position.z);
-        if(distance <= spell.maxScope && distance >= spell.minScope) {
-            switch (spell.type) {
+        if (distance <= spell.maxScope && distance >= spell.minScope) {
+            switch (spell.type/*.value*/) { // TODO uncomment
                 case "CLASSIC":
                     distance = Math.abs(player.position.x - mesh.position.x) + Math.abs(player.position.z - mesh.position.z) + Math.abs(player.position.y - mesh.position.y);
                     return (distance <= spell.maxScope && distance >= spell.minScope);
@@ -99,17 +90,16 @@ export default class FightGui { // TODO: renamed to FightGui
                 default:
                     console.log("No type found");
                     return false;
-
             }
-        }else return false;
+        } else return false;
     };
 
     highlightPickedMesh = inScopeMeshes => {
 
         let newPickedMesh = Game.CURRENT_SCENE.pick(Game.CURRENT_SCENE.pointerX, Game.CURRENT_SCENE.pointerY).pickedMesh;
 
-        if(newPickedMesh !== this.pickedMesh && inScopeMeshes.includes(newPickedMesh)) {
-            if(this.pickedMesh !== null) {
+        if (newPickedMesh !== this.pickedMesh && inScopeMeshes.includes(newPickedMesh)) {
+            if (this.pickedMesh) {
                 this.hightlightLayer.removeMesh(this.pickedMesh);
             }
             this.pickedMesh = newPickedMesh;
@@ -145,13 +135,13 @@ export default class FightGui { // TODO: renamed to FightGui
         ephemeralAxe.position = player.position;
 
 
-        let axeAnimation1 = new BABYLON.Animation("translateAxe", "position", 100/time, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-        let axeAnimation2 = new BABYLON.Animation("rotateAxe", "rotation.y", 100/time, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+        let translateAxeAnimation1 = new BABYLON.Animation("translateAxe", "position", 100/time, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+        let rotateAxeAnimation = new BABYLON.Animation("rotateAxe", "rotation.y", 100/time, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
         let keys1 = [];
         let keys2 = [];
         ephemeralAxe.animations = [];
-        ephemeralAxe.animations.push(axeAnimation1);
-        ephemeralAxe.animations.push(axeAnimation2);
+        ephemeralAxe.animations.push(translateAxeAnimation1);
+        ephemeralAxe.animations.push(rotateAxeAnimation);
         keys1.push({
             frame: 0,
             value: player.position
@@ -170,16 +160,16 @@ export default class FightGui { // TODO: renamed to FightGui
             frame: 100,
             value: Math.PI
         });
-        axeAnimation1.setKeys(keys1);
-        axeAnimation2.setKeys(keys2);
+        translateAxeAnimation1.setKeys(keys1);
+        rotateAxeAnimation.setKeys(keys2);
 
         let animationGroup = new BABYLON.AnimationGroup("axeGroup");
-        animationGroup.addTargetedAnimation(axeAnimation1, ephemeralAxe);
-        animationGroup.addTargetedAnimation(axeAnimation2, ephemeralAxe);
+        animationGroup.addTargetedAnimation(translateAxeAnimation1, ephemeralAxe);
+        animationGroup.addTargetedAnimation(rotateAxeAnimation, ephemeralAxe);
         animationGroup.normalize(0, 100);
         animationGroup.play(true);
 
-        // Game.CURRENT_SCENE.beginAnimation(ephemeralAxe, 0, 100, true, 1);
+        Game.CURRENT_SCENE.beginAnimation(ephemeralAxe, 0, 100, true, 1);
 
         setTimeout(() => Game.CURRENT_SCENE.removeMesh(ephemeralAxe), time*1000);
 

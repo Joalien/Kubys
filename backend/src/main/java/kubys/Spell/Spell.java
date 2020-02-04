@@ -54,11 +54,11 @@ public class Spell {
                 .build());
         for (long i = 4L; i<=17; i++) {
             spells.put(i, Spell.builder()
-                    .type(SpellType.THROW)
+                    .type(SpellType.CLASSIC)
                     .name("Hachachinage " + i)
                     .ammunition(-1)
                     .minScope((int) (i % 3) + 1)
-                    .maxScope((int) (i % 3) + 1)
+                    .maxScope((int) (i % 8) + 1)
                     .zone((int) ((i + 1) % 2) + 1)
                     .breed(Breed.DWARF)
                     .build());

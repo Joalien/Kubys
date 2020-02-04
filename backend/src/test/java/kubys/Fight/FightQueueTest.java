@@ -1,9 +1,9 @@
 package kubys.Fight;
 
-import kubys.Player.Player;
 import kubys.TestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +37,11 @@ class FightQueueTest {
     void testApplicationStoreNotNull() {
         assertNotNull(fightQueue.getApplicationStore());
     }
+
+    @AfterEach
+    void clearAllFight() {
+        FightService.FIGHTS.clear();
+    }
+
 
 }

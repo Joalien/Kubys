@@ -9,11 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.concurrent.ThreadLocalRandom;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
@@ -24,7 +20,7 @@ class FightServiceTest {
 
     @BeforeEach
     void verifyThereIsNoFight() {
-        assertTrue(FightService.FIGHTS.isEmpty());
+        assertTrue(FightService.FIGHTS.isEmpty()); // May be wrong if an other test has created a fight
     }
 
     @Test
