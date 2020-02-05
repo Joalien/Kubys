@@ -4,6 +4,8 @@ import java.util.Map;
 
 public enum SpellType {
 
+
+    //TODO Add conditions about casting spell and serialize them in order to avoid switch instruction inside front
     CLASSIC("Classique"),
     DROP("Laché"),
     THROW("En cloche");

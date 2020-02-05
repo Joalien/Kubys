@@ -74,7 +74,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         //BROADCAST TO ALL USER WHO SUBSCRIBED
-        config.enableSimpleBroker("/broker", "/error", "/getAllMap", "/getPlayers", "/getSpells", "/setPlayer", "/fight");
+        config.enableSimpleBroker("/broker", "/error", "/getAllMap", "/getPlayers", "/getSpells", "/setPlayer", "/fight", "/getSpellPoints");
         config.setUserDestinationPrefix("/user");
     }
 

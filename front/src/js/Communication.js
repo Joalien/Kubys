@@ -83,12 +83,18 @@ export default class Communication {
     static updateSubscription(scene) {
         Communication.getAllMapSubscription = Communication.clientSocket.subscribe("/user/getAllMap", scene.MAP.getAllMap);
         Communication.getPlayerSubscription = Communication.clientSocket.subscribe("/user/getPlayers", scene.MAP.selectionRing);
-        Communication.getSpellSubscription = Communication.clientSocket.subscribe("/user/getSpells", message => scene.GUI.createComponentTreePanel(message));
         Communication.updateMapSubscription = Communication.clientSocket.subscribe("/broker/command", scene.MAP.updateMap);
     }
 
     static unsubscribeAll() {
         [Communication.getAllMapSubscription, Communication.updateMapSubscription, Communication.getPlayerSubscription, Communication.getSpellSubscription].map(s => s.unsubscribe());
+    }
+
+    static mockRestApi = (url, callback) => {
+        let subscription = Communication.clientSocket.subscribe(url, (message) => {
+            subscription.unsubscribe();
+            callback(message);
+        });
     }
 }
 

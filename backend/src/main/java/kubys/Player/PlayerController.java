@@ -28,6 +28,7 @@ public class PlayerController {
     private SessionStore sessionStore;
     private ApplicationStore applicationStore;
     private SpellService spellService;
+    private PlayerService playerService;
 
     @MessageMapping("/setPlayer")
     @SendToUser("/setPlayer")
@@ -69,14 +70,22 @@ public class PlayerController {
         return player.getMap().getCells().values().toArray(new Cell[0]);
     }
 
-    //When a player make a command, only return the diff with previous map
     @MessageMapping("/getSpells")
     @SendToUser("/getSpells")
-    public Spell[] directionPlayer(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+    public Spell[] getSpells(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
         //Get the current player
         Player player = sessionStore.getPlayer();
 
         return spellService.getSpellsByBreed(player.getBreed()).toArray(new Spell[0]);
+    }
+
+    @MessageMapping("/getSpellPoints")
+    @SendToUser("/getSpellPoints")
+    public int getSpellPoints(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+        //Get the current player
+        Player player = sessionStore.getPlayer();
+
+        return playerService.getSpellPoints(player);
     }
 
     //When a player make a command, only return the diff with previous map

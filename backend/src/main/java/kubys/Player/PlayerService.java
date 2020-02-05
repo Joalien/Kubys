@@ -122,4 +122,9 @@ public class PlayerService {
         player.setPosition(newPosition.get());
         return true;
     }
+
+    public int getSpellPoints(Player player) {
+        int POINTS_MODIFIER = 1;
+        return player.getLevel() * POINTS_MODIFIER;
+    }
 }
