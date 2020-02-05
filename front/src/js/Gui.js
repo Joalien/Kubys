@@ -37,6 +37,7 @@ export default class Gui {
             this.advancedTexture.removeControl(Gui.playPlayerButton);
             Game.CURRENT_SCENE.MAP.clearRingSelection();
             this.advancedTexture.addControl(Gui.subscribeFightButton);
+            this.advancedTexture.addControl(Gui.skillTreeButton);
         });
 
 
@@ -77,6 +78,19 @@ export default class Gui {
                 Gui.subscription.unsubscribe();
             }
         });
+
+        Gui.skillTreeButton = Button.CreateImageOnlyButton("Arbre de compétence", "resources/images/icon_parchemin.png");
+        this.setDefaultButtonCharacteristics(Gui.skillTreeButton, -45, 40);
+        this.surroundWithColor(Gui.skillTreeButton);
+        Gui.skillTreeButton.onPointerClickObservable.add(() => {
+            if (Gui.isComponentPanelOpen)
+                this.advancedTexture.removeControl(Gui.skillTreePanel);
+            else {
+                Communication.mockRestApi("/user/getSpells", message => this.createComponentTreePanel(message));
+                Communication.sendMessage("/getSpells", null);
+            }
+            Gui.isComponentPanelOpen = !Gui.isComponentPanelOpen;
+        });
     }
 
     addPlayButton(playerId) {
@@ -113,16 +127,7 @@ export default class Gui {
     }
 
     createComponentTreePanel(message) {
-        Gui.skillTreeButton = Button.CreateImageOnlyButton("Arbre de compétence", "resources/images/icon_parchemin.png");
-        this.setDefaultButtonCharacteristics(Gui.skillTreeButton, -45, 40);
-        this.surroundWithColor(Gui.skillTreeButton);
-        Gui.skillTreeButton.onPointerClickObservable.add(() => {
-            if(Gui.isComponentPanelOpen)
-                this.advancedTexture.removeControl(Gui.skillTreePanel);
-            else this.advancedTexture.addControl(Gui.skillTreePanel);
-            Gui.isComponentPanelOpen = !Gui.isComponentPanelOpen;
-        });
-        this.advancedTexture.addControl(Gui.skillTreeButton);
+        console.log('create tree panel');
 
         // Create Skill tree
         const height = 80;
@@ -136,6 +141,14 @@ export default class Gui {
         Gui.skillTreePanel.cornerRadius = 100;
         Gui.skillTreePanel.background = "white";
         Gui.skillTreePanel.isPointerBlocker = true;
+        this.advancedTexture.addControl(Gui.skillTreePanel);
+
+        let spellPoints = new TextBlock();
+        spellPoints.left = treeWidth / 2 + "%";
+        spellPoints.top = height * (-0.5) + "%";
+        Communication.clientSocket.send("/getSpellPoints", {}, null);
+        Communication.clientSocket.subscribe("/user/getSpellPoints", message => spellPoints.text = "Vous possèdez " + message.body + " points de sort");
+        Gui.skillTreePanel.addControl(spellPoints);
 
         let nameOfSpell = new TextBlock();
         nameOfSpell.left = treeWidth / 2 + "%";
@@ -170,9 +183,8 @@ export default class Gui {
                 this.setDefaultButtonCharacteristics(axe, positionValues[i].width, positionValues[i++].height);
                 axe.alpha = 0.6;
                 Gui.skillTreePanel.addControl(axe);
-                axe.onPointerEnterObservable.add(() => axe.alpha = 2);
-                axe.onPointerOutObservable.add(() => axe.alpha = 0.6);
-                axe.onPointerClickObservable.add(() => {
+                axe.onPointerEnterObservable.add(() => {
+                    axe.alpha = 2;
                     nameOfSpell.text = // TODO uncomment
                         `${spell.name}
                                 
@@ -185,7 +197,9 @@ Zone : ${spell.zone}
                     if (spell.ammunition === -1)
                         nameOfSpell.text += "Munition : ∞";
                     else nameOfSpell.text += "Munition : " + spell.ammunition;
+
                 });
+                axe.onPointerOutObservable.add(() => axe.alpha = 0.6);
             }
         } else {
             console.log("got empty message");

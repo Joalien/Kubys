@@ -59,4 +59,5 @@ public class Player extends Cell {
     public String toString() {
         return "Player(id=" + this.getId() + ", map=" + (map!=null?map.getName():"null") + ", position=" + this.getPosition() + ", name=" + this.getName() + ")";
     }
+
 }

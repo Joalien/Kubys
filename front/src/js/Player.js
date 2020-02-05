@@ -124,7 +124,6 @@ export default class Player {
         console.log(playerId);
         Player.CURRENT_PLAYER_ID = Number(playerId);
         Communication.sendMessage("/getAllMap", null);
-        Communication.sendMessage("/getSpells", null);
     }
 
     // //Local Axes

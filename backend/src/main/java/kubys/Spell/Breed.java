@@ -10,7 +10,6 @@ public enum Breed {
     BERSERKER("Berserker");
 
 
-
     Breed(String species) {
 
     }
