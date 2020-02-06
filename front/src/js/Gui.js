@@ -43,7 +43,6 @@ export default class Gui {
 
         Gui.subscribeFightButton = Button.CreateImageOnlyButton("Fight !", "resources/images/icon_sword.png");
         this.setDefaultButtonCharacteristics(Gui.subscribeFightButton, -45, 25);
-        this.surroundWithColor(Gui.subscribeFightButton);
         Gui.subscribeFightButton.onPointerClickObservable.add(() => {
             Gui.isSubscribingFight = !Gui.isSubscribingFight;
             if (Gui.isSubscribingFight) {
@@ -200,6 +199,7 @@ Zone : ${spell.zone}
 
                 });
                 axe.onPointerOutObservable.add(() => axe.alpha = 0.6);
+                this.surroundWithColor(axe);
             }
         } else {
             console.log("got empty message");
