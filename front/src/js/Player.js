@@ -10,7 +10,6 @@ export default class Player {
 
     static elf;
     static dwarf;
-    static assassin;
     static wizard;
     static berserker;
 
@@ -46,10 +45,6 @@ export default class Player {
                 break;
             case "ELF":
                 // myObj.mesh = Player.elf.clone();
-                myObj.mesh = Player.wizard.clone();
-                break;
-            case "ASSASSIN":
-                // myObj.mesh = Player.assassin.clone();
                 myObj.mesh = Player.wizard.clone();
                 break;
             case "WIZARD":
