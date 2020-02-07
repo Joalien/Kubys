@@ -13,16 +13,17 @@ export default class Player {
     static wizard;
     static berserker;
 
-    static init() {
+    static init(scene) {
         return new Promise(resolve => {
-            if (!Player.wizard || Player.wizard._scene !== Game.CURRENT_SCENE) {
-                BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", Game.CURRENT_SCENE, (container) => {
+            if (!Player.wizard || Player.wizard._scene !== scene) {
+                BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/wizard/", "wizard.obj", scene, (container) => {
                     Player.wizard = BABYLON.Mesh.MergeMeshes(container.meshes, true, true, undefined, false, true);
                     Player.wizard.visibility = 0;
 
                     let scaleFactor = Player.getScalingVectorToFit(Player.wizard);
                     scaleFactor = Math.min(scaleFactor.x, scaleFactor.y, scaleFactor.z);
                     Player.wizard.scaling = new BABYLON.Vector3(scaleFactor, scaleFactor, scaleFactor);
+                    Player.wizard._scene = scene;
                     // TODO Improve me !
                     resolve();
                 });
@@ -32,11 +33,11 @@ export default class Player {
         });
     }
 
-    static async build(characteristics) {
-        await Player.init();
+    static async build(characteristics, scene) {
+        await Player.init(scene);
 
         let myObj = new Player();
-        myObj.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Player's name", true, Game.CURRENT_SCENE);
+        myObj.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Player's name", true, scene);
 
         switch (characteristics.breed) {
             case "DWARF":
@@ -116,39 +117,6 @@ export default class Player {
     };
 
     static refreshPlayer(playerId) {
-        console.log(playerId);
         Player.CURRENT_PLAYER_ID = Number(playerId);
-        Communication.sendMessage("/getAllMap", null);
     }
-
-    // //Local Axes
-    // static localAxes(size) {
-    //     let pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [
-    //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
-    //         new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-    //     ], Game.CURRENT_SCENE);
-    //     pilot_local_axisX.color = new BABYLON.Color3(1, 0, 0);
-    //
-    //     let pilot_local_axisY = BABYLON.Mesh.CreateLines("pilot_local_axisY", [
-    //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
-    //         new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
-    //     ], Game.CURRENT_SCENE);
-    //     pilot_local_axisY.color = new BABYLON.Color3(0, 1, 0);
-    //
-    //     let pilot_local_axisZ = BABYLON.Mesh.CreateLines("pilot_local_axisZ", [
-    //         new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-    //         new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-    //     ], Game.CURRENT_SCENE);
-    //     pilot_local_axisZ.color = new BABYLON.Color3(0, 0, 1);
-    //
-    //     let local_origin = BABYLON.MeshBuilder.CreateBox("local_origin", {size:1}, Game.CURRENT_SCENE);
-    //     local_origin.isVisible = false;
-    //
-    //     pilot_local_axisX.parent = local_origin;
-    //     pilot_local_axisY.parent = local_origin;
-    //     pilot_local_axisZ.parent = local_origin;
-    //
-    //     return local_origin;
-    //
-    // }
 };

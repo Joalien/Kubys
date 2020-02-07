@@ -30,7 +30,7 @@ public class FightService {
 
         if (!canMoveAllPlayer) {
             log.error("Fight : " + fight);
-            throw new IllegalStateException("Some users can't be move towards new Map !");
+            throw new IllegalStateException("Some users can't be move towards new MainMap !");
         }
 
         FIGHTS.put(fight.getUuid(), fight);

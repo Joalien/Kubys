@@ -26,7 +26,7 @@ public class SpellPlayer {
     @NotNull
     long spell_id;
 
-    @Column(nullable=false)
+    @Column(nullable=false, columnDefinition = "default false")
     boolean spellAvailable = false;
 
 }

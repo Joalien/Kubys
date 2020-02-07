@@ -1,14 +1,10 @@
-import Camera from './Camera.js';
-import Gui from './Gui.js';
-import Map from './Map.js';
 import "../css/MainStyle.css";
 import "../../kubys_favicon.ico";
-
-import {Engine, Scene} from 'babylonjs';
+import {Engine} from 'babylonjs';
 import Communication from "./Communication";
-
 import firebase from "firebase/app";
 import 'firebase/auth';
+import SelectionRing from "./SelectionRing";
 
 console.trace(process.env.NODE_ENV + ' mode');
 
@@ -36,31 +32,33 @@ document.addEventListener("DOMContentLoaded", () => {
 export default class Game {
     static CANVAS;
     static ENGINE;
-    static CURRENT_SCENE;
-    static MAIN_SCENE;
-    static FIGHT_SCENE;
+    static SCENES = [];
+    static current_scene; // integer
 
     init(canvasId) {
         // Canvas et engine défini ici
         Game.CANVAS = document.getElementById(canvasId);
         Game.ENGINE = new Engine(Game.CANVAS, true);
 
-        // On initie les scènes avec une fonction associé à l'objet Game
-        Game.MAIN_SCENE = new Scene(Game.ENGINE);
-        Game.MAIN_SCENE.GUI = new Gui(Game.MAIN_SCENE);
-        Game.MAIN_SCENE.CAMERA = new Camera(Game.MAIN_SCENE, Game.CANVAS);
-        Game.MAIN_SCENE.MAP = new Map(Game.MAIN_SCENE, Game.MAIN_SCENE.CAMERA);
-        Game.MAIN_SCENE.MAP.NAME = "Main map";
-        Game.MAIN_SCENE.NAME = "Main scene";
-
-        Game.CURRENT_SCENE = Game.MAIN_SCENE;
-        Game.ENGINE.runRenderLoop( () => {
-            Game.CURRENT_SCENE.render();
+        new Communication(() => {
+           new SelectionRing();
         });
 
-        new Communication();
+        Game.ENGINE.runRenderLoop( () => {
+            if (Game.current_scene !== undefined) {
+                Game.SCENES[Game.current_scene].render();
+            }
+        });
 
-            // Ajuste la vue 3D si la fenetre est agrandi ou diminué
+        // On initie les scènes avec une fonction associé à l'objet Game
+        // Game.MAIN_SCENE = new Scene(Game.ENGINE);
+        // Game.MAIN_SCENE.GUI = new Gui(Game.MAIN_SCENE);
+        // Game.MAIN_SCENE.CAMERA = new Camera(Game.MAIN_SCENE, Game.CANVAS);
+        // Game.MAIN_SCENE.MAP = new MainMap(Game.MAIN_SCENE, Game.MAIN_SCENE.CAMERA);
+        // Game.MAIN_SCENE.MAP.NAME = "Main map";
+        // Game.MAIN_SCENE.NAME = "Main scene";
+
+        // Ajuste la vue 3D si la fenetre est agrandi ou diminué
         window.addEventListener("resize", () => {
             if (Game.ENGINE) {
                 Game.ENGINE.resize();
@@ -68,15 +66,5 @@ export default class Game {
         },false);
     }
 
-    static switchScene = (scene) => {
-        // Remove old advancedTexture
-        Game.CURRENT_SCENE.GUI.advancedTexture.dispose(); // Maybe bug if we want to switch back previous scene again
-        // Game.PLAYER.advancedTexture.dispose();
-        Game.CURRENT_SCENE = scene;
-        Game.ENGINE.runRenderLoop( () => {
-            Game.CURRENT_SCENE.render();
-        });
-        console.log("end switch scene");
-    }
 }
 

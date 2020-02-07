@@ -18,6 +18,7 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.util.Arrays;
 
 @Controller
 @Slf4j
@@ -66,6 +67,8 @@ public class PlayerController {
         if (player.getPosition() == null || player.getMap() == null) {
             PlayerService.movePlayer(player, Command.CREATE);
         }
+
+        log.info(Arrays.toString(player.getMap().getCells().values().stream().filter(cell -> cell instanceof Player).toArray(Cell[]::new)));
 
         return player.getMap().getCells().values().toArray(new Cell[0]);
     }
