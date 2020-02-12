@@ -1,4 +1,4 @@
-FROM arm32v7/adoptopenjdk:11.0.5_10-jdk-hotspot-bionic
+FROM arm32v7/openjdk:11
 
 EXPOSE 8080
 

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -34,13 +35,13 @@ public class PlayerController {
     @MessageMapping("/setPlayer")
     @SendToUser("/setPlayer")
     public long setPlayer(@Payload Integer playerIndex, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
-        User u = userService.findById(principal.getName());
-        Player player = u.getPlayers().get(playerIndex);
+        User user = userService.findById(principal.getName());
+        Player player = playerService.findPlayersByUser(user).get(playerIndex);
 
         applicationStore.getSessionIdPlayer().put(headerAccessor.getSessionId(), player);
 
         sessionStore.setPlayer(player);
-        sessionStore.setUser(u);
+        sessionStore.setUser(user);
 
         return player.getId();
     }
@@ -48,15 +49,15 @@ public class PlayerController {
     @MessageMapping("/getPlayers")
     @SendToUser("/getPlayers")
     public Player[] initMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+        User user = userService.findById(principal.getName());
 
-        User u = userService.findById(principal.getName());
+        List<Player> players = playerService.findPlayersByUser(user);
 
-        log.info(String.valueOf(u));
-        if(u.getPlayers().isEmpty()) {
+        if (players.isEmpty()) {
             log.error("Should never occur except first time if no automatic player in webSocketConfig!");
         }
 
-        return u.getPlayers().toArray(new Player[0]);
+        return players.toArray(new Player[0]);
     }
 
     @MessageMapping("/getAllMap")
@@ -79,7 +80,7 @@ public class PlayerController {
         //Get the current player
         Player player = sessionStore.getPlayer();
 
-        return spellService.getSpellsByBreed(player.getBreed()).toArray(new Spell[0]);
+        return playerService.getSpellsByPlayer(player).toArray(new Spell[0]);
     }
 
     @MessageMapping("/getSpellPoints")

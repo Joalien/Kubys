@@ -10,9 +10,8 @@ export default class MapUtilities {
     static getAllMap = async (message, scene) => {
         // called when the client receives a STOMP message from the server
         if (message.body) {
-            //For each item in the map, we print it
             for (let player of JSON.parse(message.body)) {
-                if (player.hasOwnProperty("breed")) {// Check if player could be optimized
+                if (player.hasOwnProperty("characteristics")) {// TODO Improve me
                     let objPlayer = await Player.build(player, scene);
                     objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
                 } else MapUtilities.createLandPlot(player.position.x, player.position.y, player.position.z);

@@ -1,13 +1,13 @@
 package kubys.Move;
 
-import kubys.Map.MapService;
 import kubys.Map.LandPlot;
 import kubys.Map.Map;
+import kubys.Map.MapService;
 import kubys.Map.Position;
-import kubys.Spell.Breed;
 import kubys.Player.Command;
 import kubys.Player.Player;
 import kubys.Player.PlayerService;
+import kubys.TestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,13 +30,9 @@ class PlayerServiceTest {
         mainMap.getCells().clear();
         position = Position.of(0, 1, 0);
 
-        player = Player.builder()
-                .breed(Breed.DWARF)
-                .level(1)
-                .name("Joalien")
-                .map(mainMap)
-                .position(position)
-                .build();
+        player = TestHelper.createRandomNewPlayer();
+        player.setMap(mainMap);
+        player.setPosition(position);
 
         mainMap.getCells().put(position, player);
 

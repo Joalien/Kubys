@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public class SpellService {
 
     public List<Spell> getSpellsByBreed(Breed breed) {
-        return Spell.getSpells().values().stream()
-                .filter(spell -> spell.getBreed().equals(breed))
+        return new Dwarf().getSpells().stream()
+                .map(SpellWrapper::getSpell)
                 .collect(Collectors.toList());
     }
 }

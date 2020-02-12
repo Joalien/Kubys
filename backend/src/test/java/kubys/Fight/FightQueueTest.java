@@ -23,7 +23,7 @@ class FightQueueTest {
     @DisplayName("Improve me (find what depends on number of players inside a fight) ...")
     void testGenerateFight() {
         for (int i = 0; i < FightQueue.NUMBER_OF_PLAYER; i++) {
-            fightQueue.addPlayer(TestHelper.createNewPlayer());
+            fightQueue.addPlayer(TestHelper.createRandomNewPlayer());
         }
         Assertions.assertThat(fightQueue.getWaitingQueue().size()).isEqualTo(FightQueue.NUMBER_OF_PLAYER);
 

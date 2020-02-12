@@ -23,7 +23,7 @@ public class User {
     @Column
     private String displayName;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference
     @Builder.Default
     private List<Player> players = new ArrayList<>();

@@ -3,11 +3,8 @@ package kubys.configuration;
 import com.google.api.core.ApiFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import kubys.Spell.Breed;
 import kubys.Player.Player;
-import kubys.Player.PlayerDao;
-import kubys.Spell.Spell;
-import kubys.Player.SpellPlayer;
+import kubys.Spell.Dwarf;
 import kubys.User.User;
 import kubys.User.UserDao;
 import lombok.AllArgsConstructor;
@@ -33,7 +30,10 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,21 +46,14 @@ import java.util.stream.Stream;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private UserDao userDao;
-    private PlayerDao playerDao;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/connect").setAllowedOrigins("*")
+        registry.addEndpoint("/connect").setAllowedOrigins("*") //FIXME CSRF vulnerability ?
                 .addInterceptors(new HandshakeInterceptor() {
                     @Override
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                                    Map attributes) {
-                        // TODO remove this if no error
-//                        if (request instanceof ServletServerHttpRequest) {
-//                            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-//                            HttpSession session = servletRequest.getServletRequest().getSession();
-//                            attributes.put("sessionId", session.getId());
-//                        }
                         return true;
                     }
 
@@ -101,40 +94,30 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         }
 
         String userId;
-        log.info("token : " + token);
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        log.info("firebaseAuth : " + firebaseAuth);
-        ApiFuture<FirebaseToken> future = firebaseAuth.verifyIdTokenAsync(token);
-        log.info("future " + future);
+        ApiFuture<FirebaseToken> future = FirebaseAuth.getInstance().verifyIdTokenAsync(token);
         try {
-            FirebaseToken firebaseToken = future.get();
-            //FIXME Security issue, we do not double check token sent from the client !!
-//            UserRecord user = FirebaseAuth.getInstance().getUser(firebaseToken.getUid());
-            userId = firebaseToken.getUid();
+            userId = future.get().getUid();
         } catch (ExecutionException | InterruptedException e) {
             throw new BadCredentialsException(e.getMessage());
         }
 
         //Get user from db
         Optional<User> optionalUser = userDao.findById(userId);
-        if (optionalUser.isEmpty()) {
-            User u = User.builder().uid(userId).displayName("Alexandre Dumas").build();
+        if (optionalUser.isEmpty()) { // TODO move this out of this file !
+            User user = User.builder().uid(userId).displayName("Alexandre Dumas").build();
             // TODO let people create their own characters
-            u.setPlayers(Stream.of("Athos", "Porthos", "Aramis")
-                    .map(name -> Player.builder()
-                            .user(u)
-                            .name(name)
-                            .level(1)
-                            .breed(Breed.DWARF)
-                            .pa(10)
-                            .pm(5)
-                    .build())
-                    .collect(Collectors.toList()));
-
-            //Add random spell to all new player
-            u.getPlayers().forEach(player -> player.setSpellsPlayer(
-                    Set.of(getRandomSpell(player))));
-            userDao.save(u);
+            user.setPlayers(
+                    Stream.of("Athos", "Porthos", "Aramis")
+                            .map(name -> Player.builder()
+                                    .user(user)
+                                    .name(name)
+                                    .level(1)
+                                    .pa(10)
+                                    .pm(5)
+                                    .characteristics(Set.of(new Dwarf()))
+                                    .build())
+                            .collect(Collectors.toList()));
+            userDao.save(user);
         }
 
         // null credentials, we do not pass the password along
@@ -143,12 +126,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 null,
                 Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
         );
-    }
-
-    private SpellPlayer getRandomSpell(Player player) {
-        return SpellPlayer.builder()
-                .player(player)
-                .spell_id(Math.round(Math.random() * Spell.getSpells().size()))
-                .build();
     }
 }

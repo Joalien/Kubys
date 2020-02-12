@@ -1,23 +1,32 @@
 package kubys.Player;
 
-import kubys.Map.MapService;
 import kubys.Map.Cell;
 import kubys.Map.Map;
+import kubys.Map.MapService;
 import kubys.Map.Position;
+import kubys.Spell.Spell;
+import kubys.Spell.SpellWrapper;
+import kubys.User.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @Data
+@AllArgsConstructor
 public class PlayerService {
-
     static private MapService mapService;
     static private SimpMessagingTemplate template;
+
+    private PlayerDao playerDao;
 
     public static Boolean movePlayer(Player player, Command command) {
         switch(command) {
@@ -126,5 +135,18 @@ public class PlayerService {
     public int getSpellPoints(Player player) {
         int POINTS_MODIFIER = 1;
         return player.getLevel() * POINTS_MODIFIER;
+    }
+
+    @Transactional
+    public List<Spell> getSpellsByPlayer(Player player) {
+        return player.getCharacteristics().stream()
+                .flatMap(playerCharacteristics -> playerCharacteristics.getSpells().stream())
+                .map(SpellWrapper::getSpell)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<Player> findPlayersByUser(User user) {
+        return playerDao.findPlayersByUser(user);
     }
 }
