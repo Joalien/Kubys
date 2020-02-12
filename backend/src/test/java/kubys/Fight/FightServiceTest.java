@@ -26,7 +26,7 @@ class FightServiceTest {
     @Test
     @DisplayName("create a simple fight map")
     void createFightMap() {
-        Fight fight = fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
+        Fight fight = fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
         assertEquals(FightService.FIGHTS.size(), 1);
         assertTrue(FightService.FIGHTS.containsKey(fight.getUuid()));
         assertTrue(FightService.FIGHTS.containsValue(fight));
@@ -35,9 +35,9 @@ class FightServiceTest {
     @Test
     @DisplayName("create three different fight map")
     void createMultiplesFightMaps() {
-        fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
-        fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
-        fightService.generateFight(TestHelper.createNewPlayers(2));// Magic number!
+        fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
+        fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
+        fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
         assertEquals(FightService.FIGHTS.size(), 3);
     }
 
@@ -45,14 +45,14 @@ class FightServiceTest {
     @DisplayName("verify map can't afford more player that has staring position")
     void createMapWithTooManyPlayers() {
         int tooManyPlayers = 10; // May depends on fight map starting position (should not introduce coupling)
-        assertThrows(IllegalStateException.class, () -> fightService.generateFight(TestHelper.createNewPlayers(tooManyPlayers)));
+        assertThrows(IllegalStateException.class, () -> fightService.generateFight(TestHelper.createRandomNewPlayers(tooManyPlayers)));
     }
 
     @Test
     @DisplayName("create map with no player")
     void createMapWithTooFewPlayers() {
         int tooFewPlayers = FightService.MIN_NUMBER_OF_PLAYER - 1;
-        assertThrows(IllegalArgumentException.class, () -> fightService.generateFight(TestHelper.createNewPlayers(tooFewPlayers)));
+        assertThrows(IllegalArgumentException.class, () -> fightService.generateFight(TestHelper.createRandomNewPlayers(tooFewPlayers)));
     }
 
     @AfterEach

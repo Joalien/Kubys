@@ -1,13 +1,10 @@
 package kubys.Spell;
 
 
-public enum Breed {
-    DWARF("Nain"),
-    ELF("Elfe"),
-    WIZARD("Mage"),
-    BERSERKER("Berserker");
+import kubys.Player.PlayerCharacteristics;
+import lombok.Getter;
 
-    Breed(String breed) {
+@Getter
+public abstract class Breed extends PlayerCharacteristics {
 
-    }
 }

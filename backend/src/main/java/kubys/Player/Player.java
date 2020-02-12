@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import kubys.Map.Cell;
 import kubys.Map.Map;
 import kubys.Map.Position;
-import kubys.Spell.Breed;
 import kubys.User.User;
 import lombok.*;
 import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
@@ -25,7 +24,8 @@ public class Player extends Cell {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
-    @ManyToOne(cascade=CascadeType.ALL)
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonBackReference
     private User user;
 
@@ -36,19 +36,16 @@ public class Player extends Cell {
     private Position position;
 
     @Column
-    @Enumerated(EnumType.STRING)
-    private Breed breed;
-    @Column
     private String name;
     @Column
     @NumberFormat
     private int level;
-    //private Weapon [] weapons;
-    //private Weapon currentWeapon;
-    @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL, mappedBy = "player")
-    @JsonBackReference
+
+    @Column
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default
-    private Set<SpellPlayer> spellsPlayer = new LinkedHashSet<>();
+    private Set<PlayerCharacteristics> characteristics = new HashSet<>();
+
     @Column
     @NumberFormat
     private int pm;
@@ -57,7 +54,6 @@ public class Player extends Cell {
     private int pa;
 
     public String toString() {
-        return "Player(id=" + this.getId() + ", map=" + (map!=null?map.getName():"null") + ", position=" + this.getPosition() + ", name=" + this.getName() + ")";
+        return "Player(id=" + this.getId() + ", map=" + (map != null ? map.getName() : "null") + ", position=" + this.getPosition() + ", name=" + this.getName() + ")";
     }
-
 }

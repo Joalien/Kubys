@@ -33,42 +33,28 @@ export default class Player {
         });
     }
 
-    static async build(characteristics, scene) {
+    static async build(player, scene) {
         await Player.init(scene);
 
         let myObj = new Player();
         myObj.advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("Player's name", true, scene);
 
-        switch (characteristics.breed) {
-            case "DWARF":
-                // myObj.mesh = Player.dwarf.clone();
-                myObj.mesh = Player.wizard.clone();
-                break;
-            case "ELF":
-                // myObj.mesh = Player.elf.clone();
-                myObj.mesh = Player.wizard.clone();
-                break;
-            case "WIZARD":
-                myObj.mesh = Player.wizard.clone();
-                break;
-            case "BERSERKER":
-                // myObj.mesh = Player.berserker.clone();
-                myObj.mesh = Player.wizard.clone();
-                break;
-            default :
-                console.error("Breed not found !");
-                break;
-        }
-        myObj.mesh.id = characteristics.id;
+        if (player.characteristics.some(characteristics => characteristics.name === "DWARF")) {
+            // myObj.mesh = Player.dwarf.clone();
+            myObj.mesh = Player.wizard.clone();
+        } else console.error("Unknown breed !");
+
+
+        myObj.mesh.id = player.id;
         myObj.mesh.visibility = 1;
 
 
         let label = new TextBlock();
-        label.text = characteristics.name;
+        label.text = player.name;
 
-        let rect1 = new Rectangle("rect" + characteristics.id);
-        rect1.id = "rect" + characteristics.id;
-        rect1.width = (characteristics.name.length + 1) * 10 + "px";
+        let rect1 = new Rectangle("rect" + player.id);
+        rect1.id = "rect" + player.id;
+        rect1.width = (player.name.length + 1) * 10 + "px";
         rect1.height = "40px";
         rect1.cornerRadius = 20;
         rect1.color = "blue";
@@ -79,7 +65,7 @@ export default class Player {
         myObj.advancedTexture.addControl(rect1);
         rect1.linkWithMesh(myObj.mesh);
 
-        Player.NAME_LABEL["rect" + characteristics.id] = rect1;
+        Player.NAME_LABEL["rect" + player.id] = rect1;
         return myObj;
     }
 
