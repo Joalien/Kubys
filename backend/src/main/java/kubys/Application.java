@@ -17,10 +17,15 @@ public class Application {
     private static final String KEY_PATH = "serviceAccountPrivateKey.json";
 
     public static void main(String[] args) throws IOException {
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
-                .build();
-        FirebaseApp.initializeApp(options);
+        try {
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
+                    .build();
+            FirebaseApp.initializeApp(options);
+        } catch (IOException e) {
+            log.error(KEY_PATH + " file not found.");
+            log.error("That's why you won't be able to use it to communicate with any client. Nevertheless, the app is not crashing so that it can be use in development environment.");
+        }
 
         SpringApplication.run(Application.class, args);
 
