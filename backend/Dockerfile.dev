@@ -3,9 +3,7 @@ FROM openjdk:11
 EXPOSE 8080
 
 # TODO : Does not work if multiple .jar
-COPY target/kubys-*.jar .
-
-CMD java -jar kubys-*.jar
+CMD java -jar /target/kubys-*.jar
 
 
 
