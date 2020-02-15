@@ -16,7 +16,6 @@ export default class SkillTree {
 
         this.scene = new BABYLON.Scene(Game.ENGINE);
         this.camera = new Camera(this.scene, Game.CANVAS);
-
         Game.current_scene = Game.SCENES.push(this.scene) - 1;
 
         // Create Gui
@@ -89,7 +88,7 @@ export default class SkillTree {
         );
 
         //Uncomment to see axis (debug purpose)
-        MapUtilities.showWorldAxis(1, this.scene);
+        // MapUtilities.showWorldAxis(1, this.scene);
         MapUtilities.createLight(this.scene);
         MapUtilities.createSkybox(this.scene);
     }

@@ -16,7 +16,7 @@ public class SpellWrapper {
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    Spell spell;
+    private Spell spell;
     @Column
     private boolean unlock;
 

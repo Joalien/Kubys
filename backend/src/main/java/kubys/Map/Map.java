@@ -1,8 +1,9 @@
 package kubys.Map;
 
-import kubys.Player.Player; // Only use in toString method, it doesn't mean MainMap relies on Player
+import kubys.Player.Player;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

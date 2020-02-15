@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 @Builder
 @Data
-public class Fight {
+class Fight {
     private String uuid;
 
     private Map map;

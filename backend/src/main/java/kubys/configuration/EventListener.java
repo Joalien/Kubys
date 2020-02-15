@@ -26,7 +26,7 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
 
         String sessionId = sessionDisconnectEvent.getSessionId();
         log.info("USER DISCONNECT !");
-        if(applicationStore.getSessionIdPlayer().containsKey(sessionId)) {
+        if (applicationStore.getSessionIdPlayer().containsKey(sessionId)) {
             Player oldPlayer = applicationStore.getSessionIdPlayer().get(sessionId);
             applicationStore.getSessionIdPlayer().remove(sessionId);
             fightQueue.removePlayer(oldPlayer);

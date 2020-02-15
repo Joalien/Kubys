@@ -27,8 +27,9 @@ public class FightQueue {
 
     private Set<Player> waitingQueue = ConcurrentHashMap.newKeySet();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    public static final int NUMBER_OF_PLAYER = 1;
-    public static final int DELAY = 10; // Delay in seconds each time the queue is processed
+    public final int NUMBER_OF_PLAYER = 1;
+    private final int DELAY = 10; // Delay in seconds each time the queue is processed
+
     @NonNull
     private SimpMessagingTemplate template;
     @NonNull
@@ -37,6 +38,7 @@ public class FightQueue {
     private FightService fightService;
 
     private Runnable launchFight = () -> {
+//        log.info("waitingQueue : " + waitingQueue);
         List<Player> players = waitingQueue
                 .stream()
                 .limit(NUMBER_OF_PLAYER)
@@ -53,16 +55,20 @@ public class FightQueue {
     };
 
     @PostConstruct
-    public void addScheduler() {
+    void addScheduler() {
         scheduler.scheduleWithFixedDelay(launchFight, 0, DELAY, TimeUnit.SECONDS);
         log.info(String.valueOf(applicationStore));
     }
 
-    public boolean addPlayer(Player player) {
+    boolean addPlayer(Player player) {
         return waitingQueue.add(player);
     }
 
     public boolean removePlayer(Player player) {
         return waitingQueue.remove(player);
+    }
+
+    public void clearQueue() {
+        this.getWaitingQueue().clear();
     }
 }
