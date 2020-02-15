@@ -14,7 +14,6 @@ export default class SelectionRing {
     constructor() {
         this.scene = new BABYLON.Scene(Game.ENGINE);
         this.camera = new Camera(this.scene, Game.CANVAS);
-
         Game.current_scene = Game.SCENES.push(this.scene) - 1;
 
         // Create GUI
@@ -43,6 +42,7 @@ export default class SelectionRing {
         Communication.mockRestApi("/user/setPlayer", message => Player.refreshPlayer(message.body));
         Communication.sendMessage("/setPlayer", this.playerId);
         this.scene.dispose();
+        this.advancedTexture.dispose();
         new MainMap();
     }
 

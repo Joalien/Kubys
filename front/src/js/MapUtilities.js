@@ -2,6 +2,7 @@ import Player from "./Player";
 import Tree from "../../resources/textures/tree.jpg";
 import Leaf from "../../resources/textures/leaf.jpg";
 import Grass from "../../resources/textures/grass.jpg";
+import Communication from "./Communication";
 
 export default class MapUtilities {
 
@@ -191,6 +192,22 @@ export default class MapUtilities {
         axisZ.color = new BABYLON.Color3(0, 0, 1);
         let zChar = makeTextPlane("Z", "blue", size / 10);
         zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size);
+    }
+
+    static addMoveListener(scene) {
+        scene.onKeyboardObservable.add(evt => {
+            if (evt.type === BABYLON.KeyboardEventTypes.KEYDOWN) {
+                switch (evt.event.key) {
+                    case 'z':
+                    case 's':
+                    case 'q':
+                    case 'd':
+                        Communication.mockRestApi("/broker/command", message => MapUtilities.updateMap(message, scene));
+                        Communication.sendMessage("/command", JSON.stringify(evt.event.key));
+                }
+            }
+        });
+        scene._inputManager._onCanvasFocusObserver.callback(); //https://forum.babylonjs.com/t/camera-keyboard-issue/3335/5
     }
 
 }

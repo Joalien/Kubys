@@ -18,14 +18,16 @@ class FightQueueTest {
 
     @Autowired
     FightQueue fightQueue;
+    @Autowired
+    FightService fightService;
 
     @Test
     @DisplayName("Improve me (find what depends on number of players inside a fight) ...")
     void testGenerateFight() {
-        for (int i = 0; i < FightQueue.NUMBER_OF_PLAYER; i++) {
+        for (int i = 0; i < fightQueue.NUMBER_OF_PLAYER; i++) {
             fightQueue.addPlayer(TestHelper.createRandomNewPlayer());
         }
-        Assertions.assertThat(fightQueue.getWaitingQueue().size()).isEqualTo(FightQueue.NUMBER_OF_PLAYER);
+        Assertions.assertThat(fightQueue.getWaitingQueue().size()).isEqualTo(fightQueue.NUMBER_OF_PLAYER);
 
         fightQueue.getLaunchFight().run();
 
@@ -40,7 +42,7 @@ class FightQueueTest {
 
     @AfterEach
     void clearAllFight() {
-        FightService.FIGHTS.clear();
+        fightService.getFights().clear();
     }
 
 

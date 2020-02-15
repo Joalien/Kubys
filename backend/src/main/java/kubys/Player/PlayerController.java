@@ -66,7 +66,7 @@ public class PlayerController {
         log.info("getAllMap");
         Player player = sessionStore.getPlayer();
         if (player.getPosition() == null || player.getMap() == null) {
-            PlayerService.movePlayer(player, Command.CREATE);
+            playerService.movePlayer(player, Command.CREATE);
         }
 
         log.info(Arrays.toString(player.getMap().getCells().values().stream().filter(cell -> cell instanceof Player).toArray(Cell[]::new)));
@@ -99,7 +99,7 @@ public class PlayerController {
         Player player = sessionStore.getPlayer();
 
         //If player command, send changes to all players
-        if (PlayerService.movePlayer(player, command)) {
+        if (playerService.movePlayer(player, command)) {
             return player;
         }
         return null;

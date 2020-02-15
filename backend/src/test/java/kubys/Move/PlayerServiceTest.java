@@ -10,6 +10,7 @@ import kubys.Player.PlayerService;
 import kubys.TestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static java.time.Duration.ofMillis;
@@ -23,10 +24,12 @@ class PlayerServiceTest {
     private Map mainMap;
     private Player player;
     private Position position;
+    @Autowired
+    private PlayerService playerService;
 
     @BeforeEach
     void setup() {
-        this.mainMap = MapService.MAIN_MAP;
+        mainMap = MapService.MAIN_MAP;
         mainMap.getCells().clear();
         position = Position.of(0, 1, 0);
 
@@ -36,12 +39,14 @@ class PlayerServiceTest {
 
         mainMap.getCells().put(position, player);
 
+        assertNotNull(mainMap);
+        assertNotNull(position);
+        assertNotNull(player);
         assertEquals(position, Position.of(0, 1, 0));
     }
 
     @Nested
     class movePlayerTest {
-
 
         @Test
         @DisplayName("test CREATE command")
@@ -53,7 +58,7 @@ class PlayerServiceTest {
         @DisplayName("move forward")
         void moveForward() {
             mainMap.getCells().put(position.plusY(-1).plusZ(1), LandPlot.builder().build());
-            PlayerService.movePlayer(player, Command.FORWARD);
+            playerService.movePlayer(player, Command.FORWARD);
             assertEquals(player.getPosition(), position.plusZ(1));
         }
 
@@ -61,7 +66,7 @@ class PlayerServiceTest {
         @DisplayName("climb landplot")
         void climbLandPlot() {
             mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
-            PlayerService.movePlayer(player, Command.FORWARD);
+            playerService.movePlayer(player, Command.FORWARD);
             assertEquals(player.getPosition(), position.plusZ(1).plusY(1));
         }
 
@@ -70,7 +75,7 @@ class PlayerServiceTest {
         void tryToMoveForward() {
             mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
             mainMap.getCells().put(position.plusY(1).plusZ(1), LandPlot.builder().build());
-            PlayerService.movePlayer(player, Command.FORWARD);
+            playerService.movePlayer(player, Command.FORWARD);
             assertEquals(player.getPosition(), position);
         }
 
@@ -78,7 +83,7 @@ class PlayerServiceTest {
         @DisplayName("move forward and drop")
         void moveForwardThenFall() {
             mainMap.getCells().put(position.plusX(1).plusY(-2), LandPlot.builder().build());
-            PlayerService.movePlayer(player, Command.RIGHT);
+            playerService.movePlayer(player, Command.RIGHT);
             assertEquals(player.getPosition(), position.plusX(1).plusY(-1));
         }
 
@@ -88,7 +93,7 @@ class PlayerServiceTest {
             // TODO: Find waorkaround
             //  Warning, it will not stop infinite loop, but at least the test will not pass
             assertTimeout(ofMillis(1000), () -> {
-                PlayerService.movePlayer(player, Command.FORWARD);
+                playerService.movePlayer(player, Command.FORWARD);
                 assertEquals(player.getPosition(), position);
             });
         }
@@ -107,7 +112,7 @@ class PlayerServiceTest {
         @BeforeEach
         void setup() {
             otherMap = MapService.generateFightMap();
-            PlayerService.switchMap(player, otherMap);
+            playerService.switchMap(player, otherMap);
         }
 
         @Test

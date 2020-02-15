@@ -19,7 +19,10 @@ class SpellTest {
     @Nested
     class SpellDeserialization {
         private SpellType spellType = SpellType.CLASSIC;
-        private Spell spell = new Dwarf().getSpells().stream().findFirst().get().spell;
+        private Spell spell = new Dwarf().getSpells().stream()
+                .map(SpellWrapper::getSpell)
+                .filter(spell -> spell.type.equals(spellType))
+                .findFirst().get();
 
         @Test
         void testSpellTypeSerialization() {

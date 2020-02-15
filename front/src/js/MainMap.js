@@ -5,19 +5,14 @@ import Camera from "./Camera";
 import MapUtilities from "./MapUtilities";
 import {AdvancedDynamicTexture, Button} from 'babylonjs-gui';
 import firebase from "firebase";
-import FightGui from "./FightGui";
+import FightMap from "./FightMap";
 import Gui from "./Gui";
 import SkillTree from "./SkillTree";
 
-
 export default class MainMap {
-
     constructor() {
-        // Appel des letiables nécéssaires
-
         this.scene = new BABYLON.Scene(Game.ENGINE);
         this.camera = new Camera(this.scene, Game.CANVAS);
-
         Game.current_scene = Game.SCENES.push(this.scene) - 1;
 
         // Create Gui
@@ -37,7 +32,12 @@ export default class MainMap {
         subscribeFightButton.onPointerClickObservable.add(() => {
             subscribeFightButton.isSubscribingFight = !subscribeFightButton.isSubscribingFight;
             if (subscribeFightButton.isSubscribingFight) {
-                subscribeFightButton.subscription = Communication.clientSocket.subscribe("/broker/fight", message => new FightGui(message));
+                subscribeFightButton.subscription = Communication.clientSocket.subscribe("/broker/fight", message => {
+                    subscribeFightButton.subscription.unsubscribe();
+                    this.scene.dispose();
+                    this.advancedTexture.dispose();
+                    new FightMap(message.body)
+                });
                 Communication.sendMessage("/fight/subscribe", {});
             } else {
                 Communication.sendMessage("/fight/unsubscribe", {});
@@ -56,23 +56,11 @@ export default class MainMap {
         this.advancedTexture.addControl(skillTreeButton);
 
         //Uncomment to see axis (debug purpose)
-        MapUtilities.showWorldAxis(1, this.scene);
+        // MapUtilities.showWorldAxis(1, this.scene);
         MapUtilities.createLight(this.scene);
         MapUtilities.createSkybox(this.scene);
 
-        this.scene.onKeyboardObservable.add(evt => {
-            if (evt.type === BABYLON.KeyboardEventTypes.KEYDOWN) {
-                switch (evt.event.key) {
-                    case 'z':
-                    case 's':
-                    case 'q':
-                    case 'd':
-                        Communication.mockRestApi("/broker/command", message => MapUtilities.updateMap(message, this.scene));
-                        Communication.sendMessage("/command", JSON.stringify(evt.event.key));
-                }
-            }
-        });
-        this.scene._inputManager._onCanvasFocusObserver.callback(); //https://forum.babylonjs.com/t/camera-keyboard-issue/3335/5
+        MapUtilities.addMoveListener(this.scene);
 
         // Get all map
         Communication.mockRestApi("/user/getAllMap", message => MapUtilities.getAllMap(message, this.scene));

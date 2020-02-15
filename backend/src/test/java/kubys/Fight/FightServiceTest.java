@@ -20,16 +20,16 @@ class FightServiceTest {
 
     @BeforeEach
     void verifyThereIsNoFight() {
-        assertTrue(FightService.FIGHTS.isEmpty()); // May be wrong if an other test has created a fight
+        assertTrue(fightService.getFights().isEmpty()); // May be wrong if an other test has created a fight
     }
 
     @Test
     @DisplayName("create a simple fight map")
     void createFightMap() {
         Fight fight = fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
-        assertEquals(FightService.FIGHTS.size(), 1);
-        assertTrue(FightService.FIGHTS.containsKey(fight.getUuid()));
-        assertTrue(FightService.FIGHTS.containsValue(fight));
+        assertEquals(fightService.getFights().size(), 1);
+        assertTrue(fightService.getFights().containsKey(fight.getUuid()));
+        assertTrue(fightService.getFights().containsValue(fight));
     }
 
     @Test
@@ -38,7 +38,7 @@ class FightServiceTest {
         fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
         fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
         fightService.generateFight(TestHelper.createRandomNewPlayers(2));// Magic number!
-        assertEquals(FightService.FIGHTS.size(), 3);
+        assertEquals(fightService.getFights().size(), 3);
     }
 
     @Test
@@ -51,12 +51,12 @@ class FightServiceTest {
     @Test
     @DisplayName("create map with no player")
     void createMapWithTooFewPlayers() {
-        int tooFewPlayers = FightService.MIN_NUMBER_OF_PLAYER - 1;
+        int tooFewPlayers = fightService.MIN_NUMBER_OF_PLAYER - 1;
         assertThrows(IllegalArgumentException.class, () -> fightService.generateFight(TestHelper.createRandomNewPlayers(tooFewPlayers)));
     }
 
     @AfterEach
     void clearAllFight() {
-        FightService.FIGHTS.clear();
+        fightService.getFights().clear();
     }
 }

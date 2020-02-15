@@ -41,7 +41,6 @@ export default class Communication {
         document.location.href = "/login.html";
     }
 
-
     static sendMessage(endpoint, message) {
         message = message===0?"0":message;
         Communication.clientSocket.send(endpoint, {}, message);

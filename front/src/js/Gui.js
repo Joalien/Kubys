@@ -4,7 +4,7 @@ import Game from "./Game.js";
 import firebase from "firebase/app";
 import 'firebase/auth';
 import {Scene} from "babylonjs";
-import FightGui from "./FightGui";
+import FightMap from "./FightMap";
 import Camera from "./Camera";
 import MainMap from "./MainMap";
 
