@@ -25,6 +25,7 @@ public class FightController {
     public void subscribe(SimpMessageHeaderAccessor headerAccessor) {
         log.info("/subscribe");
         fightQueue.addPlayer(applicationStore.getSessionIdPlayer().get(headerAccessor.getSessionId()));
+        fightQueue.getLaunchFight().run();
     }
 
     @MessageMapping("/unsubscribe")
