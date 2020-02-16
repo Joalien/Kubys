@@ -9,6 +9,8 @@ import {AdvancedDynamicTexture, Button} from 'babylonjs-gui';
 import firebase from "firebase";
 import MapUtilities from "./MapUtilities";
 import MainMap from "./MainMap";
+import toastr from "toastr"
+import './../../node_modules/toastr/build/toastr.css'; // FIXME find a better way to do this
 
 export default class FightMap {
 
@@ -63,6 +65,26 @@ export default class FightMap {
 
 
         this.fightEventSubscription = Communication.clientSocket.subscribe("/broker/fight/" + this.fightUid, message => this.updateFightListener(message)); // TODO add your own logic here
+
+        toastr.options = { // TODO put in a global conf file if multiple toastr
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": false,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "3000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+        toastr["info"]("Début du combat !");
+        this.scene._inputManager._onCanvasFocusObserver.callback();
 
         BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/axe/", "axe.obj", this.scene, container => {
             FightMap.axe = container.meshes[0];
