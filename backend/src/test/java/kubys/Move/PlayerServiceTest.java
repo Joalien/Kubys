@@ -63,6 +63,15 @@ class PlayerServiceTest {
         }
 
         @Test
+        @DisplayName("can't move forward")
+        void tryToMoveForward() {
+            mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
+            mainMap.getCells().put(position.plusY(1).plusZ(1), LandPlot.builder().build());
+            playerService.movePlayer(player, Command.FORWARD);
+            assertEquals(player.getPosition(), position);
+        }
+
+        @Test
         @DisplayName("climb landplot")
         void climbLandPlot() {
             mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
@@ -71,10 +80,10 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("can't move forward")
-        void tryToMoveForward() {
+        @DisplayName("can't climb landplot")
+        void climbLandPlotThenFail() {
             mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
-            mainMap.getCells().put(position.plusY(1).plusZ(1), LandPlot.builder().build());
+            mainMap.getCells().put(position.plusY(1), LandPlot.builder().build());
             playerService.movePlayer(player, Command.FORWARD);
             assertEquals(player.getPosition(), position);
         }
@@ -90,8 +99,8 @@ class PlayerServiceTest {
         @Test
         @DisplayName("no infinite loop if user fall")
         void moveThenDontFall() {
-            // TODO: Find waorkaround
-            //  Warning, it will not stop infinite loop, but at least the test will not pass
+            // TODO: Find workaround
+            // Warning, it will not stop infinite loop, but at least the test will not pass
             assertTimeout(ofMillis(1000), () -> {
                 playerService.movePlayer(player, Command.FORWARD);
                 assertEquals(player.getPosition(), position);
