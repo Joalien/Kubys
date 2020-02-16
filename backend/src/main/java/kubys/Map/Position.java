@@ -4,8 +4,9 @@ import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @ToString
@@ -18,9 +19,7 @@ public class Position {
     @Column private int y;
     @Column private int z;
 
-    private static HashSet<Position> instancesStore = new HashSet<>();
-
-
+    private static Set<Position> instancesStore = ConcurrentHashMap.newKeySet();
 
     public Position plusX(int x) {
         return Position.of(this.getX() + x, this.getY(), this.getZ());

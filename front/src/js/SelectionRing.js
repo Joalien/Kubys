@@ -7,6 +7,7 @@ import Camera from "./Camera";
 import Game from "./Game";
 import MapUtilities from "./MapUtilities";
 
+
 export default class SelectionRing {
 
     static ringPlayers = [];
@@ -28,7 +29,7 @@ export default class SelectionRing {
         this.playPlayerButton.color = "white";
         this.playPlayerButton.width = "80px";
         this.playPlayerButton.onPointerClickObservable.add(() => {
-            this.confirmPickedPlayer();
+            this.confirmPickedPlayer(this.playerId);
         });
 
         MapUtilities.createLight(this.scene);
@@ -38,12 +39,15 @@ export default class SelectionRing {
         Communication.sendMessage("/getPlayers");
     }
 
-    confirmPickedPlayer() {
-        Communication.mockRestApi("/user/setPlayer", message => Player.refreshPlayer(message.body));
-        Communication.sendMessage("/setPlayer", this.playerId);
-        this.scene.dispose();
-        this.advancedTexture.dispose();
-        new MainMap();
+    confirmPickedPlayer(playerId) {
+        Communication.mockRestApi("/user/setPlayer", message => {
+            Player.refreshPlayer(message.body);
+            this.scene.dispose();
+            this.advancedTexture.dispose();
+            new MainMap();
+        });
+        Communication.sendMessage("/setPlayer", playerId);
+
     }
 
     selectionRing = async message => {
@@ -65,9 +69,8 @@ export default class SelectionRing {
                 objPlayer.mesh.actionManager.registerAction(
                     new BABYLON.ExecuteCodeAction(
                         BABYLON.ActionManager.OnPickTrigger, () => {
-                            let pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, null, null).pickedMesh;
-                            if (SelectionRing.ringPlayers[this.playerId] === pickInfo) {
-                                this.confirmPickedPlayer();
+                            if (SelectionRing.ringPlayers[this.playerId] === objPlayer.mesh) {
+                                this.confirmPickedPlayer(this.playerId);
                                 return;
                             }
                             let animationBox = new BABYLON.Animation("translatePlayer",
@@ -78,19 +81,19 @@ export default class SelectionRing {
                             animationBox.setKeys([
                                 {
                                     frame: 0,
-                                    value: pickInfo.position
+                                    value: objPlayer.mesh.position
                                 }, {
                                     frame: 100,
                                     value: new BABYLON.Vector3.Zero()
                                 }
                             ]);
-                            pickInfo.animations = [animationBox];
+                            objPlayer.mesh.animations = [animationBox];
 
                             for (let j = 0; j < SelectionRing.ringPlayers.length; j++) {
                                 if (SelectionRing.ringPlayers[j].position.equals(new BABYLON.Vector3.Zero())) {
                                     this.scene.beginAnimation(SelectionRing.ringPlayers[j], 100, 0, true);
                                 }
-                                if (SelectionRing.ringPlayers[j] === pickInfo) {
+                                if (SelectionRing.ringPlayers[j] === objPlayer.mesh) {
                                     this.advancedTexture.addControl(this.playPlayerButton);
                                     this.playerId = j;
                                 }
@@ -108,7 +111,7 @@ export default class SelectionRing {
                             ]);
                             this.camera.arcRotateCamera.animations = [animationCamera];
                             this.scene.beginAnimation(this.camera.arcRotateCamera, 0, 100, false, 1, () =>
-                                this.scene.beginAnimation(pickInfo, 0, 100, true)
+                                this.scene.beginAnimation(objPlayer.mesh, 0, 100, true)
                             );
                         }));
                 SelectionRing.ringPlayers[i++] = objPlayer.mesh;

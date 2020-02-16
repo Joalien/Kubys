@@ -19,7 +19,7 @@ public class Dwarf extends Breed { // TODO make singleton
                 .type(SpellType.CLASSIC)
                 .pa(3)
                 .minScope(1)
-                .maxScope(8)
+                .maxScope(11)
                 .damage(100)
                 .ammunition(-1)
                 .zone(1)

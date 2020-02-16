@@ -170,7 +170,6 @@ export default class FightMap {
                 this.unselectableMeshes.push(mesh);
             }
         }
-        console.log("After partitioning : " + this.selectableMeshes.length);
     }
 
     createComponentTreePanel = message => {
