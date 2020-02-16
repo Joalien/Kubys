@@ -5,7 +5,7 @@
 
     <groupId>fr.kubys</groupId>
     <artifactId>kubys</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

@@ -13,35 +13,35 @@ export default class MapUtilities {
         if (message.body) {
             for (let player of JSON.parse(message.body)) {
                 if (player.hasOwnProperty("characteristics")) {// TODO Improve me
-                    let objPlayer = await Player.build(player, scene);
-                    objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
-                } else MapUtilities.createLandPlot(player.position.x, player.position.y, player.position.z);
+                    await this.createPlayer(player, scene);
+                } else {
+                    this.createLandPlot(player.position.x, player.position.y, player.position.z);
+                }
             }
         } else {
             console.log("got empty message");
         }
     };
 
+    static async createPlayer(player, scene) {
+        let objPlayer = await Player.build(player, scene);
+        objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
+    }
+
     static updateMap = async (message, scene) => {
-        console.log("update the map");
         if (message.body) {
             let player = JSON.parse(message.body);
             let mesh = scene.getMeshByID(player.id);
 
-            if (mesh == null) { //If new player
-                let objPlayer = await Player.build(player, scene);
-                objPlayer.setLabel(player.name);
-                objPlayer.setPosition(new BABYLON.Vector3(player.position.x, player.position.y, player.position.z));
-
-                //TODO Create new endpoint for disconnected users
-                // } else if(player.connected === false) {// If player disconnect
-                //     console.log("Player "+player.id+" has left the game");
-                //     Player.NAME_LABEL[mesh].dispose();
-                //     mesh.dispose();
-            } else {//If player had already been created and should move (normal case)
+            let isNewPlayer = mesh === null;
+            if (isNewPlayer) {
+                await this.createPlayer(player, scene);
+            } else if (player.connected === false) { // If player disconnect
+                console.log("Player " + player.id + " has left the game");
+                Player.playersNameMap.get(player.id).dispose();
+                mesh.dispose();
+            } else { //If player had already been created and should move (normal case)
                 let newPosition = new BABYLON.Vector3(player.position.x, player.position.y, player.position.z);
-                // try to find the direction in order to rotate the player around y axis
-
                 if (newPosition.x - mesh.position.x === 1) {
                     mesh.rotation.y = Math.PI / 2;
                 } else if (newPosition.x - mesh.position.x === -1) {
@@ -77,7 +77,7 @@ export default class MapUtilities {
 
     static createFloor(scene) {
         // SUR TOUS LES AXES Y -> On monte les meshes de la moitié de la hauteur du mesh en question.
-        let mainBox = MapUtilities.createLandPlot(scene, 0, MapUtilities.CUBE_SIZE / 2, 0);
+        let mainBox = this.createLandPlot(scene, 0, MapUtilities.CUBE_SIZE / 2, 0);
 
         const sizeOfMap = 50;
 
@@ -148,7 +148,7 @@ export default class MapUtilities {
 
     static createSkybox(scene) {
         // Skybox
-        let skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
+        let skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size: 1000.0}, scene);
         let skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
         skyboxMaterial.backFaceCulling = false;
         skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("resources/textures/skybox", scene);
@@ -202,7 +202,6 @@ export default class MapUtilities {
                     case 's':
                     case 'q':
                     case 'd':
-                        Communication.mockRestApi("/broker/command", message => MapUtilities.updateMap(message, scene));
                         Communication.sendMessage("/command", JSON.stringify(evt.event.key));
                 }
             }

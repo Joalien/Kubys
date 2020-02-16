@@ -33,8 +33,9 @@ public class PlayerController {
     private PlayerService playerService;
 
     @MessageMapping("/setPlayer")
+    @SendTo("/broker/command")
     @SendToUser("/setPlayer")
-    public long setPlayer(@Payload Integer playerIndex, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+    public Cell setPlayer(@Payload Integer playerIndex, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
         User user = userService.findById(principal.getName());
         Player player = playerService.findPlayersByUser(user).get(playerIndex);
 
@@ -43,7 +44,11 @@ public class PlayerController {
         sessionStore.setPlayer(player);
         sessionStore.setUser(user);
 
-        return player.getId();
+        if (playerService.movePlayer(player, Command.CREATE)) {
+            return player;
+        }
+
+        return null;
     }
 
     @MessageMapping("/getPlayers")
@@ -62,12 +67,9 @@ public class PlayerController {
 
     @MessageMapping("/getAllMap")
     @SendToUser("/getAllMap")
-    public Cell[] getAllMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+    public Cell[] getAllMap(Principal principal, SimpMessageHeaderAccessor headerAccessor) throws NullPointerException{
         log.info("getAllMap");
         Player player = sessionStore.getPlayer();
-        if (player.getPosition() == null || player.getMap() == null) {
-            playerService.movePlayer(player, Command.CREATE);
-        }
 
         log.info(Arrays.toString(player.getMap().getCells().values().stream().filter(cell -> cell instanceof Player).toArray(Cell[]::new)));
 

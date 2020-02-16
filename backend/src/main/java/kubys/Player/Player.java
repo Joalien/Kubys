@@ -53,6 +53,10 @@ public class Player extends Cell {
     @NumberFormat
     private int pa;
 
+    @Transient
+    @Builder.Default
+    private boolean connected = true;
+
     public String toString() {
         return "Player(id=" + this.getId() + ", map=" + (map != null ? map.getName() : "null") + ", position=" + this.getPosition() + ", name=" + this.getName() + ")";
     }

@@ -5,7 +5,7 @@ import Communication from "./Communication";
 
 export default class Player {
 
-    static NAME_LABEL = {};
+    static playersNameMap = new Map();
     static CURRENT_PLAYER_ID;
 
     static elf;
@@ -65,14 +65,13 @@ export default class Player {
         myObj.advancedTexture.addControl(rect1);
         rect1.linkWithMesh(myObj.mesh);
 
-        Player.NAME_LABEL["rect" + player.id] = rect1;
+        Player.playersNameMap.set(player.id, rect1);
         return myObj;
     }
 
     setPosition(position) {
         this.mesh.position = position;
     }
-
 
     static getScalingVectorToFit(mesh) {
         let otherVector = BABYLON.Vector3.One();
@@ -87,7 +86,6 @@ export default class Player {
 
         return mesh.__scaleVectorCache;
     };
-
 
     static getAbsoluteSize(mesh) {
         if (!mesh.__size) {

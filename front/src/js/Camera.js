@@ -5,7 +5,7 @@ export default class Camera {
         this.scene = scene;
         this.arcRotateCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera", -Math.PI/2, 7 * Math.PI/16, 12, new BABYLON.Vector3.Zero(), scene);
         this.arcRotateCamera.lowerBetaLimit = 0;
-        this.arcRotateCamera.lowerRadiusLimit = 2;
+        this.arcRotateCamera.lowerRadiusLimit = 8;
         this.arcRotateCamera.upperBetaLimit = 9/10 * Math.PI/2;
         this.arcRotateCamera.upperRadiusLimit = 80;
 

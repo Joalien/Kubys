@@ -34,8 +34,8 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
             oldPlayer.getMap().getCells().remove(oldPlayer.getPosition(), oldPlayer);
             playerDao.save(oldPlayer);
 
-            //TODO Create new endpoint for disconnected users
-//            this.template.convertAndSend("/broker/command", oldPlayer);
+            oldPlayer.setConnected(false);
+            this.template.convertAndSend("/broker/command", oldPlayer);
         }
 
 
