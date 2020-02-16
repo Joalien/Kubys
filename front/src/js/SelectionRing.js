@@ -6,6 +6,8 @@ import {AdvancedDynamicTexture, Button} from 'babylonjs-gui';
 import Camera from "./Camera";
 import Game from "./Game";
 import MapUtilities from "./MapUtilities";
+import Gui from "./Gui";
+import firebase from "firebase";
 
 
 export default class SelectionRing {
@@ -32,6 +34,14 @@ export default class SelectionRing {
             this.confirmPickedPlayer(this.playerId);
         });
 
+        let logOutButton = Button.CreateImageOnlyButton("Log out", "resources/images/icon_logout.png");
+        Gui.setDefaultButtonCharacteristics(logOutButton, -45, -40);
+        // this.advancedTexture.addControl(Gui.addTooltip(logOutButton, "Déconnexion"));
+        logOutButton.onPointerClickObservable.add(() => {
+            firebase.auth().signOut();
+        });
+        this.advancedTexture.addControl(logOutButton);
+
         MapUtilities.createLight(this.scene);
         MapUtilities.createSkybox(this.scene);
 
@@ -47,7 +57,6 @@ export default class SelectionRing {
             new MainMap();
         });
         Communication.sendMessage("/setPlayer", playerId);
-
     }
 
     selectionRing = async message => {

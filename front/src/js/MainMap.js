@@ -65,5 +65,6 @@ export default class MainMap {
         // Get all map
         Communication.mockRestApi("/user/getAllMap", message => MapUtilities.getAllMap(message, this.scene));
         Communication.sendMessage("/getAllMap", null);
+        Communication.clientSocket.subscribe("/broker/command", message => MapUtilities.updateMap(message, this.scene));
     }
 };
