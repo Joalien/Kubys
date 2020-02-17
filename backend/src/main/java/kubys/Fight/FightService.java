@@ -19,6 +19,7 @@ import java.util.UUID;
 public class FightService {
     private final java.util.Map<String, Fight> fights = new HashMap<>();
     public final int MIN_NUMBER_OF_PLAYER = 1; // TODO -> move to 2
+    // TODO add MAX_NUMBER_OF_PLAYER ?
 
     private PlayerService playerService;
 

@@ -36,7 +36,6 @@ class SpellTest {
 
         @Test
         void testSpellArraySerialization() {
-            System.out.println(Arrays.toString(List.of(spell).toArray(new Spell[0])));
             verifySpellTypeSerialization(Arrays.toString(List.of(spell).toArray(new Spell[0])));
         }
 
@@ -52,7 +51,7 @@ class SpellTest {
         @Test
         void testAccessRole() {
             Player player = TestHelper.createRandomNewPlayer();
-
+            // TODO add tests about available/unlocked
         }
     }
 }

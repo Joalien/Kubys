@@ -97,7 +97,7 @@ public class PlayerController {
     //When a player make a command, only return the diff with previous map
     @MessageMapping("/command")
     @SendTo("/broker/command")
-    public Cell applyCommand(Principal principal, Command command, SimpMessageHeaderAccessor headerAccessor) {
+    public Cell applyCommand(Command command) {
         Player player = sessionStore.getPlayer();
 
         //If player command, send changes to all players

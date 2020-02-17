@@ -17,7 +17,6 @@ import static java.time.Duration.ofMillis;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@DisplayName("Test user displacement")
 @Slf4j
 class PlayerServiceTest {
 
@@ -49,13 +48,6 @@ class PlayerServiceTest {
     class movePlayerTest {
 
         @Test
-        @DisplayName("test CREATE command")
-        void createUser() {
-            // TODO
-        }
-
-        @Test
-        @DisplayName("move forward")
         void moveForward() {
             mainMap.getCells().put(position.plusY(-1).plusZ(1), LandPlot.builder().build());
             playerService.movePlayer(player, Command.FORWARD);
@@ -63,8 +55,7 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("can't move forward")
-        void tryToMoveForward() {
+        void failMovingForward() {
             mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
             mainMap.getCells().put(position.plusY(1).plusZ(1), LandPlot.builder().build());
             playerService.movePlayer(player, Command.FORWARD);
@@ -72,7 +63,6 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("climb landplot")
         void climbLandPlot() {
             mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
             playerService.movePlayer(player, Command.FORWARD);
@@ -80,8 +70,7 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("can't climb landplot")
-        void climbLandPlotThenFail() {
+        void failClimbingLandPlot() {
             mainMap.getCells().put(position.plusZ(1), LandPlot.builder().build());
             mainMap.getCells().put(position.plusY(1), LandPlot.builder().build());
             playerService.movePlayer(player, Command.FORWARD);
@@ -89,7 +78,6 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("move forward and drop")
         void moveForwardThenFall() {
             mainMap.getCells().put(position.plusX(1).plusY(-2), LandPlot.builder().build());
             playerService.movePlayer(player, Command.RIGHT);
@@ -97,8 +85,7 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("no infinite loop if user fall")
-        void moveThenDontFall() {
+        void failMovingThenFalling() {
             // TODO: Find workaround
             // Warning, it will not stop infinite loop, but at least the test will not pass
             assertTimeout(ofMillis(1000), () -> {
@@ -108,14 +95,13 @@ class PlayerServiceTest {
         }
 
         @AfterEach
-        @DisplayName("implicit test that player's position is the same that its map position")
-        void userPosition() {
-            assertEquals(mainMap.getCells().get(player.getPosition()), player);
+        void testPlayerPositionIsTheSameThatItsPositionInsideMap() {
+            assertTrue(isPlayerInsideMap(mainMap, player));
         }
     }
 
     @Nested
-    class switchMapTest {
+    class switchTowardFightMapTest {
         Map otherMap;
 
         @BeforeEach
@@ -125,7 +111,6 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("player is only on the new map")
         void changeUserMap() {
             assertEquals(player.getMap(), otherMap);
             assertTrue(otherMap.getCells().values().stream().anyMatch(cell -> cell.equals(player)));
@@ -133,15 +118,17 @@ class PlayerServiceTest {
         }
 
         @Test
-        @DisplayName("user starts on starting cell")
-        void userStartsOnStartingCell() {
+        void verifyThatUserStartsOnStartingCell() {
             assertTrue(otherMap.getStartingPositions().contains(player.getPosition()));
         }
 
         @AfterEach
-        @DisplayName("implicit test that player's position is the same that its map position")
-        void userPosition() {
-            assertEquals(otherMap.getCells().get(player.getPosition()), player);
+        void testPlayerPositionIsTheSameThatItsPositionInsideMap() {
+            assertTrue(isPlayerInsideMap(otherMap, player));
         }
+    }
+
+    static boolean isPlayerInsideMap(Map map, Player player) {
+        return map.getCells().get(player.getPosition()).equals(player);
     }
 }

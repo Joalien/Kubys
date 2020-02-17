@@ -40,6 +40,8 @@ public class PlayerService {
                 return moveRight(player);
             case CREATE:
                 return switchMap(player, MapService.MAIN_MAP);
+            case REMOVE:
+                return removePlayerFromItsMap(player);
             default:
                 throw new IllegalArgumentException("Unexpected value: " + command);
         }
@@ -69,6 +71,7 @@ public class PlayerService {
     }
 
     // This method contains logic
+
     private Boolean moveToPosition(Player player, Position position) {
         java.util.Map<Position, Cell> cells = player.getMap().getCells();
         if (position == null || !player.getMap().isInsideMap(position)) throw new IllegalArgumentException("Position should not be null nor outside of the map !");
@@ -91,7 +94,6 @@ public class PlayerService {
             return true;
         } else return false;
     }
-
     private void updatePosition(Player player, Position position) {
         java.util.Map<Position, Cell> cells = player.getMap().getCells();
         cells.remove(player.getPosition());
@@ -130,6 +132,13 @@ public class PlayerService {
 
         // Make user fall if he is created in the air
         return moveToPosition(player, player.getPosition());
+    }
+
+    private Boolean removePlayerFromItsMap(Player oldPlayer) {
+        oldPlayer.getMap().getCells().remove(oldPlayer.getPosition(), oldPlayer);
+        oldPlayer.setConnected(false);
+        playerDao.save(oldPlayer);
+        return true;
     }
 
     int getSpellPoints(Player player) {

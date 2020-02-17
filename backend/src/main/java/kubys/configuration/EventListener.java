@@ -1,8 +1,10 @@
 package kubys.configuration;
 
 import kubys.Fight.FightQueue;
+import kubys.Player.Command;
 import kubys.Player.Player;
 import kubys.Player.PlayerDao;
+import kubys.Player.PlayerService;
 import kubys.configuration.commons.ApplicationStore;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,7 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
 
     private SimpMessagingTemplate template;
     private ApplicationStore applicationStore;
-    private PlayerDao playerDao;
+    private PlayerService playerService;
     private FightQueue fightQueue;
 
     @Override
@@ -31,10 +33,8 @@ public class EventListener implements ApplicationListener<SessionDisconnectEvent
             applicationStore.getSessionIdPlayer().remove(sessionId);
             fightQueue.removePlayer(oldPlayer);
 
-            oldPlayer.getMap().getCells().remove(oldPlayer.getPosition(), oldPlayer);
-            playerDao.save(oldPlayer);
+            playerService.movePlayer(oldPlayer, Command.REMOVE);
 
-            oldPlayer.setConnected(false);
             this.template.convertAndSend("/broker/command", oldPlayer);
         }
 
