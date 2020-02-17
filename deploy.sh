@@ -8,4 +8,4 @@ scp docker-compose.yml josquin@kubys.fr:~
 
 ssh josquin@kubys.fr -t "export LC_ALL=C.UTF-8;
 			 export LANG=C.UTF-8;
-			 pipenv run docker-compose up --build -d"
+			 pipenv run docker-compose up --build --force-recreate -d"

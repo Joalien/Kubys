@@ -1,6 +1,6 @@
 package kubys.configuration.commons;
 
-import kubys.Player.Player;
+import kubys.player.Player;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +29,6 @@ public class ApplicationStore {
         return sessionIdPlayer.keySet()
                 .stream()
                 .filter(s -> sessionIdPlayer.get(s).equals(p))
-                .peek(s -> log.info("Reverse dictionary : " + s))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("No string are key for this player"));
     }

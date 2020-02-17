@@ -1,11 +1,10 @@
 package kubys.configuration;
 
-import kubys.Fight.FightQueue;
-import kubys.Player.Command;
-import kubys.Player.Player;
-import kubys.Player.PlayerDao;
-import kubys.Player.PlayerService;
 import kubys.configuration.commons.ApplicationStore;
+import kubys.fight.FightQueue;
+import kubys.player.Command;
+import kubys.player.Player;
+import kubys.player.PlayerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;

@@ -92,4 +92,4 @@ export default class SkillTree {
         MapUtilities.createLight(this.scene);
         MapUtilities.createSkybox(this.scene);
     }
-};
+}

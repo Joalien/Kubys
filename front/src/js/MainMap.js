@@ -34,6 +34,7 @@ export default class MainMap {
             if (subscribeFightButton.isSubscribingFight) {
                 subscribeFightButton.subscription = Communication.clientSocket.subscribe("/broker/fight", message => {
                     subscribeFightButton.subscription.unsubscribe();
+                    this.updatesSubscription.unsubscribe();
                     this.scene.dispose();
                     this.advancedTexture.dispose();
                     new FightMap(message.body)
@@ -65,6 +66,6 @@ export default class MainMap {
         // Get all map
         Communication.mockRestApi("/user/getAllMap", message => MapUtilities.getAllMap(message, this.scene));
         Communication.sendMessage("/getAllMap", null);
-        Communication.clientSocket.subscribe("/broker/command", message => MapUtilities.updateMap(message, this.scene));
+        this.updatesSubscription = Communication.clientSocket.subscribe("/broker/command", message => MapUtilities.updateMap(message, this.scene));
     }
-};
+}

@@ -1,7 +1,5 @@
-import {Rectangle, AdvancedDynamicTexture, TextBlock} from 'babylonjs-gui'
+import {AdvancedDynamicTexture, Rectangle, TextBlock} from 'babylonjs-gui'
 import 'babylonjs-loaders'
-import Game from "./Game";
-import Communication from "./Communication";
 
 export default class Player {
 
@@ -85,7 +83,7 @@ export default class Player {
         mesh.__scaleVectorCache.z = otherVector.z / size.z;
 
         return mesh.__scaleVectorCache;
-    };
+    }
 
     static getAbsoluteSize(mesh) {
         if (!mesh.__size) {
@@ -98,9 +96,9 @@ export default class Player {
         mesh.__size.z = Math.abs(bounds.minimum.z - bounds.maximum.z);
 
         return mesh.__size;
-    };
+    }
 
     static refreshPlayer(playerId) {
         Player.CURRENT_PLAYER_ID = Number(playerId);
     }
-};
+}

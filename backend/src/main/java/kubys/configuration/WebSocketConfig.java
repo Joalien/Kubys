@@ -3,15 +3,13 @@ package kubys.configuration;
 import com.google.api.core.ApiFuture;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import kubys.Player.Player;
-import kubys.Spell.Dwarf;
-import kubys.User.User;
-import kubys.User.UserDao;
+import kubys.player.Player;
+import kubys.spell.Dwarf;
+import kubys.user.User;
+import kubys.user.UserDao;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -24,14 +22,11 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -49,19 +44,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/connect").setAllowedOrigins("*") //FIXME CSRF vulnerability ?
-                .addInterceptors(new HandshakeInterceptor() {
-                    @Override
-                    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-                                                   Map attributes) {
-                        return true;
-                    }
-
-                    @Override
-                    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-                                               Exception ex) {
-                    }
-                });
+        registry.addEndpoint("/connect")
+                .setAllowedOrigins("https://www.kubysfr", "https://kubys.fr", "http://localhost:4200", "https://localhost");
     }
 
     @Override
@@ -98,6 +82,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         try {
             userId = future.get().getUid();
         } catch (ExecutionException | InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new BadCredentialsException(e.getMessage());
         }
 

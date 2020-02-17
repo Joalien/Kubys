@@ -16,7 +16,7 @@ public class Application {
 
     private static final String KEY_PATH = "serviceAccountPrivateKey.json";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         try {
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(new ClassPathResource(KEY_PATH).getInputStream()))
@@ -28,14 +28,5 @@ public class Application {
         }
 
         SpringApplication.run(Application.class, args);
-
-        /*
-        TODO : (MVP)
-        - Optimize payload (low)
-        - Use Spring Cloud Vault (low)
-        - Change scene in BabylonJS
-            - Refactor JS (ongoing)
-            - Refactor Ring Selection with Scene switch (low)
-         */
     }
 }

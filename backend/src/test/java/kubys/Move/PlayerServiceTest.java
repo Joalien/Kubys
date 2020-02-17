@@ -1,12 +1,12 @@
 package kubys.Move;
 
-import kubys.Map.LandPlot;
-import kubys.Map.Map;
-import kubys.Map.MapService;
-import kubys.Map.Position;
-import kubys.Player.Command;
-import kubys.Player.Player;
-import kubys.Player.PlayerService;
+import kubys.map.LandPlot;
+import kubys.map.Map;
+import kubys.map.MapService;
+import kubys.map.Position;
+import kubys.player.Command;
+import kubys.player.Player;
+import kubys.player.PlayerService;
 import kubys.TestHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;

@@ -64,8 +64,6 @@ export default class FightMap {
         Communication.sendMessage("/getAllMap", null);
 
 
-        this.fightEventSubscription = Communication.clientSocket.subscribe("/broker/fight/" + this.fightUid, message => this.updateFightListener(message)); // TODO add your own logic here
-
         toastr.options = { // TODO put in a global conf file if multiple toastr
             "closeButton": true,
             "debug": false,
@@ -83,9 +81,9 @@ export default class FightMap {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
+
         toastr["info"]("Début du combat !");
         this.scene._inputManager._onCanvasFocusObserver.callback();
-
         BABYLON.SceneLoader.LoadAssetContainer("/resources/objects/axe/", "axe.obj", this.scene, container => {
             FightMap.axe = container.meshes[0];
             FightMap.axe.rotate(BABYLON.Axis.X, Math.PI / 2, BABYLON.Space.WORLD);
@@ -94,7 +92,11 @@ export default class FightMap {
         });
 
         Communication.mockRestApi("/user/getSpells", message => this.createComponentTreePanel(message));
+
         Communication.sendMessage("/getSpells", null);
+
+        this.fightEventSubscription = Communication.clientSocket.subscribe("/broker/fight/" + this.fightUid, message => this.updateFightListener(message)); // TODO add your own logic here
+        this.updatesSubscription = Communication.clientSocket.subscribe("/broker/command", message => MapUtilities.updateMap(message, this.scene));
     }
 
     initializeActionManager() {
@@ -212,7 +214,7 @@ export default class FightMap {
 
         let ray = new BABYLON.Ray(origin, direction, 30);
 
-        let hit = this.scene.pickWithRay(ray, (mesh) => mesh !== this.scene.getMeshByID(player.id));
+        let hit = this.scene.pickWithRay(ray, () => mesh !== this.scene.getMeshByID(player.id));
 
         return (hit.pickedMesh === mesh || hit.pickedMesh === null); //Weird but else (-4, 0, -4) not found :O
 
@@ -275,6 +277,7 @@ export default class FightMap {
         console.log("Received from /fight/" + this.fightUid + " : " + message.body);
         if (message.body === "true") {
             this.fightEventSubscription.unsubscribe();
+            this.updatesSubscription.unsubscribe();
             this.scene.dispose();
             this.advancedTexture.dispose();
             new MainMap();

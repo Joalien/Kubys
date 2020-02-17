@@ -160,11 +160,11 @@ export default class MapUtilities {
     }
 
     static showWorldAxis(size, scene) {
-        let makeTextPlane = (text, color, size) => {
+        let makeTextPlane = (text, color, textSize) => {
             let dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true);
             dynamicTexture.hasAlpha = true;
             dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
-            let plane = BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true);
+            let plane = BABYLON.Mesh.CreatePlane("TextPlane", textSize, scene, true);
             plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene);
             plane.material.backFaceCulling = false;
             plane.material.specularColor = new BABYLON.Color3(0, 0, 0);

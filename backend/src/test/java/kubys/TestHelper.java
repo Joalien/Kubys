@@ -1,8 +1,8 @@
 package kubys;
 
-import kubys.Player.Player;
-import kubys.Spell.Dwarf;
-import kubys.User.User;
+import kubys.player.Player;
+import kubys.spell.Dwarf;
+import kubys.user.User;
 
 import java.util.List;
 import java.util.Set;

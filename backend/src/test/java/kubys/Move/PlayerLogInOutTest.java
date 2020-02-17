@@ -1,12 +1,11 @@
 package kubys.Move;
 
-import kubys.Map.MainMap;
-import kubys.Map.MapService;
-import kubys.Map.Position;
-import kubys.Player.Command;
-import kubys.Player.Player;
-import kubys.Player.PlayerService;
 import kubys.TestHelper;
+import kubys.map.MapService;
+import kubys.map.Position;
+import kubys.player.Command;
+import kubys.player.Player;
+import kubys.player.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest

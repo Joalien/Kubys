@@ -27,6 +27,6 @@ export default class Camera {
         this.scene.activeCamera = this.arcRotateCamera;
         this.arcRotateCamera.attachControl(this.canvas, true);
     }
-};
+}
 
 
